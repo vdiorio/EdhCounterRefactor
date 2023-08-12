@@ -1,9 +1,11 @@
 import * as NavigationBar from 'expo-navigation-bar';
 import * as Font from 'expo-font';
 import { useEffect, useState } from 'react';
-import HomeScreen from './src/Screens/HomeScreen/HomeScreen';
 import hideNavbar from './src/helpers/hideNavBar';
 import LoadingAnimated from './src/helpers/LoadingAnimated';
+import ThemeProvider from './src/contexts/ThemeContext';
+import { ThemedBackground } from './src/helpers/components/ThemeComponents';
+import Routes from './src/Routes';
 
 const loadApp = async (callBack: () => void) => {
 	const hideNavBar = NavigationBar.setVisibilityAsync('hidden');
@@ -25,5 +27,7 @@ export default function App() {
 		loadApp(() => toggleLoad(true));
 	}, []);
 
-	return <>{isLoaded ? <HomeScreen /> : <LoadingAnimated />}</>;
+	return (
+		<ThemeProvider>{isLoaded ? <Routes /> : <LoadingAnimated />}</ThemeProvider>
+	);
 }

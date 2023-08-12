@@ -1,16 +1,8 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Wpercentage } from '../../helpers/getWindowPercentage';
 
 const styles = StyleSheet.create({
-	screen: {
-		width: '100%',
-		height: '100%',
-		alignItems: 'center',
-		backgroundColor: 'rgb(24, 23, 28)',
-		justifyContent: 'space-evenly',
-		paddingBottom: 60,
-		padding: '10%',
-	},
 	image: {
 		width: '100%',
 		height: '100%',
@@ -20,12 +12,12 @@ const styles = StyleSheet.create({
 		aspectRatio: 1,
 		alignSelf: 'center',
 		marginTop: '5%',
-		maxHeight: Dimensions.get('window').width / 1.8,
+		maxHeight: Wpercentage(55.55),
 	},
 	titleContainer: {
 		height: '16%',
 		aspectRatio: 3,
-		maxHeight: Dimensions.get('window').width / 3.2,
+		maxHeight: Wpercentage(31.25),
 	},
 	text: {
 		color: '#aa9877',
@@ -46,7 +38,7 @@ const styles = StyleSheet.create({
 		fontFamily: 'serif',
 		fontSize: 200,
 		textAlign: 'center',
-		color: 'white',
+		color: '#F5F3F0',
 		textShadowColor: 'black',
 		textShadowOffset: { width: RFValue(1, 800), height: RFValue(1, 800) },
 		textShadowRadius: RFValue(4, 800),
