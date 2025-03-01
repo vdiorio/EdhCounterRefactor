@@ -1,24 +1,38 @@
-import { Button, StyleSheet, Text, View } from "react-native";
-import { useState } from "react";
-import WheelPicker from "react-native-wheely";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import playerContainerStyles from "./(number)/style";
-import renderAltOptions from "@/components/AltOptions";
+import { StyleSheet, useColorScheme, View } from "react-native";
+import { useGlobalSearchParams } from "expo-router";
+import LayoutGenerator from "./LayoutGenerator";
+import { getPlayerLayout } from "@/store/playerLayouts";
+import PlayerScreen from "@/components/PlayerScreen";
+import useGameStore from "@/store/GameStore";
 
-const options = Array.from(new Array(6)).map(
-  (_, index) => `${index + 1} Player${!index ? "" : "s"}`
-);
+const AppColors = {
+  dark: {
+    text: "#e0e0e0",
+    background: "#1a1a1a",
+  },
+  light: {
+    text: "#1a1a1a",
+    background: "#e0e0e0",
+  },
+};
 
-export default function GameSelectors() {
-  const [selected, setSelected] = useState<number>(3);
+export default function Game() {
+  const { playerCount, alternative } = useGlobalSearchParams();
+  const numPlayers = playerCount ? Number(playerCount) : 4;
+  const alt = alternative ? alternative === "v" : false;
+  const colorScheme = useColorScheme() || "dark";
+  const colors = colorScheme === "dark" ? AppColors.dark : AppColors.light;
 
-  const scaleFunction = (x: number) => {
-    return 0.5 * x; // Adjust for desired scale
-  };
+  const gameStore = useGameStore();
+  gameStore.getState().setNumPlayers(numPlayers);
 
   return (
-    <View style={styles.container}>
-      <Text>Game</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <LayoutGenerator
+        layout={getPlayerLayout({ playerCount: numPlayers, alt })}
+        component={PlayerScreen}
+        game
+      />
     </View>
   );
 }
@@ -54,6 +68,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 0.5,
-    borderColor: "black",
+    borderColor: "#1a1a1a",
   },
 });

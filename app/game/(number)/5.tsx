@@ -8,7 +8,7 @@ interface Props {
 }
 const FivePlayerScreen = ({ alt = false }: Props) => {
   const { w50, h50, h33, h30, h35 } = playerContainerStyles;
-  if (alt)
+  if (!alt)
     return (
       <View style={styles.screen}>
         {renderPlayer({

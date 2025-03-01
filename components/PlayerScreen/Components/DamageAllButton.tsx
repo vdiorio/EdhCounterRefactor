@@ -1,16 +1,19 @@
-import GameStore from "@/store/GameStore";
+import Typography from "@/components/ui/Typography";
+import useGameStore from "@/store/GameStore";
 import { useRef } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 interface Props {
   playerId: number;
 }
 
 const DAMAGE_ALL_INTERVAL = 500;
+const BUTTON_SIZE = 50;
 
 const DamageAllButton = ({ playerId }: Props) => {
+  const store = useGameStore();
   const timer = useRef<NodeJS.Timeout | null>(null);
-  const { damageAllOponents } = GameStore((state) => state);
+  const { damageAllOponents } = store((state) => state);
   const onPress = () => {
     damageAllOponents({ playerId, value: -1 });
   };
@@ -37,7 +40,7 @@ const DamageAllButton = ({ playerId }: Props) => {
       onLongPress={onLongPress}
       onPressOut={onPressOut}
     >
-      <Text>-1</Text>
+      <Typography style={{ color: "#1a1a1a" }}>-1</Typography>
     </TouchableOpacity>
   );
 };
@@ -50,12 +53,14 @@ const styles = StyleSheet.create({
     textTransform: "uppercase", // Transforma o texto em maiúsculas
     alignItems: "center", // Centraliza o texto dentro do botão
     justifyContent: "center", // Centraliza o texto verticalmente
-    width: "15%",
     aspectRatio: 1,
     position: "absolute",
     bottom: 20,
     right: 20,
     zIndex: 2,
+    width: BUTTON_SIZE,
+    height: BUTTON_SIZE,
+    color: "#1a1a1a",
   },
 });
 

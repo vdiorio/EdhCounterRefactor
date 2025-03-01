@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { useEffect, useState } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { StatusBar, setStatusBarHidden } from "expo-status-bar";
 import * as NavigationBar from "expo-navigation-bar";
 import { Stack } from "expo-router";
@@ -58,20 +58,22 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <View
-      style={styles.container}
-      onLayout={(event) => {
-        const { width, height } = event.nativeEvent.layout;
-        if (!isSystemStatusBarVisible && !isSystemNavigationBarVisible) {
-          setScreenDimensions({ height, width });
-        }
-      }}
-    >
-      <Stack>
-        <Stack.Screen name="game/index" options={{ headerShown: false }} />
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
-    </View>
+    <StrictMode>
+      <View
+        style={styles.container}
+        onLayout={(event) => {
+          const { width, height } = event.nativeEvent.layout;
+          if (!isSystemStatusBarVisible && !isSystemNavigationBarVisible) {
+            setScreenDimensions({ height, width });
+          }
+        }}
+      >
+        <Stack>
+          <Stack.Screen name="game/index" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+        </Stack>
+      </View>
+    </StrictMode>
   );
 }
 

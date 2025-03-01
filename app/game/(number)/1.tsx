@@ -6,8 +6,15 @@ import renderPlayer from "./renderPlayer";
 interface Props {
   alt?: boolean;
 }
-const OnePlayerScreen = (props: Props) => {
-  return (
+const OnePlayerScreen = ({ alt }: Props) => {
+  return alt ? (
+    <View style={styles.screen}>
+      {renderPlayer({
+        playerId: 1,
+        playerDirection: Direction.left,
+      })}
+    </View>
+  ) : (
     <View style={styles.screen}>
       {renderPlayer({
         playerId: 1,

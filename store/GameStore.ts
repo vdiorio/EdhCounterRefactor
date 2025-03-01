@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { CommanderStore, Player } from "./types";
+import { CommanderStore, gameLayout, Player } from "./types";
 
 const STARTING_VALUE = 40;
 const TIME_TO_RESET_DELTA = 2000;
@@ -75,12 +75,19 @@ const GameStore = create<CommanderStore>((set, get) => {
   return {
     players: generatePlayers(4), // 🟢 Default to 4 players or set dynamically later
     numPlayers: 4,
+    deadPlayers: [],
+    removePlayerFromLayout: (playerId) => {
+      set((state) => ({
+        deadPlayers: [...state.deadPlayers, playerId],
+      }));
+    },
 
     setNumPlayers: (NUMBER_OF_PLAYERS: number) => {
       if (NUMBER_OF_PLAYERS === get().numPlayers) return;
       set(() => ({
         numPlayers: NUMBER_OF_PLAYERS,
         players: generatePlayers(NUMBER_OF_PLAYERS),
+        deadPlayers: [],
       }));
     },
 
@@ -135,4 +142,8 @@ const GameStore = create<CommanderStore>((set, get) => {
   };
 });
 
-export default GameStore;
+const useGameStore = () => {
+  return GameStore;
+};
+
+export default useGameStore;

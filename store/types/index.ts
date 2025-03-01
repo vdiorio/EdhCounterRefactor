@@ -26,10 +26,12 @@ export interface DamageAllOponentsPayload {
   playerId: number;
   value: number;
 }
-
+export type gameLayout = [number, number, number, number];
 export interface CommanderStore {
   players: Record<number, Player>;
   numPlayers: number;
+  deadPlayers: number[];
+  removePlayerFromLayout: (playerId: number) => void;
   setLife: ({ playerId, newLife }: SetLifePayload) => void;
   IncrementLife: ({ playerId, value }: IncLifePayload) => void;
   dealCommanderDamage: ({

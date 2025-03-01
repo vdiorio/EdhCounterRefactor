@@ -1,79 +1,81 @@
-import { Direction } from "@/components/types";
-import GameStore from "@/store/GameStore";
 import { useRef } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
+import useGameStore from "@/store/GameStore";
+
 interface Props {
   playerId: number;
-  playerDirection: Direction;
 }
 
 const INCREMENT_HOLD_INTERVAL = 100;
-const HALF_SECOND = 500;
 
-const IncrementerButtons = ({ playerId, playerDirection }: Props) => {
+const IncrementerButtons = ({ playerId }: Props) => {
   const playerInterval = useRef<NodeJS.Timeout | null>(null);
 
-  const { IncrementLife } = GameStore((state) => state);
+  const gameStore = useGameStore();
+  const { IncrementLife } = gameStore((state) => state);
 
   const startAction = (value: number) => {
-    IncrementLife({ playerId, value });
-    playerInterval.current = setTimeout(() => {
-      playerInterval.current = setInterval(
-        () => IncrementLife({ playerId, value }),
-        INCREMENT_HOLD_INTERVAL
-      );
-    }, HALF_SECOND);
+    playerInterval.current = setInterval(
+      () => IncrementLife({ playerId, value }),
+      INCREMENT_HOLD_INTERVAL
+    );
   };
 
-  const stopAction = () => clearInterval(playerInterval.current || undefined);
+  const stopAction = () => {
+    if (playerInterval.current) {
+      clearInterval(playerInterval.current);
+      playerInterval.current = null;
+    }
+  };
 
   return (
-    <>
-      <TouchableOpacity
-        style={[styles.default, styles.leftTouchArea]}
-        onPressIn={() => startAction(-1)}
+    <View style={styles.container}>
+      {/* Left button */}
+      <TouchableHighlight
+        style={[styles.touchable]}
+        onLongPress={() => startAction(-1)}
+        onPress={() => IncrementLife({ playerId, value: -1 })}
         onPressOut={stopAction}
-        activeOpacity={1}
-      />
+        underlayColor={"rgba(255,0,0,0.1)"}
+        activeOpacity={0.4}
+      >
+        <View />
+      </TouchableHighlight>
 
-      <TouchableOpacity
-        style={[styles.default, styles.rightTouchArea]}
-        onPressIn={() => startAction(1)}
+      {/* Right button */}
+      <TouchableHighlight
+        style={[styles.touchable]}
+        onLongPress={() => startAction(1)}
+        onPress={() => IncrementLife({ playerId, value: 1 })}
         onPressOut={stopAction}
-        activeOpacity={1}
-      />
-    </>
+        underlayColor={"rgba(0,255,0,0.1)"}
+        activeOpacity={0.4}
+      >
+        <View />
+      </TouchableHighlight>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  default: {
+  container: {
+    flexDirection: "row", // Arrange buttons horizontally
+    justifyContent: "space-between", // Space out buttons
+    width: "100%",
+    height: "100%", // Ensure the container takes full height of the parent
     position: "absolute",
-    zIndex: 1,
+    padding: 10,
   },
-  leftTouchArea: {
-    left: 0,
-    bottom: 0,
-    width: "50%",
-    height: "100%",
+  touchable: {
+    flex: 1, // Make both buttons take up equal width
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20, // Add padding to make buttons larger and more touch-friendly
+    borderRadius: 10, // Add border radius for rounded corners
   },
-  rightTouchArea: {
-    right: 0,
-    bottom: 0,
-    width: "50%",
-    height: "100%",
-  },
-  downTouchArea: {
-    left: 0,
-    bottom: 0,
-    width: "100%",
-    height: "50%",
-  },
-  upTouchArea: {
-    left: 0,
-    top: 0,
-    width: "100%",
-    height: "50%",
+  buttonText: {
+    color: "#e0e0e0", // Button text color
+    fontSize: 16,
   },
 });
 
