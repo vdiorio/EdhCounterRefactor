@@ -31,6 +31,7 @@ export interface CommanderStore {
   players: Record<number, Player>;
   numPlayers: number;
   deadPlayers: number[];
+  alivePlayers: number[];
   removePlayerFromLayout: (playerId: number) => void;
   setLife: ({ playerId, newLife }: SetLifePayload) => void;
   IncrementLife: ({ playerId, value }: IncLifePayload) => void;

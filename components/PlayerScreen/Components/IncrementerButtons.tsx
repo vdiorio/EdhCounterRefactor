@@ -33,7 +33,7 @@ const IncrementerButtons = ({ playerId }: Props) => {
       {/* Left button */}
       <TouchableHighlight
         style={[styles.touchable]}
-        onLongPress={() => startAction(-1)}
+        onLongPress={() => startAction(-10)}
         onPress={() => IncrementLife({ playerId, value: -1 })}
         onPressOut={stopAction}
         underlayColor={"rgba(255,0,0,0.1)"}

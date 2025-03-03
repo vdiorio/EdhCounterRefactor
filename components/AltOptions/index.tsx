@@ -1,7 +1,11 @@
-import playerContainerStyles from "@/app/game/(number)/style";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect } from "react";
-import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  ViewProps,
+} from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,22 +15,27 @@ import Animated, {
   withTiming,
   useDerivedValue,
 } from "react-native-reanimated";
-import LayoutGenerator from "../../app/game/LayoutGenerator";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { getPlayerLayout } from "@/store/playerLayouts";
 import Rotator from "../Rotator";
 import { Direction } from "../types";
-import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 
-interface Props {
+// Constants
+const { width } = Dimensions.get("window");
+
+// Types
+interface AltSelectorProps {
   onChange: (value: boolean) => void;
   playerCount: number;
   alt: boolean;
-  colors: any;
+  colors?: any;
 }
 
-const { width } = Dimensions.get("window");
-
-const AltSelector = ({ onChange, playerCount, alt }: Props) => {
+/**
+ * Component that allows selecting between default and alternative layouts
+ */
+const AltSelector = ({ onChange, playerCount, alt }: AltSelectorProps) => {
+  // Animation values
   const offset = useSharedValue<number>(alt ? 100 : 0);
   const scale = useSharedValue<number>(alt ? 0 : 1);
 
@@ -44,11 +53,11 @@ const AltSelector = ({ onChange, playerCount, alt }: Props) => {
     });
   });
 
-  const fScale = useDerivedValue(() =>
+  const firstOptionScale = useDerivedValue(() =>
     interpolate(scale.value, [0, 1], [1.08, 0.95])
   );
 
-  const sScale = useDerivedValue(() =>
+  const secondOptionScale = useDerivedValue(() =>
     interpolate(scale.value, [0, 1], [0.95, 1.08])
   );
 
@@ -68,37 +77,36 @@ const AltSelector = ({ onChange, playerCount, alt }: Props) => {
 
   const defaultCardStyle = useAnimatedStyle(() => ({
     width: "40%",
-    transform: [{ scale: fScale.value }],
+    transform: [{ scale: firstOptionScale.value }],
     opacity: interpolate(offset.value, [100, 0], [0.7, 1]),
   }));
 
   const altCardStyle = useAnimatedStyle(() => ({
     width: "40%",
-    transform: [{ scale: sScale.value }],
+    transform: [{ scale: secondOptionScale.value }],
     opacity: interpolate(offset.value, [0, 100], [0.7, 1]),
   }));
 
+  // Update animation when alt prop changes
   useEffect(() => {
     const config = { damping: 15, stiffness: 300 };
     offset.value = withSpring(alt ? 100 : 0, config);
     scale.value = withTiming(alt ? 1 : 0, { duration: 300 });
-  }, [alt]);
+  }, [alt, offset, scale]);
 
   return (
     <View style={styles.container}>
       <View style={styles.altContainer}>
         <Animated.View style={[styles.highlight, highlightStyle]} />
+
         <Animated.View style={defaultCardStyle}>
           <TouchableOpacity
             onPress={() => onChange(false)}
             style={styles.altCard}
           >
-            <Rotator direction={Direction.right} style={styles.rotatorStyle}>
-              <LayoutGenerator
-                layout={getPlayerLayout({ playerCount, alt: false })}
-                component={PlayerIcon}
-              />
-            </Rotator>
+            <LayoutVisualizer
+              layout={getPlayerLayout({ playerCount, alt: false })}
+            />
           </TouchableOpacity>
         </Animated.View>
 
@@ -107,12 +115,9 @@ const AltSelector = ({ onChange, playerCount, alt }: Props) => {
             onPress={() => onChange(true)}
             style={styles.altCard}
           >
-            <Rotator direction={Direction.right} style={styles.rotatorStyle}>
-              <LayoutGenerator
-                layout={getPlayerLayout({ playerCount, alt: true })}
-                component={PlayerIcon}
-              />
-            </Rotator>
+            <LayoutVisualizer
+              layout={getPlayerLayout({ playerCount, alt: true })}
+            />
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -120,12 +125,77 @@ const AltSelector = ({ onChange, playerCount, alt }: Props) => {
   );
 };
 
-// Utility function to render a player icon
+/**
+ * Component to visualize a player icon
+ */
 const PlayerIcon = ({ style, ...props }: ViewProps) => (
   <View style={[styles.playerIconContainer, style]} {...props}>
     <View>
       <Ionicons name="person" size={28} color="#2c3e50" />
     </View>
+  </View>
+);
+
+/**
+ * Component to visualize a layout configuration
+ */
+const LayoutVisualizer = ({ layout }: { layout: number[] }) => (
+  <View style={styles.iconLayoutContainer}>
+    {/* Left section */}
+    {!!layout[0] && (
+      <Rotator
+        style={{ flex: 1, borderRightWidth: 0.5 }}
+        direction={Direction.left}
+      >
+        {Array.from({ length: layout[0] }).map((_, index) => (
+          <PlayerIcon key={`left-${index}`} />
+        ))}
+      </Rotator>
+    )}
+
+    {/* Middle section (top and bottom) */}
+    {!!(layout[1] || layout[2]) && (
+      <View style={{ flex: Math.max(layout[1], layout[2]) + 1 }}>
+        {!!layout[2] && (
+          <Rotator
+            direction={Direction.up}
+            style={{ flex: 1, borderBottomWidth: 0.5 }}
+          >
+            {Array.from({ length: layout[2] }).map((_, index) => (
+              <PlayerIcon
+                key={`up-${index}`}
+                style={{ borderRightWidth: 0.5 }}
+              />
+            ))}
+          </Rotator>
+        )}
+        {layout[1] && (
+          <Rotator
+            direction={Direction.down}
+            style={{ flex: 1, borderTopWidth: 0.5 }}
+          >
+            {Array.from({ length: layout[1] }).map((_, index) => (
+              <PlayerIcon
+                key={`down-${index}`}
+                style={{ borderLeftWidth: 0.5 }}
+              />
+            ))}
+          </Rotator>
+        )}
+      </View>
+    )}
+
+    {/* Right section */}
+    {!!layout[3] && (
+      <Rotator
+        direction={Direction.right}
+        style={{ flex: 1, borderLeftWidth: 0.5 }}
+      >
+        {Array.from({ length: layout[3] }).map((_, index) => (
+          <PlayerIcon key={`right-${index}`} />
+        ))}
+      </Rotator>
+    )}
   </View>
 );
 
@@ -150,9 +220,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 12,
-    display: "flex",
     backgroundColor: "#e0e0e0",
-    overflow: "hidden",
   },
   iconContainer: {
     justifyContent: "center",
@@ -177,6 +245,11 @@ const styles = StyleSheet.create({
   rotatorStyle: {
     width: "100%",
     height: "100%",
+  },
+  iconLayoutContainer: {
+    width: "100%",
+    height: "100%",
+    flexDirection: "row",
   },
 });
 

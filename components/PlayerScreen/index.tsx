@@ -4,8 +4,12 @@ import LifeTotal from "./Components/Lifetotal";
 import DamageAllButton from "./Components/DamageAllButton";
 import IncrementerButtons from "./Components/IncrementerButtons";
 import useStyleStore from "@/store/StyleStore";
+import Animated, { ZoomIn } from "react-native-reanimated";
+import AnimatedAdjustableView, {
+  AnimatedAdjustableViewProps,
+} from "../ui/Animations/AutoAdjustableView";
 
-interface Props extends ViewProps {
+interface Props extends AnimatedAdjustableViewProps {
   playerId: number;
 }
 
@@ -18,7 +22,7 @@ const PlayerScreen = ({ playerId, style, ...props }: Props) => {
   const isDark = colorScheme === "dark";
 
   return (
-    <View style={[styles.container, style]}>
+    <AnimatedAdjustableView style={[style, styles.container]} {...props}>
       <View
         style={[
           styles.content,
@@ -29,7 +33,7 @@ const PlayerScreen = ({ playerId, style, ...props }: Props) => {
       </View>
       <DamageAllButton playerId={playerId} />
       <IncrementerButtons playerId={playerId} />
-    </View>
+    </AnimatedAdjustableView>
   );
 };
 
@@ -41,13 +45,12 @@ export default PlayerScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     borderColor: "#555555",
+    justifyContent: "center",
   },
   content: {
-    flex: 1,
     justifyContent: "center",
-    alignItems: "center",
     position: "relative",
+    minWidth: 200,
   },
 });

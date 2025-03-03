@@ -10,15 +10,23 @@ import { Direction, RotatedStyle } from "../types";
 
 interface Props extends ViewProps {
   direction: Direction;
+  isDead?: boolean;
 }
 
-const Rotator: React.FC<Props> = ({ direction, children, style, ...props }) => {
+const Rotator: React.FC<Props> = ({
+  direction,
+  children,
+  style,
+  isDead,
+  ...props
+}) => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   const isInverted = direction.includes("90");
 
   const onLayout = useCallback(
     (event: LayoutChangeEvent) => {
+      if (isDead) return;
       const { width, height } = event.nativeEvent.layout;
       setDimensions({ width, height });
     },
@@ -55,9 +63,7 @@ const styles = StyleSheet.create({
   fullScreen: {
     flexDirection: "row",
   },
-  right: {
-    flexDirection: "row-reverse",
-  },
+  right: {},
 });
 
 export default Rotator;

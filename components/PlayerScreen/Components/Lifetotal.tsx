@@ -3,7 +3,7 @@ import PlusIcon from "@/assets/icons/plus-sign";
 import Typography from "@/components/ui/Typography";
 import useGameStore from "@/store/GameStore";
 import useStyleStore from "@/store/StyleStore";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button, StyleSheet, View } from "react-native";
 
 interface Props {
@@ -23,28 +23,14 @@ const LifeTotal = ({ playerId }: Props) => {
   const styleStore = useStyleStore();
   const playerColor = styleStore((state) => state.playerColors)[playerId - 1];
 
-  const deltaColor = delta > 0 ? "green" : "red";
-  const toggleEditing = () => setEditing(!editing);
+  const deltaColor = useMemo(() => (delta > 0 ? "green" : "red"), [delta]);
+  const opacity = useMemo(() => (lTotal <= 0 ? 0.5 : 1), [lTotal]);
 
-  // const handleInputConfirm = (newLife: string | number = lTotal) => {
-  //   setLife({ playerId, newLife: Number(newLife) });
-  //   setEditing(false);
-  // };
-  // if (editing) {
-  //   return (
-  //     <NumberInput
-  //       initialValue={lTotal}
-  //       onConfirm={handleInputConfirm}
-  //       onCancel={toggleEditing}
-  //     />
-  //   );
-  // }
+  const toggleEditing = () => setEditing(!editing);
 
   const removePlayerFromLayout = useGameStore()(
     (state) => state.removePlayerFromLayout
   );
-
-  const opacity = lTotal <= 0 ? 0.5 : 1;
 
   return (
     <>
