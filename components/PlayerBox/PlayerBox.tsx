@@ -13,7 +13,7 @@ interface Props extends AnimatedAdjustableViewProps {
   playerId: number;
 }
 
-const PlayerScreen = ({ playerId, style, ...props }: Props) => {
+const PlayerBox = ({ playerId, style, ...props }: Props) => {
   const colorScheme = useColorScheme() || "dark";
   const styleStore = useStyleStore();
   const backgroundColor = styleStore((state) => state.playerColors)[
@@ -37,7 +37,7 @@ const PlayerScreen = ({ playerId, style, ...props }: Props) => {
   );
 };
 
-export default PlayerScreen;
+export default PlayerBox;
 
 /* ------- Compnentes ------- */
 

@@ -32,6 +32,7 @@ export interface CommanderStore {
   numPlayers: number;
   deadPlayers: number[];
   alivePlayers: number[];
+  gameLayout: gameLayout;
   removePlayerFromLayout: (playerId: number) => void;
   setLife: ({ playerId, newLife }: SetLifePayload) => void;
   IncrementLife: ({ playerId, value }: IncLifePayload) => void;
@@ -42,5 +43,11 @@ export interface CommanderStore {
   }: DealCommanderDamagePayload) => void;
   resetGame: () => void;
   damageAllOponents: ({ playerId, value }: DamageAllOponentsPayload) => void;
-  setNumPlayers: (NUMBER_OF_PLAYERS: number) => void;
+  setNumPlayers: ({
+    playerCount,
+    alt,
+  }: {
+    playerCount: number;
+    alt: boolean;
+  }) => void;
 }

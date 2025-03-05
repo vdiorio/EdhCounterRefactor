@@ -6,10 +6,9 @@ import LayoutPiece from "./Component/LayoutPiece";
 import LayoutPieceTwo from "./Component/LayoutPieceTwo";
 import { Direction } from "@/components/types";
 import { getPlayerIds } from "./Component/utils";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 interface Props extends ViewProps {
-  layout: number[];
   component: (props: any) => JSX.Element;
   game?: boolean;
 }
@@ -17,48 +16,39 @@ interface Props extends ViewProps {
 /**
  * Finds the layout index for a given player ID
  */
-
 export default function LayoutGenerator({
-  layout,
   style,
   component: Component,
   game = false,
   ...props
 }: Props) {
-  useGameStore().getState().setNumPlayers(6);
   const alivePlayers = useGameStore()((state) => state.alivePlayers);
+  const layout = useGameStore()((state) => state.gameLayout);
 
   const gameMatrix = useMemo(
     () =>
-      layout.map((_, index) => {
-        return getPlayerIds(layout, index).filter((id) =>
-          alivePlayers.includes(id)
-        ).length;
-      }),
+      layout.map(
+        (_, index) =>
+          getPlayerIds(layout, index).filter((id) => alivePlayers.includes(id))
+            .length
+      ),
     [alivePlayers, layout]
   );
 
-  const topPieceHeightUnits = useMemo(
-    () => (gameMatrix[0] > 0 ? 1 : 0),
-    [gameMatrix]
-  );
+  const [topDimensions, bottomDimensions, middleDimensions] = useMemo(() => {
+    const top = gameMatrix[0] > 0 ? 1 : 0;
+    const bottom = gameMatrix[3] > 0 ? 1 : 0;
+    const middle =
+      Math.max(gameMatrix[1], gameMatrix[2]) +
+      (gameMatrix[1] + gameMatrix[2] <= 1 ? 0 : 1);
+    const height = 100 / (top + middle + bottom);
 
-  const bottomPieceHeightUnits = useMemo(
-    () => (gameMatrix[3] > 0 ? 1 : 0),
-    [gameMatrix]
-  );
+    const topDimensions = { height: top * height };
+    const bottomDimensions = { height: bottom * height };
+    const middleDimensions = { height: middle * height };
 
-  const middlePieceHeightUnits = useMemo(() => {
-    const max = Math.max(gameMatrix[1], gameMatrix[2]) + 1;
-    return gameMatrix[1] + gameMatrix[2] === 1 ? 1 : max;
+    return [topDimensions, bottomDimensions, middleDimensions];
   }, [gameMatrix]);
-
-  const heightUnit = useMemo(
-    () =>
-      100 /
-      (topPieceHeightUnits + middlePieceHeightUnits + bottomPieceHeightUnits),
-    [topPieceHeightUnits, middlePieceHeightUnits, bottomPieceHeightUnits]
-  );
 
   return (
     <View style={styles.gameBody} {...props}>
@@ -66,18 +56,15 @@ export default function LayoutGenerator({
         layout={layout}
         index={0}
         direction={Direction.up}
-        dimensions={{ height: heightUnit * topPieceHeightUnits }}
+        dimensions={topDimensions}
         style={{ borderBottomWidth: 0.5 }}
       />
-      <LayoutPieceTwo
-        layout={layout}
-        dimensions={{ height: heightUnit * middlePieceHeightUnits }}
-      />
+      <LayoutPieceTwo layout={layout} dimensions={middleDimensions} />
       <LayoutPiece
         layout={layout}
         index={3}
         direction={Direction.down}
-        dimensions={{ height: heightUnit * bottomPieceHeightUnits }}
+        dimensions={bottomDimensions}
         style={{ borderTopWidth: 0.5 }}
       />
     </View>

@@ -1,5 +1,5 @@
-import PlayerScreen from "@/components/PlayerScreen";
-import Rotator from "@/components/Rotator";
+import PlayerScreen from "@/components/PlayerScreen/PlayerBox";
+import Rotator from "@/components/Rotator/Rotator";
 import { Direction } from "@/components/types";
 import AnimatedAdjustableView from "@/components/ui/Animations/AutoAdjustableView";
 import useGameStore from "@/store/GameStore";
@@ -33,10 +33,8 @@ export default function LayoutPiece({
     [playerIds, deadPlayers]
   );
 
-  const playerWidth = useMemo(
-    () => 100 / Math.max(alivePlayers.length, 1),
-    [alivePlayers]
-  );
+  const playerWidth = 100 / Math.max(alivePlayers.length, 1);
+
   return (
     <AnimatedAdjustableView
       style={[styles.sideContainer, style]}

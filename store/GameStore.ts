@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { CommanderStore, gameLayout, Player } from "./types";
+import { getPlayerLayout } from "./playerLayouts";
 
 const STARTING_VALUE = 40;
 const TIME_TO_RESET_DELTA = 2000;
@@ -77,6 +78,7 @@ const GameStore = create<CommanderStore>((set, get) => {
     numPlayers: 4,
     deadPlayers: [],
     alivePlayers: [],
+    gameLayout: [0, 0, 0, 0],
     removePlayerFromLayout: (playerId) => {
       set((state) => ({
         deadPlayers: [...state.deadPlayers, playerId],
@@ -84,16 +86,21 @@ const GameStore = create<CommanderStore>((set, get) => {
       }));
     },
 
-    setNumPlayers: (NUMBER_OF_PLAYERS: number) => {
-      if (NUMBER_OF_PLAYERS === get().numPlayers) return;
+    setNumPlayers: ({
+      playerCount,
+      alt,
+    }: {
+      playerCount: number;
+      alt: boolean;
+    }) => {
+      const newLayout = getPlayerLayout({ playerCount, alt });
+      if (newLayout.join("") === get().gameLayout.join("")) return;
       set(() => ({
-        numPlayers: NUMBER_OF_PLAYERS,
-        players: generatePlayers(NUMBER_OF_PLAYERS),
+        gameLayout: newLayout,
+        numPlayers: playerCount,
+        players: generatePlayers(playerCount),
         deadPlayers: [],
-        alivePlayers: Array.from(
-          { length: NUMBER_OF_PLAYERS },
-          (_, i) => i + 1
-        ),
+        alivePlayers: Array.from({ length: playerCount }, (_, i) => i + 1),
       }));
     },
 
@@ -130,6 +137,8 @@ const GameStore = create<CommanderStore>((set, get) => {
       set((state) => ({
         ...state,
         players: generatePlayers(state.numPlayers),
+        deadPlayers: [],
+        alivePlayers: Array.from({ length: state.numPlayers }, (_, i) => i + 1),
       })),
 
     damageAllOponents: ({ playerId, value }) =>

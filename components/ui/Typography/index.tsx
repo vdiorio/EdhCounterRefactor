@@ -19,7 +19,10 @@ export default function Typography({
   const color = scheme || { dark: "#e0e0e0", light: "#1a1a1a" };
 
   return (
-    <Text style={[{ color: color[colorScheme] }, style]} {...props}>
+    <Text
+      style={[{ color: color[colorScheme], flexWrap: "nowrap" }, style]}
+      {...props}
+    >
       {children}
     </Text>
   );

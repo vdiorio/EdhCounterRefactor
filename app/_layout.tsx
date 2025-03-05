@@ -58,22 +58,27 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <StrictMode>
-      <View
-        style={styles.container}
-        onLayout={(event) => {
-          const { width, height } = event.nativeEvent.layout;
-          if (!isSystemStatusBarVisible && !isSystemNavigationBarVisible) {
-            setScreenDimensions({ height, width });
-          }
-        }}
-      >
-        <Stack>
-          <Stack.Screen name="game/index" options={{ headerShown: false }} />
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-        </Stack>
-      </View>
-    </StrictMode>
+    <View
+      style={styles.container}
+      onLayout={(event) => {
+        const { width, height } = event.nativeEvent.layout;
+        if (!isSystemStatusBarVisible && !isSystemNavigationBarVisible) {
+          setScreenDimensions({ height, width });
+        }
+      }}
+    >
+      <Stack>
+        <Stack.Screen
+          name="Pages/GameScreen"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Pages/LayoutSelectorScreen"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+      </Stack>
+    </View>
   );
 }
 

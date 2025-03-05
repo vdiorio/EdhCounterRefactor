@@ -1,9 +1,8 @@
 import { StyleSheet, useColorScheme, View } from "react-native";
 import { useGlobalSearchParams } from "expo-router";
-import LayoutGenerator from "./LayoutGenerator";
-import { getPlayerLayout } from "@/store/playerLayouts";
-import PlayerScreen from "@/components/PlayerScreen";
 import useGameStore from "@/store/GameStore";
+import LayoutGenerator from "@/components/LayoutGenerator/LayoutGenerator";
+import PlayerBox from "@/components/PlayerBox/PlayerBox";
 
 const AppColors = {
   dark: {
@@ -17,22 +16,20 @@ const AppColors = {
 };
 
 export default function Game() {
-  const { playerCount, alternative } = useGlobalSearchParams();
-  const numPlayers = playerCount ? Number(playerCount) : 4;
-  const alt = alternative ? alternative === "v" : false;
+  const params = useGlobalSearchParams();
+  const { alt, playerCount } = {
+    alt: params.alternative === "v",
+    playerCount: parseInt(String(params.playerCount) || "4"),
+  };
   const colorScheme = useColorScheme() || "dark";
   const colors = colorScheme === "dark" ? AppColors.dark : AppColors.light;
 
-  const gameStore = useGameStore();
-  gameStore.getState().setNumPlayers(numPlayers);
+  const setNumberOfPlayers = useGameStore()((state) => state.setNumPlayers);
 
+  setNumberOfPlayers({ playerCount, alt });
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <LayoutGenerator
-        layout={getPlayerLayout({ playerCount: numPlayers, alt })}
-        component={PlayerScreen}
-        game
-      />
+      <LayoutGenerator component={PlayerBox} game />
     </View>
   );
 }
