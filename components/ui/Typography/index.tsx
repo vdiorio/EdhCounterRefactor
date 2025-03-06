@@ -16,7 +16,7 @@ export default function Typography({
   ...props
 }: Props) {
   const colorScheme = useColorScheme() || "dark";
-  const color = scheme || { dark: "#e0e0e0", light: "#1a1a1a" };
+  const color = scheme || { dark: "#e0e0e0", light: "#121212" };
 
   return (
     <Text

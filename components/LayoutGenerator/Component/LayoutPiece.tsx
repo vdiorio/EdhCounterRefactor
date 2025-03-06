@@ -1,11 +1,11 @@
-import PlayerScreen from "@/components/PlayerScreen/PlayerBox";
 import Rotator from "@/components/Rotator/Rotator";
 import { Direction } from "@/components/types";
 import AnimatedAdjustableView from "@/components/ui/Animations/AutoAdjustableView";
-import useGameStore from "@/store/GameStore";
+import GameStore from "@/store/GameStore";
 import { useMemo } from "react";
 import { StyleSheet, ViewProps } from "react-native";
 import { getPlayerIds } from "./utils";
+import PlayerBox from "@/components/PlayerBox/PlayerBox";
 
 interface Props extends ViewProps {
   layout: number[];
@@ -25,7 +25,7 @@ export default function LayoutPiece({
   style,
   ...props
 }: Props) {
-  const deadPlayers = useGameStore()((state) => state.deadPlayers);
+  const deadPlayers = GameStore((state) => state.deadPlayers);
 
   const playerIds = useMemo(() => getPlayerIds(layout, index), [layout]);
   const alivePlayers = useMemo(
@@ -52,7 +52,7 @@ export default function LayoutPiece({
             borderRightWidth: shouldHaveBorderRight ? 0.5 : 0,
           };
           return (
-            <PlayerScreen
+            <PlayerBox
               playerId={playerId}
               key={playerId}
               shouldExit={deadPlayers.includes(playerId)}

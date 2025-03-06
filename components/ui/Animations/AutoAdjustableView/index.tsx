@@ -17,8 +17,6 @@ const AnimatedAdjustableView = ({
   dimensions = {},
   ...props
 }: AnimatedAdjustableViewProps) => {
-  const [exited, setExited] = useState(false);
-
   const currentWidth = dimensions?.width || 100;
   const currentHeight = dimensions?.height || 100;
 
@@ -29,13 +27,9 @@ const AnimatedAdjustableView = ({
   );
 
   return (
-    <>
-      {!exited && (
-        <Animated.View style={[style, animatedStyle]} {...props}>
-          {children}
-        </Animated.View>
-      )}
-    </>
+    <Animated.View style={[style, animatedStyle]} {...props}>
+      {children}
+    </Animated.View>
   );
 };
 

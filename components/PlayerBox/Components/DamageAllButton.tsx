@@ -1,5 +1,5 @@
 import Typography from "@/components/ui/Typography";
-import useGameStore from "@/store/GameStore";
+import GameStore from "@/store/GameStore";
 import { useRef } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
@@ -7,29 +7,24 @@ interface Props {
   playerId: number;
 }
 
-const DAMAGE_ALL_INTERVAL = 500;
+export const DAMAGE_ALL_INTERVAL = 400;
 const BUTTON_SIZE = 50;
 
 const DamageAllButton = ({ playerId }: Props) => {
-  const store = useGameStore();
   const timer = useRef<NodeJS.Timeout | null>(null);
-  const { damageAllOponents } = store((state) => state);
+  const { damageAllOponents } = GameStore((state) => state);
   const onPress = () => {
     damageAllOponents({ playerId, value: -1 });
   };
 
   const onLongPress = () => {
-    timer.current = setTimeout(() => {
-      damageAllOponents({ playerId, value: 1 });
-      timer.current = setInterval(
-        () => damageAllOponents({ playerId, value: 1 }),
-        DAMAGE_ALL_INTERVAL
-      );
-    }, DAMAGE_ALL_INTERVAL);
+    timer.current = setInterval(
+      () => damageAllOponents({ playerId, value: 1 }),
+      DAMAGE_ALL_INTERVAL
+    );
   };
 
   const onPressOut = () => {
-    clearTimeout(timer.current || undefined);
     clearInterval(timer.current || undefined); // Adicionado para limpar o setInterval
   };
 
@@ -39,8 +34,9 @@ const DamageAllButton = ({ playerId }: Props) => {
       onPress={onPress}
       onLongPress={onLongPress}
       onPressOut={onPressOut}
+      testID={`damage-all-${playerId}`}
     >
-      <Typography style={{ color: "#1a1a1a" }}>-1</Typography>
+      <Typography style={{ color: "#121212" }}>-1</Typography>
     </TouchableOpacity>
   );
 };
@@ -60,7 +56,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
     width: BUTTON_SIZE,
     height: BUTTON_SIZE,
-    color: "#1a1a1a",
+    color: "#121212",
   },
 });
 

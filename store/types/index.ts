@@ -35,7 +35,7 @@ export interface CommanderStore {
   gameLayout: gameLayout;
   removePlayerFromLayout: (playerId: number) => void;
   setLife: ({ playerId, newLife }: SetLifePayload) => void;
-  IncrementLife: ({ playerId, value }: IncLifePayload) => void;
+  incrementLife: ({ playerId, value }: IncLifePayload) => void;
   dealCommanderDamage: ({
     attackerId,
     playerId,

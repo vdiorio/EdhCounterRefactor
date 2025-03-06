@@ -1,6 +1,6 @@
 import { StyleSheet, View, ViewStyle } from "react-native";
 import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
-import useGameStore from "@/store/GameStore";
+import GameStore from "@/store/GameStore";
 import { useSharedValue } from "react-native-reanimated";
 import LayoutPiece from "./Component/LayoutPiece";
 import LayoutPieceTwo from "./Component/LayoutPieceTwo";
@@ -22,8 +22,8 @@ export default function LayoutGenerator({
   game = false,
   ...props
 }: Props) {
-  const alivePlayers = useGameStore()((state) => state.alivePlayers);
-  const layout = useGameStore()((state) => state.gameLayout);
+  const alivePlayers = GameStore((state) => state.alivePlayers);
+  const layout = GameStore((state) => state.gameLayout);
 
   const gameMatrix = useMemo(
     () =>

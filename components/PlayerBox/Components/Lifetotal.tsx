@@ -1,8 +1,8 @@
 import MinusIcon from "@/assets/icons/minus-sign";
 import PlusIcon from "@/assets/icons/plus-sign";
 import Typography from "@/components/ui/Typography";
-import useGameStore from "@/store/GameStore";
-import useStyleStore from "@/store/StyleStore";
+import GameStore from "@/store/GameStore";
+import { StyleStore } from "@/store/StyleStore";
 import { useState, useMemo } from "react";
 import { Button, StyleSheet, View } from "react-native";
 
@@ -15,27 +15,28 @@ const DELTA_FONT_SIZE = Math.floor(LIFE_FONT_SIZE * 0.3333);
 const VISUAL_HELPER_ICON_SIZE = Math.round(LIFE_FONT_SIZE / 4);
 
 const LifeTotal = ({ playerId }: Props) => {
-  const store = useGameStore();
   const [editing, setEditing] = useState(false);
-  const lTotal = store((state) => state.players[playerId].lTotal);
-  const delta = store((state) => state.players[playerId].delta);
+  const lTotal = GameStore((state) => state.players[playerId].lTotal);
+  const delta = GameStore((state) => state.players[playerId].delta);
 
-  const styleStore = useStyleStore();
-  const playerColor = styleStore((state) => state.playerColors)[playerId - 1];
+  const playerColor = StyleStore((state) => state.playerColors)[playerId - 1];
 
-  const deltaColor = useMemo(() => (delta > 0 ? "green" : "red"), [delta]);
+  const deltaColor = useMemo(() => (delta > 0 ? "lime" : "red"), [delta]);
   const opacity = useMemo(() => (lTotal <= 0 ? 0.5 : 1), [lTotal]);
 
   const toggleEditing = () => setEditing(!editing);
 
-  const removePlayerFromLayout = useGameStore()(
+  const removePlayerFromLayout = GameStore(
     (state) => state.removePlayerFromLayout
   );
 
   return (
     <>
-      <View style={[styles.container]}>
-        <Typography style={[styles.deltaText, { color: deltaColor }]}>
+      <View data-testid={`lifetotal-${playerId}`} style={[styles.container]}>
+        <Typography
+          testID="delta"
+          style={[styles.deltaText, { color: deltaColor }]}
+        >
           {delta > 0 ? `+${delta}` : delta || " "}
         </Typography>
         <MinusIcon
@@ -44,9 +45,10 @@ const LifeTotal = ({ playerId }: Props) => {
           opacity={opacity}
         />
         <Typography
-          scheme={{ dark: playerColor, light: "#1a1a1a" }}
+          scheme={{ dark: playerColor, light: "#121212" }}
           onLongPress={toggleEditing}
-          style={[styles.lifeTotal, { opacity }]}
+          style={{ ...styles.lifeTotal, opacity }}
+          testID={`lifetotal-${playerId}`}
         >
           {lTotal}
         </Typography>

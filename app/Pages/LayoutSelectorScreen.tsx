@@ -32,7 +32,7 @@ const AppColors = {
     accent: {
       green: "#34A853", // Green mana
       white: "#F0F0F0", // White mana
-      black: "#121212", // #1a1a1a mana
+      black: "#121212", // #121212 mana
     },
     // Typography
     text: "#FFFFFF",
@@ -67,7 +67,7 @@ const AppColors = {
     accent: {
       green: "#34A853", // Green mana
       white: "#F8F8F8", // White mana
-      black: "#212121", // #1a1a1a mana
+      black: "#212121", // #121212 mana
     },
     // Typography
     text: "#212121",
@@ -147,7 +147,7 @@ export default function GameSelectors() {
               }}
               selectedTextStyle={{
                 fontSize: 26,
-                color: "#1a1a1a",
+                color: "#121212",
                 fontWeight: "700",
               }}
               itemHeight={50}

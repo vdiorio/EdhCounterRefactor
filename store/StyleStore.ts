@@ -39,8 +39,4 @@ export const StyleStore = create<StyleState>((set) => {
   };
 });
 
-const useStyleStore = () => {
-  return StyleStore;
-};
-
-export default useStyleStore;
+export default StyleStore;

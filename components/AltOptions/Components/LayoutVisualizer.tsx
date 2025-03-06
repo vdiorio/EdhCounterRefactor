@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    borderColor: "#1a1a1a",
+    borderColor: "#121212",
   },
 });
 

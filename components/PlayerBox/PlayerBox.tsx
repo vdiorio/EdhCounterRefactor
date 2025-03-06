@@ -3,7 +3,7 @@ import { View, StyleSheet, ViewProps, useColorScheme } from "react-native";
 import LifeTotal from "./Components/Lifetotal";
 import DamageAllButton from "./Components/DamageAllButton";
 import IncrementerButtons from "./Components/IncrementerButtons";
-import useStyleStore from "@/store/StyleStore";
+import useStyleStore, { StyleStore } from "@/store/StyleStore";
 import Animated, { ZoomIn } from "react-native-reanimated";
 import AnimatedAdjustableView, {
   AnimatedAdjustableViewProps,
@@ -15,14 +15,17 @@ interface Props extends AnimatedAdjustableViewProps {
 
 const PlayerBox = ({ playerId, style, ...props }: Props) => {
   const colorScheme = useColorScheme() || "dark";
-  const styleStore = useStyleStore();
-  const backgroundColor = styleStore((state) => state.playerColors)[
+  const backgroundColor = StyleStore((state) => state.playerColors)[
     playerId - 1
   ];
   const isDark = colorScheme === "dark";
 
   return (
-    <AnimatedAdjustableView style={[style, styles.container]} {...props}>
+    <AnimatedAdjustableView
+      testID={`player-${playerId}`}
+      style={[style, styles.container]}
+      {...props}
+    >
       <View
         style={[
           styles.content,

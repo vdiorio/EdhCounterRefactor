@@ -2,8 +2,8 @@ import { create } from "zustand";
 import { CommanderStore, gameLayout, Player } from "./types";
 import { getPlayerLayout } from "./playerLayouts";
 
-const STARTING_VALUE = 40;
-const TIME_TO_RESET_DELTA = 2000;
+export const STARTING_VALUE = 40;
+export const TIME_TO_RESET_DELTA = 2000;
 
 /**
  * Generates an object with player IDs as keys and Player objects as values.
@@ -78,7 +78,7 @@ const GameStore = create<CommanderStore>((set, get) => {
     numPlayers: 4,
     deadPlayers: [],
     alivePlayers: [],
-    gameLayout: [0, 0, 0, 0],
+    gameLayout: [0, 2, 2, 0],
     removePlayerFromLayout: (playerId) => {
       set((state) => ({
         deadPlayers: [...state.deadPlayers, playerId],
@@ -104,7 +104,7 @@ const GameStore = create<CommanderStore>((set, get) => {
       }));
     },
 
-    IncrementLife: ({ playerId, value }) =>
+    incrementLife: ({ playerId, value }) =>
       set((state) => {
         let newState = { ...state };
         const player = newState.players[playerId];
@@ -129,7 +129,7 @@ const GameStore = create<CommanderStore>((set, get) => {
         let newState = { ...state };
         const player = newState.players[playerId];
         player.Cdmg[attackerId] += value;
-        state.IncrementLife({ playerId, value });
+        state.incrementLife({ playerId, value });
         return newState;
       }),
 
@@ -157,8 +157,4 @@ const GameStore = create<CommanderStore>((set, get) => {
   };
 });
 
-const useGameStore = () => {
-  return GameStore;
-};
-
-export default useGameStore;
+export default GameStore;

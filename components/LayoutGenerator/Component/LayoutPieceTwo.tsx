@@ -1,8 +1,6 @@
-import PlayerScreen from "@/components/PlayerScreen/PlayerBox";
-import Rotator from "@/components/Rotator/Rotator";
 import { Direction } from "@/components/types";
 import AnimatedAdjustableView from "@/components/ui/Animations/AutoAdjustableView";
-import useGameStore from "@/store/GameStore";
+import GameStore from "@/store/GameStore";
 import { useMemo } from "react";
 import { StyleSheet, ViewProps } from "react-native";
 import { getPlayerIds } from "./utils";
@@ -26,7 +24,7 @@ export default function LayoutPieceTwo({
   dimensions,
   ...props
 }: Props) {
-  const deadPlayers = useGameStore()((state) => state.deadPlayers);
+  const deadPlayers = GameStore((state) => state.deadPlayers);
   const isPlayerDead = (playerId: number) => {
     if (!deadPlayers) return false;
     return deadPlayers.includes(playerId);
