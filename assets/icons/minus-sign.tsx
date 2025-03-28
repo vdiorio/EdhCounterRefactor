@@ -1,7 +1,12 @@
 import React from "react";
 import Svg, { Path } from "react-native-svg";
 
-const MinusIcon = ({ size = 24, color = "#121212", opacity = 1 }) => {
+const MinusIcon = ({
+  size = 24,
+  color = "#121212",
+  opacity = 1,
+  strokeWidth = "4",
+}) => {
   return (
     <Svg
       width={size}
@@ -13,7 +18,7 @@ const MinusIcon = ({ size = 24, color = "#121212", opacity = 1 }) => {
       <Path
         d="M2 12H22" /* Now extends fully from left to right */
         stroke={color}
-        strokeWidth="4"
+        strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
       />

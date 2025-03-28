@@ -36,27 +36,21 @@ const DamageAllButton = ({ playerId }: Props) => {
       onPressOut={onPressOut}
       testID={`damage-all-${playerId}`}
     >
-      <Typography style={{ color: "#121212" }}>-1</Typography>
+      <Typography style={{ color: "#ff4d4d" }}>-1</Typography>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   Button: {
-    backgroundColor: "#ff4d4d", // Cor sólida como fallback (ver nota sobre gradiente abaixo)
-    borderWidth: 2, // Borda de 2px
-    borderRadius: "50%", // Bordas arredondadas
-    textTransform: "uppercase", // Transforma o texto em maiúsculas
+    borderColor: "#ff4d4d", // Cor sólida como fallback (ver nota sobre gradiente abaixo)
+    borderWidth: 0.5,
+    color: "#ff4d4d",
     alignItems: "center", // Centraliza o texto dentro do botão
     justifyContent: "center", // Centraliza o texto verticalmente
+    width: "100%",
     aspectRatio: 1,
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    zIndex: 2,
-    width: BUTTON_SIZE,
-    height: BUTTON_SIZE,
-    color: "#121212",
+    borderRadius: 5,
   },
 });
 

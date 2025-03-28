@@ -4,17 +4,19 @@ import Typography from "@/components/ui/Typography";
 import GameStore from "@/store/GameStore";
 import { StyleStore } from "@/store/StyleStore";
 import { useState, useMemo } from "react";
+import { ViewProps } from "react-native";
 import { Button, StyleSheet, View } from "react-native";
 
-interface Props {
+interface Props extends ViewProps {
   playerId: number;
+  noIcon?: boolean;
 }
 
 const LIFE_FONT_SIZE = 48;
 const DELTA_FONT_SIZE = Math.floor(LIFE_FONT_SIZE * 0.3333);
 const VISUAL_HELPER_ICON_SIZE = Math.round(LIFE_FONT_SIZE / 4);
 
-const LifeTotal = ({ playerId }: Props) => {
+const LifeTotal = ({ playerId, style, noIcon = false, ...props }: Props) => {
   const [editing, setEditing] = useState(false);
   const lTotal = GameStore((state) => state.players[playerId].lTotal);
   const delta = GameStore((state) => state.players[playerId].delta);
@@ -32,18 +34,24 @@ const LifeTotal = ({ playerId }: Props) => {
 
   return (
     <>
-      <View data-testid={`lifetotal-${playerId}`} style={[styles.container]}>
+      <View
+        data-testid={`lifetotal-${playerId}`}
+        style={[styles.container, style]}
+        {...props}
+      >
         <Typography
           testID="delta"
           style={[styles.deltaText, { color: deltaColor }]}
         >
           {delta > 0 ? `+${delta}` : delta || " "}
         </Typography>
-        <MinusIcon
-          size={VISUAL_HELPER_ICON_SIZE}
-          color={playerColor}
-          opacity={opacity}
-        />
+        {!noIcon && (
+          <MinusIcon
+            size={VISUAL_HELPER_ICON_SIZE}
+            color={playerColor}
+            opacity={opacity}
+          />
+        )}
         <Typography
           scheme={{ dark: playerColor, light: "#121212" }}
           onLongPress={toggleEditing}
@@ -52,11 +60,13 @@ const LifeTotal = ({ playerId }: Props) => {
         >
           {lTotal}
         </Typography>
-        <PlusIcon
-          size={VISUAL_HELPER_ICON_SIZE}
-          color={playerColor}
-          opacity={opacity}
-        />
+        {!noIcon && (
+          <PlusIcon
+            size={VISUAL_HELPER_ICON_SIZE}
+            color={playerColor}
+            opacity={opacity}
+          />
+        )}
       </View>
 
       {lTotal <= 0 && (
@@ -88,7 +98,6 @@ const styles = StyleSheet.create({
     fontSize: LIFE_FONT_SIZE,
     fontWeight: "bold",
     margin: 10,
-    zIndex: 20,
   },
   deltaText: {
     fontSize: DELTA_FONT_SIZE,

@@ -1,17 +1,22 @@
-import { StyleSheet, View, ViewStyle } from "react-native";
+import { Button, StyleSheet, View, ViewStyle } from "react-native";
 import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 import GameStore from "@/store/GameStore";
 import { useSharedValue } from "react-native-reanimated";
-import LayoutPiece from "./Component/LayoutPiece";
-import LayoutPieceTwo from "./Component/LayoutPieceTwo";
 import { Direction } from "@/components/types";
 import { getPlayerIds } from "./Component/utils";
 import { useEffect, useMemo } from "react";
+import PlayerPiece from "./Component/Player/PlayerPiece";
+import PlayerPieceTwo from "./Component/Player/PlayerPieceTwo";
+import CdmgPiece from "./Component/Cdmg/CdmgPiece";
+import CdmgPieceTwo from "./Component/Cdmg/CdmgPieceTwo";
+import ScreenStore from "@/store/ScreenStore";
 
 interface Props extends ViewProps {
   component: (props: any) => JSX.Element;
-  game?: boolean;
+  piece?: string;
 }
+
+const PlayerPieces = [PlayerPiece, PlayerPieceTwo];
 
 /**
  * Finds the layout index for a given player ID
@@ -19,11 +24,23 @@ interface Props extends ViewProps {
 export default function LayoutGenerator({
   style,
   component: Component,
-  game = false,
+  piece = "player",
   ...props
 }: Props) {
   const alivePlayers = GameStore((state) => state.alivePlayers);
   const layout = GameStore((state) => state.gameLayout);
+  const setScreen = ScreenStore((state) => state.setScreen);
+
+  const screen = ScreenStore((state) => state.screen);
+
+  const [LayoutPiece, LayoutPieceTwo] = (() => {
+    switch (screen) {
+      case "cdmg":
+        return [CdmgPiece, CdmgPieceTwo];
+      default:
+        return [PlayerPiece, PlayerPieceTwo];
+    }
+  })();
 
   const gameMatrix = useMemo(
     () =>
@@ -74,8 +91,7 @@ export default function LayoutGenerator({
 const styles = StyleSheet.create({
   gameBody: {
     width: "100%",
-    height: "100%",
-    flex: 1,
+    height: "95%",
     justifyContent: "center",
   },
 });

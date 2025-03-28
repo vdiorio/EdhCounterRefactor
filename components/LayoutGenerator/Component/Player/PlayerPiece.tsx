@@ -4,7 +4,7 @@ import AnimatedAdjustableView from "@/components/ui/Animations/AutoAdjustableVie
 import GameStore from "@/store/GameStore";
 import { useMemo } from "react";
 import { StyleSheet, ViewProps } from "react-native";
-import { getPlayerIds } from "./utils";
+import { getPlayerIds } from "../utils";
 import PlayerBox from "@/components/PlayerBox/PlayerBox";
 
 interface Props extends ViewProps {
@@ -17,14 +17,14 @@ interface Props extends ViewProps {
   direction?: Direction;
 }
 
-export default function LayoutPiece({
+const PlayerPiece = ({
   layout,
   index,
   dimensions = {},
   direction = Direction.down,
   style,
   ...props
-}: Props) {
+}: Props) => {
   const deadPlayers = GameStore((state) => state.deadPlayers);
 
   const playerIds = useMemo(() => getPlayerIds(layout, index), [layout]);
@@ -43,28 +43,23 @@ export default function LayoutPiece({
       {...props}
     >
       <Rotator direction={direction} style={styles.content}>
-        {playerIds.map((playerId) => {
-          const playerIndex = alivePlayers.findIndex((id) => id === playerId);
-          const shouldHaveBorderLeft = playerIndex !== 0;
-          const shouldHaveBorderRight = playerIndex !== alivePlayers.length - 1;
-          const borderStyle = {
-            borderLeftWidth: shouldHaveBorderLeft ? 0.5 : 0,
-            borderRightWidth: shouldHaveBorderRight ? 0.5 : 0,
-          };
-          return (
-            <PlayerBox
-              playerId={playerId}
-              key={playerId}
-              shouldExit={deadPlayers.includes(playerId)}
-              dimensions={{ width: playerWidth }}
-              style={borderStyle}
-            />
-          );
-        })}
+        {alivePlayers.map((playerId, playerIndex) => (
+          <PlayerBox
+            key={playerId}
+            playerId={playerId}
+            shouldExit={deadPlayers.includes(playerId)}
+            dimensions={{ width: playerWidth }}
+            style={{
+              borderLeftWidth: playerIndex === 0 ? 0 : 1, // Only show left border for first player
+              borderRightWidth: playerIndex === alivePlayers.length - 1 ? 0 : 1, // Only show right border for last player
+              borderTopWidth: index % (layout.length - 1) === 0 ? 1 : 0, // Only show top border for first and last Piece
+            }}
+          />
+        ))}
       </Rotator>
     </AnimatedAdjustableView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   sideContainer: {
@@ -76,3 +71,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
 });
+
+export default PlayerPiece;

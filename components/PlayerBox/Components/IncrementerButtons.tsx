@@ -68,14 +68,11 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%", // Ensure the container takes full height of the parent
     position: "absolute",
-    padding: 10,
   },
   touchable: {
     flex: 1, // Make both buttons take up equal width
     justifyContent: "center",
     alignItems: "center",
-    padding: 20, // Add padding to make buttons larger and more touch-friendly
-    borderRadius: 10, // Add border radius for rounded corners
   },
   buttonText: {
     color: "#e0e0e0", // Button text color

@@ -3,7 +3,8 @@ export interface Player {
   lTotal: number;
   delta: number;
   history: number[];
-  Cdmg: Record<number, number>;
+  Cdmg: Record<number, number[]>;
+  chain: boolean;
 }
 
 export interface SetLifePayload {
@@ -20,6 +21,7 @@ export interface DealCommanderDamagePayload {
   attackerId: number;
   playerId: number;
   value: number;
+  partner?: boolean;
 }
 
 export interface DamageAllOponentsPayload {
@@ -43,6 +45,7 @@ export interface CommanderStore {
   }: DealCommanderDamagePayload) => void;
   resetGame: () => void;
   damageAllOponents: ({ playerId, value }: DamageAllOponentsPayload) => void;
+  togglePlayerChain: (playerId: number) => void;
   setNumPlayers: ({
     playerCount,
     alt,

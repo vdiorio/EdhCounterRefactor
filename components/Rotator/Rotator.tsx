@@ -11,12 +11,14 @@ import { Direction, RotatedStyle } from "../types";
 interface Props extends ViewProps {
   direction: Direction;
   isDead?: boolean;
+  rotatedStyle?: ViewStyle;
 }
 
 const Rotator: React.FC<Props> = ({
   direction,
   children,
   style,
+  rotatedStyle,
   isDead,
   ...props
 }) => {
@@ -46,7 +48,9 @@ const Rotator: React.FC<Props> = ({
 
   return (
     <View style={[styles.container, style]} onLayout={onLayout} {...props}>
-      <View style={[styles.fullScreen, rightStyle, getRotatedStyle()]}>
+      <View
+        style={[styles.fullScreen, rightStyle, rotatedStyle, getRotatedStyle()]}
+      >
         {children}
       </View>
     </View>

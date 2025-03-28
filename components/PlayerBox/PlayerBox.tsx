@@ -8,6 +8,8 @@ import Animated, { ZoomIn } from "react-native-reanimated";
 import AnimatedAdjustableView, {
   AnimatedAdjustableViewProps,
 } from "../ui/Animations/AutoAdjustableView";
+import UtilsSideBar from "./Components/UtilsSideBar";
+import CdmgSideBar from "./Components/CdmgSideBar";
 
 interface Props extends AnimatedAdjustableViewProps {
   playerId: number;
@@ -26,16 +28,12 @@ const PlayerBox = ({ playerId, style, ...props }: Props) => {
       style={[style, styles.container]}
       {...props}
     >
-      <View
-        style={[
-          styles.content,
-          { backgroundColor: isDark ? "" : backgroundColor },
-        ]}
-      >
+      <CdmgSideBar style={styles.sideBar} playerId={playerId} />
+      <View style={[styles.content]}>
         <LifeTotal playerId={playerId} />
+        <IncrementerButtons playerId={playerId} />
       </View>
-      <DamageAllButton playerId={playerId} />
-      <IncrementerButtons playerId={playerId} />
+      <UtilsSideBar style={styles.sideBar} playerId={playerId} />
     </AnimatedAdjustableView>
   );
 };
@@ -50,10 +48,24 @@ const styles = StyleSheet.create({
   container: {
     borderColor: "#555555",
     justifyContent: "center",
+    flexDirection: "row",
+    paddingHorizontal: "1%",
+    paddingTop: "3%",
+    paddingBottom: "1%",
+    gap: 5,
   },
   content: {
     justifyContent: "center",
+    height: "100%",
     position: "relative",
-    minWidth: 200,
+    flex: 1,
+    borderColor: "#555555",
+    borderWidth: 0.5,
+    borderRadius: 5,
+  },
+  sideBar: {
+    height: "100%",
+    alignItems: "center",
+    width: 30,
   },
 });

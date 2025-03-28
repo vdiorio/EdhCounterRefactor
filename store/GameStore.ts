@@ -11,23 +11,21 @@ export const TIME_TO_RESET_DELTA = 2000;
  * @returns {Record<number, Player>} An object with the generated players.
  */
 const generatePlayers = (numPlayers: number): Record<number, Player> => {
-  const createCdmg = (playerId: number): Record<number, number> => {
-    const Cdmg: Record<number, number> = {};
-    for (let i = 1; i <= numPlayers; i++) {
-      if (i !== playerId) Cdmg[i] = 0;
-    }
-    return Cdmg;
-  };
-
   const players: Record<number, Player> = {};
+
   for (let i = 1; i <= numPlayers; i++) {
     players[i] = {
       id: i,
       lTotal: STARTING_VALUE,
       delta: 0,
       history: [],
-      Cdmg: createCdmg(i),
+      Cdmg: {},
+      chain: true,
     };
+
+    for (let j = 1; j <= numPlayers; j++) {
+      if (j !== i) players[i].Cdmg[j] = [0, 0];
+    }
   }
   return players;
 };
@@ -71,6 +69,10 @@ const GameStore = create<CommanderStore>((set, get) => {
         },
       },
     }));
+  };
+
+  const clampCdmg = (value: number) => {
+    return Math.min(21, Math.max(0, value));
   };
 
   return {
@@ -124,13 +126,29 @@ const GameStore = create<CommanderStore>((set, get) => {
         return newState;
       }),
 
-    dealCommanderDamage: ({ playerId, attackerId, value }) =>
+    dealCommanderDamage: ({ playerId, attackerId, value, partner }) =>
       set((state) => {
-        let newState = { ...state };
-        const player = newState.players[playerId];
-        player.Cdmg[attackerId] += value;
-        state.incrementLife({ playerId, value });
-        return newState;
+        const ptnIdx = partner ? 1 : 0;
+        const player = { ...state.players[playerId] };
+        player.Cdmg[attackerId][ptnIdx] += value;
+        if (
+          player.Cdmg[attackerId][ptnIdx] > 21 ||
+          player.Cdmg[attackerId][ptnIdx] < 0
+        ) {
+          return {};
+        }
+        if (player.chain) {
+          player.lTotal -= value;
+          player.delta -= value;
+          timerResetDelta(playerId);
+        }
+        return {
+          ...state,
+          players: {
+            ...state.players,
+            [playerId]: { ...player },
+          },
+        };
       }),
 
     resetGame: () =>
@@ -153,6 +171,20 @@ const GameStore = create<CommanderStore>((set, get) => {
           }
         }
         return newState;
+      }),
+
+    togglePlayerChain: (playerId: number) =>
+      set((state) => {
+        let newState = { ...state };
+        const player = newState.players[playerId];
+        player.chain = !player.chain;
+        return {
+          ...state,
+          players: {
+            ...state.players,
+            [playerId]: { ...player },
+          },
+        };
       }),
   };
 });

@@ -3,8 +3,8 @@ import AnimatedAdjustableView from "@/components/ui/Animations/AutoAdjustableVie
 import GameStore from "@/store/GameStore";
 import { useMemo } from "react";
 import { StyleSheet, ViewProps } from "react-native";
-import { getPlayerIds } from "./utils";
-import LayoutPiece from "./LayoutPiece";
+import { getPlayerIds } from "../utils";
+import CdmgPiece from "./CdmgPiece";
 
 interface Props extends ViewProps {
   layout: number[];
@@ -16,9 +16,9 @@ interface Props extends ViewProps {
 }
 
 /**
- * LayoutPieceTwo component for managing two groups of players with independent animations
+ * PlayerPieceTwo component for managing two groups of players with independent animations
  */
-export default function LayoutPieceTwo({
+export default function CdmgPieceTwo({
   layout,
   style,
   dimensions,
@@ -54,23 +54,21 @@ export default function LayoutPieceTwo({
       dimensions={dimensions}
       {...props}
     >
-      <LayoutPiece
+      <CdmgPiece
         layout={layout}
         index={1}
         dimensions={{
           width: containerWidth,
         }}
-        direction={Direction.left}
-        style={{ borderRightWidth: 0.5 }}
+        style={{ borderRightWidth: 1 }}
       />
-      <LayoutPiece
+      <CdmgPiece
         layout={layout}
         index={2}
         dimensions={{
           width: containerWidth,
         }}
-        direction={Direction.right}
-        style={{ borderLeftWidth: 0.5 }}
+        style={{ borderLeftWidth: 1, flexDirection: "column-reverse" }}
       />
     </AnimatedAdjustableView>
   );
