@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { CommanderStore, gameLayout, Player } from "./types";
 import { getPlayerLayout } from "./playerLayouts";
 
-export const STARTING_VALUE = 40;
+export const STARTING_LIFE_TOTAL = 40;
 export const TIME_TO_RESET_DELTA = 2000;
 
 /**
@@ -16,7 +16,7 @@ const generatePlayers = (numPlayers: number): Record<number, Player> => {
   for (let i = 1; i <= numPlayers; i++) {
     players[i] = {
       id: i,
-      lTotal: STARTING_VALUE,
+      lTotal: STARTING_LIFE_TOTAL,
       delta: 0,
       history: [],
       Cdmg: {},
@@ -39,18 +39,32 @@ const GameStore = create<CommanderStore>((set, get) => {
    * @param {number} playerId The ID of the player to reset the delta for.
    * @returns {void}
    */
-  const timerResetDelta = (playerId: number) => {
+  const scheduleDeltaReset = ({
+    playerId,
+    timer,
+  }: {
+    playerId: number;
+    timer?: number;
+  }) => {
     if (timers[playerId]) clearTimeout(timers[playerId]);
-
     timers[playerId] = setTimeout(() => {
       set((state) => {
-        let newState = { ...state };
-        const player = newState.players[playerId];
-        addToHistory(playerId, player.delta);
-        player.delta = 0;
-        return newState;
+        const player = state.players[playerId];
+
+        if (player.delta === 0) return {}; // No change needed
+
+        return {
+          players: {
+            ...state.players,
+            [playerId]: {
+              ...player,
+              history: [...player.history, player.delta], // push delta
+              delta: 0, // reset delta
+            },
+          },
+        };
       });
-    }, TIME_TO_RESET_DELTA);
+    }, timer || TIME_TO_RESET_DELTA);
   };
 
   /**
@@ -108,12 +122,18 @@ const GameStore = create<CommanderStore>((set, get) => {
 
     incrementLife: ({ playerId, value }) =>
       set((state) => {
-        let newState = { ...state };
-        const player = newState.players[playerId];
-        player.lTotal += value;
-        player.delta += value;
-        timerResetDelta(playerId);
-        return newState;
+        const player = state.players[playerId];
+        scheduleDeltaReset({ playerId });
+        return {
+          players: {
+            ...state.players,
+            [playerId]: {
+              ...player,
+              lTotal: player.lTotal + value,
+              delta: player.delta + value,
+            },
+          },
+        };
       }),
 
     setLife: ({ playerId, newLife }) =>
@@ -122,26 +142,31 @@ const GameStore = create<CommanderStore>((set, get) => {
         const player = newState.players[playerId];
         player.delta = newLife - player.lTotal;
         player.lTotal = newLife;
-        timerResetDelta(playerId);
+        scheduleDeltaReset({ playerId });
         return newState;
       }),
 
-    dealCommanderDamage: ({ playerId, attackerId, value, partner }) =>
-      set((state) => {
-        const ptnIdx = partner ? 1 : 0;
+    dealCommanderDamage: ({
+      playerId,
+      attackerId,
+      value,
+      partner: isPartner,
+    }) => {
+      const opponentIdx = isPartner ? 1 : 0;
+      return set((state) => {
         const player = { ...state.players[playerId] };
-        player.Cdmg[attackerId][ptnIdx] += value;
-        if (
-          player.Cdmg[attackerId][ptnIdx] > 21 ||
-          player.Cdmg[attackerId][ptnIdx] < 0
-        ) {
-          return {};
-        }
+        const actualValue = player.Cdmg[attackerId][opponentIdx];
+        const newCdmgValue = clampCdmg(actualValue + value);
+        if (newCdmgValue === actualValue) return state;
+
         if (player.chain) {
+          // Checks if CDMG is linked to life total
           player.lTotal -= value;
           player.delta -= value;
-          timerResetDelta(playerId);
+          scheduleDeltaReset({ playerId, timer: 500 });
         }
+
+        player.Cdmg[attackerId][opponentIdx] = newCdmgValue;
         return {
           ...state,
           players: {
@@ -149,8 +174,8 @@ const GameStore = create<CommanderStore>((set, get) => {
             [playerId]: { ...player },
           },
         };
-      }),
-
+      });
+    },
     resetGame: () =>
       set((state) => ({
         ...state,
@@ -163,11 +188,11 @@ const GameStore = create<CommanderStore>((set, get) => {
       set((state) => {
         let newState = { ...state };
         for (const id in state.players) {
-          const nID = Number(id);
-          if (nID !== playerId) {
-            newState.players[nID].lTotal += value;
-            newState.players[nID].delta += value;
-            timerResetDelta(nID);
+          const pID = Number(id);
+          if (pID !== playerId) {
+            newState.players[pID].lTotal += value;
+            newState.players[pID].delta += value;
+            scheduleDeltaReset({ playerId: pID });
           }
         }
         return newState;

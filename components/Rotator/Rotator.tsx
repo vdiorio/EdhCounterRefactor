@@ -24,7 +24,7 @@ const Rotator: React.FC<Props> = ({
 }) => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  const isInverted = direction.includes("90");
+  const isInverted = (direction || "").includes("90");
 
   const onLayout = useCallback(
     (event: LayoutChangeEvent) => {

@@ -32,7 +32,6 @@ export default function CdmgIncrementer({
 
   const dealCdmg = GameStore((state) => state.dealCommanderDamage);
 
-  const defenderId = playerId;
   const attackerId = positionId;
 
   const cDmgIndex = partner ? 1 : 0;
@@ -76,7 +75,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 10,
     borderWidth: 1,
-    width: "46%",
+    minWidth: 80,
   },
   text: {
     fontSize: 25,

@@ -1,40 +1,61 @@
-import React, { useRef } from "react";
-import { View, StyleSheet, ViewProps, useColorScheme } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, useColorScheme, View } from "react-native";
 import LifeTotal from "./Components/Lifetotal";
-import DamageAllButton from "./Components/DamageAllButton";
 import IncrementerButtons from "./Components/IncrementerButtons";
-import useStyleStore, { StyleStore } from "@/store/StyleStore";
-import Animated, { ZoomIn } from "react-native-reanimated";
-import AnimatedAdjustableView, {
-  AnimatedAdjustableViewProps,
-} from "../ui/Animations/AutoAdjustableView";
+import Animated, {
+  FadeIn,
+  LinearTransition,
+  SlideInLeft,
+  SlideOutLeft,
+} from "react-native-reanimated";
+
 import UtilsSideBar from "./Components/UtilsSideBar";
 import CdmgSideBar from "./Components/CdmgSideBar";
+import { SideBar } from "../types";
+import HistorySideBar from "./Components/HistorySideBar";
+import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
+import ScreenStore, { Screen } from "@/store/ScreenStore";
 
-interface Props extends AnimatedAdjustableViewProps {
+interface Props extends ViewProps {
   playerId: number;
+  style?: any;
 }
 
 const PlayerBox = ({ playerId, style, ...props }: Props) => {
-  const colorScheme = useColorScheme() || "dark";
-  const backgroundColor = StyleStore((state) => state.playerColors)[
-    playerId - 1
-  ];
-  const isDark = colorScheme === "dark";
+  const [selectedBar, setSelectedBar] = useState<SideBar | null>(null);
 
   return (
-    <AnimatedAdjustableView
+    <Animated.View
+      entering={FadeIn.duration(1000).delay(500)}
       testID={`player-${playerId}`}
       style={[style, styles.container]}
       {...props}
     >
-      <CdmgSideBar style={styles.sideBar} playerId={playerId} />
-      <View style={[styles.content]}>
+      {selectedBar === SideBar.cdmg && (
+        <Animated.View entering={SlideInLeft} exiting={SlideOutLeft}>
+          <CdmgSideBar style={styles.sideBar} playerId={playerId} />
+        </Animated.View>
+      )}
+      {selectedBar === SideBar.history && (
+        <Animated.View entering={SlideInLeft} exiting={SlideOutLeft}>
+          <HistorySideBar style={styles.sideBar} playerId={playerId} />
+        </Animated.View>
+      )}
+      <Animated.View
+        layout={LinearTransition}
+        entering={FadeIn.duration(1000)}
+        style={[styles.content]}
+      >
         <LifeTotal playerId={playerId} />
         <IncrementerButtons playerId={playerId} />
-      </View>
-      <UtilsSideBar style={styles.sideBar} playerId={playerId} />
-    </AnimatedAdjustableView>
+      </Animated.View>
+      <UtilsSideBar
+        style={[styles.sideBar, styles.utils]}
+        playerId={playerId}
+        selectSideBar={setSelectedBar}
+        selectedBar={selectedBar}
+      />
+    </Animated.View>
   );
 };
 
@@ -49,23 +70,29 @@ const styles = StyleSheet.create({
     borderColor: "#555555",
     justifyContent: "center",
     flexDirection: "row",
-    paddingHorizontal: "1%",
-    paddingTop: "3%",
-    paddingBottom: "1%",
     gap: 5,
+    flex: 1,
+    overflow: "hidden",
   },
   content: {
     justifyContent: "center",
-    height: "100%",
     position: "relative",
     flex: 1,
-    borderColor: "#555555",
-    borderWidth: 0.5,
-    borderRadius: 5,
+    width: 500,
   },
   sideBar: {
     height: "100%",
-    alignItems: "center",
-    width: 30,
+    width: "20%",
+    maxWidth: 60,
+    minWidth: 60,
+    backgroundColor: "#FFFFFF0a",
+    borderWidth: 0.5,
+    borderColor: "#555555",
+  },
+  utils: {
+    width: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+    minWidth: 0,
   },
 });

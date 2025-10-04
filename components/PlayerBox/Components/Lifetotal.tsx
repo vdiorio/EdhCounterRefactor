@@ -2,10 +2,21 @@ import MinusIcon from "@/assets/icons/minus-sign";
 import PlusIcon from "@/assets/icons/plus-sign";
 import Typography from "@/components/ui/Typography";
 import GameStore from "@/store/GameStore";
+import ScreenStore, { Screen } from "@/store/ScreenStore";
 import { StyleStore } from "@/store/StyleStore";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ViewProps } from "react-native";
 import { Button, StyleSheet, View } from "react-native";
+import Animated, {
+  FadeIn,
+  LinearTransition,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+import { Line } from "react-native-svg";
 
 interface Props extends ViewProps {
   playerId: number;
@@ -23,8 +34,29 @@ const LifeTotal = ({ playerId, style, noIcon = false, ...props }: Props) => {
 
   const playerColor = StyleStore((state) => state.playerColors)[playerId - 1];
 
-  const deltaColor = useMemo(() => (delta > 0 ? "lime" : "red"), [delta]);
+  const [deltaColor, signedDelta] = useMemo(() => {
+    if (delta > 0) {
+      return ["lime", `+${delta}`];
+    } else {
+      return ["red", `${delta}`];
+    }
+  }, [delta]);
+
   const opacity = useMemo(() => (lTotal <= 0 ? 0.5 : 1), [lTotal]);
+
+  const deltaAnimationOffset = useSharedValue(0);
+
+  const deltaAnimationStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: deltaAnimationOffset.value }],
+      color: deltaColor,
+    };
+  });
+
+  useEffect(() => {
+    deltaAnimationOffset.value = -3;
+    deltaAnimationOffset.value = withTiming(0, { duration: 100 });
+  }, [delta]);
 
   const toggleEditing = () => setEditing(!editing);
 
@@ -34,25 +66,36 @@ const LifeTotal = ({ playerId, style, noIcon = false, ...props }: Props) => {
 
   return (
     <>
-      <View
+      <Animated.View
+        layout={LinearTransition}
+        entering={FadeIn.duration(100)}
         data-testid={`lifetotal-${playerId}`}
         style={[styles.container, style]}
         {...props}
       >
         <Typography
+          layout={LinearTransition}
+          entering={FadeIn.duration(100)}
           testID="delta"
-          style={[styles.deltaText, { color: deltaColor }]}
+          style={[styles.deltaText, deltaAnimationStyle]}
         >
-          {delta > 0 ? `+${delta}` : delta || " "}
+          {delta !== 0 && signedDelta}
         </Typography>
         {!noIcon && (
-          <MinusIcon
-            size={VISUAL_HELPER_ICON_SIZE}
-            color={playerColor}
-            opacity={opacity}
-          />
+          <Animated.View
+            layout={LinearTransition}
+            entering={FadeIn.duration(100)}
+          >
+            <MinusIcon
+              size={VISUAL_HELPER_ICON_SIZE}
+              color={playerColor}
+              opacity={opacity}
+            />
+          </Animated.View>
         )}
         <Typography
+          layout={LinearTransition}
+          entering={FadeIn.duration(100)}
           scheme={{ dark: playerColor, light: "#121212" }}
           onLongPress={toggleEditing}
           style={{ ...styles.lifeTotal, opacity }}
@@ -61,22 +104,18 @@ const LifeTotal = ({ playerId, style, noIcon = false, ...props }: Props) => {
           {lTotal}
         </Typography>
         {!noIcon && (
-          <PlusIcon
-            size={VISUAL_HELPER_ICON_SIZE}
-            color={playerColor}
-            opacity={opacity}
-          />
+          <Animated.View
+            layout={LinearTransition}
+            entering={FadeIn.duration(100)}
+          >
+            <PlusIcon
+              size={VISUAL_HELPER_ICON_SIZE}
+              color={playerColor}
+              opacity={opacity}
+            />
+          </Animated.View>
         )}
-      </View>
-
-      {lTotal <= 0 && (
-        <View style={{ zIndex: 10 }}>
-          <Button
-            title="Delete Player"
-            onPress={() => removePlayerFromLayout(playerId)}
-          />
-        </View>
-      )}
+      </Animated.View>
     </>
   );
 };
@@ -93,6 +132,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
     flexDirection: "row",
+    width: "100%",
   },
   lifeTotal: {
     fontSize: LIFE_FONT_SIZE,

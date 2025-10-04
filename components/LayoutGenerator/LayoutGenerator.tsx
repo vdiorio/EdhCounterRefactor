@@ -1,47 +1,37 @@
-import { Button, StyleSheet, View, ViewStyle } from "react-native";
-import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
+import { Dimensions, StyleSheet, View } from "react-native";
 import GameStore from "@/store/GameStore";
-import { useSharedValue } from "react-native-reanimated";
+import ScreenStore, { Screen } from "@/store/ScreenStore";
+import { useEffect, useMemo } from "react";
 import { Direction } from "@/components/types";
 import { getPlayerIds } from "./Component/utils";
-import { useEffect, useMemo } from "react";
 import PlayerPiece from "./Component/Player/PlayerPiece";
 import PlayerPieceTwo from "./Component/Player/PlayerPieceTwo";
 import CdmgPiece from "./Component/Cdmg/CdmgPiece";
 import CdmgPieceTwo from "./Component/Cdmg/CdmgPieceTwo";
-import ScreenStore from "@/store/ScreenStore";
+import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 
-interface Props extends ViewProps {
-  component: (props: any) => JSX.Element;
-  piece?: string;
-}
-
-const PlayerPieces = [PlayerPiece, PlayerPieceTwo];
-
-/**
- * Finds the layout index for a given player ID
- */
-export default function LayoutGenerator({
-  style,
-  component: Component,
-  piece = "player",
-  ...props
-}: Props) {
+export default function LayoutGenerator({ style, ...props }: ViewProps) {
   const alivePlayers = GameStore((state) => state.alivePlayers);
   const layout = GameStore((state) => state.gameLayout);
-  const setScreen = ScreenStore((state) => state.setScreen);
-
   const screen = ScreenStore((state) => state.screen);
 
-  const [LayoutPiece, LayoutPieceTwo] = (() => {
-    switch (screen) {
-      case "cdmg":
-        return [CdmgPiece, CdmgPieceTwo];
-      default:
-        return [PlayerPiece, PlayerPieceTwo];
-    }
-  })();
+  const setScreen = ScreenStore((state) => state.setScreen);
 
+  useEffect(() => {
+    setScreen({ screen: Screen.game });
+
+    return () => {
+      setScreen({ screen: Screen.main });
+    };
+  }, []);
+
+  // calculate gameMatrix once
   const gameMatrix = useMemo(
     () =>
       layout.map(
@@ -52,38 +42,71 @@ export default function LayoutGenerator({
     [alivePlayers, layout]
   );
 
-  const [topDimensions, bottomDimensions, middleDimensions] = useMemo(() => {
-    const top = gameMatrix[0] > 0 ? 1 : 0;
-    const bottom = gameMatrix[3] > 0 ? 1 : 0;
-    const middle =
-      Math.max(gameMatrix[1], gameMatrix[2]) +
-      (gameMatrix[1] + gameMatrix[2] <= 1 ? 0 : 1);
-    const height = 100 / (top + middle + bottom);
+  const opacity = useSharedValue(screen === Screen.cdmg ? 0 : 1);
 
-    const topDimensions = { height: top * height };
-    const bottomDimensions = { height: bottom * height };
-    const middleDimensions = { height: middle * height };
+  useEffect(() => {
+    opacity.value = withTiming(screen === Screen.cdmg ? 100 : -100, {
+      duration: 200,
+    });
+  }, [screen]);
 
-    return [topDimensions, bottomDimensions, middleDimensions];
-  }, [gameMatrix]);
+  const gameFadeStyle = useAnimatedStyle(() => ({
+    opacity: -Math.min(0, opacity.value) / 100,
+  }));
+
+  const screenWidth = Dimensions.get("window").width;
+
+  const cdmgFadeStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: (1 - Math.max(0, opacity.value) / 100) * screenWidth },
+    ],
+  }));
+
+  if (screen === Screen.main) {
+    return null;
+  }
 
   return (
     <View style={styles.gameBody} {...props}>
-      <LayoutPiece
-        layout={layout}
-        index={0}
-        direction={Direction.up}
-        dimensions={topDimensions}
-        style={{ borderBottomWidth: 0.5 }}
-      />
-      <LayoutPieceTwo layout={layout} dimensions={middleDimensions} />
-      <LayoutPiece
-        layout={layout}
-        index={3}
-        direction={Direction.down}
-        dimensions={bottomDimensions}
-        style={{ borderTopWidth: 0.5 }}
-      />
+      {/* Base game layout */}
+      <Animated.View
+        style={[styles.overlay, gameFadeStyle]}
+        pointerEvents={screen !== "cdmg" ? "auto" : "none"} // allow clicks only when active
+      >
+        <PlayerPiece
+          layout={layout}
+          index={0}
+          direction={Direction.up}
+          style={{ borderBottomWidth: 0.5 }}
+        />
+        <PlayerPieceTwo layout={layout} />
+        <PlayerPiece
+          layout={layout}
+          index={3}
+          direction={Direction.down}
+          style={{ borderTopWidth: 0.5 }}
+        />
+      </Animated.View>
+
+      {/* Overlay for cdmg */}
+      <Animated.View
+        style={[styles.overlay, cdmgFadeStyle]}
+        pointerEvents={screen === "cdmg" ? "auto" : "none"} // allow clicks only when active
+      >
+        <CdmgPiece
+          layout={layout}
+          index={0}
+          direction={Direction.up}
+          style={{ borderBottomWidth: 0.5 }}
+        />
+        <CdmgPieceTwo layout={layout} />
+        <CdmgPiece
+          layout={layout}
+          index={3}
+          direction={Direction.down}
+          style={{ borderTopWidth: 0.5 }}
+        />
+      </Animated.View>
     </View>
   );
 }
@@ -91,7 +114,11 @@ export default function LayoutGenerator({
 const styles = StyleSheet.create({
   gameBody: {
     width: "100%",
-    height: "95%",
+    height: "100%",
+    justifyContent: "center",
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject, // fills parent View
     justifyContent: "center",
   },
 });

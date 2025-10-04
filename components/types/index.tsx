@@ -11,3 +11,8 @@ export interface RotatedStyle {
   width: DimensionValue;
   height: DimensionValue;
 }
+
+export enum SideBar {
+  cdmg = "cdmg",
+  history = "history",
+}

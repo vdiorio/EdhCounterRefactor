@@ -29,7 +29,7 @@ export default function Game() {
   setNumberOfPlayers({ playerCount, alt });
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <LayoutGenerator component={PlayerBox} />
+      <LayoutGenerator />
     </View>
   );
 }

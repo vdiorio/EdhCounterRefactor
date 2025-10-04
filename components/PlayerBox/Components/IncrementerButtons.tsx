@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
 import GameStore from "@/store/GameStore";
+import Animated, { FadeIn, LinearTransition } from "react-native-reanimated";
 
 interface Props {
   playerId: number;
@@ -31,7 +32,7 @@ const IncrementerButtons = ({ playerId }: Props) => {
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View entering={FadeIn.duration(1000)} style={styles.container}>
       {/* Left button */}
       <TouchableHighlight
         style={[styles.touchable]}
@@ -57,7 +58,7 @@ const IncrementerButtons = ({ playerId }: Props) => {
       >
         <View />
       </TouchableHighlight>
-    </View>
+    </Animated.View>
   );
 };
 

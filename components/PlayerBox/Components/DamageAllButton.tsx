@@ -1,16 +1,20 @@
 import Typography from "@/components/ui/Typography";
 import GameStore from "@/store/GameStore";
 import { useRef } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  TouchableOpacityProps,
+} from "react-native";
 
-interface Props {
+interface Props extends TouchableOpacityProps {
   playerId: number;
 }
 
 export const DAMAGE_ALL_INTERVAL = 400;
 const BUTTON_SIZE = 50;
 
-const DamageAllButton = ({ playerId }: Props) => {
+const DamageAllButton = ({ playerId, style, ...props }: Props) => {
   const timer = useRef<NodeJS.Timeout | null>(null);
   const { damageAllOponents } = GameStore((state) => state);
   const onPress = () => {
@@ -30,11 +34,12 @@ const DamageAllButton = ({ playerId }: Props) => {
 
   return (
     <TouchableOpacity
-      style={styles.Button}
+      style={[styles.Button, style]}
       onPress={onPress}
       onLongPress={onLongPress}
       onPressOut={onPressOut}
       testID={`damage-all-${playerId}`}
+      {...props}
     >
       <Typography style={{ color: "#ff4d4d" }}>-1</Typography>
     </TouchableOpacity>

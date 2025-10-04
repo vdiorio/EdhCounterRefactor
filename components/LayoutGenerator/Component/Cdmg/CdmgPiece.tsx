@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { StyleSheet, ViewProps } from "react-native";
 import { getPlayerIds } from "../utils";
 import CdmgBox from "@/components/CdmgBox/CdmgBox";
+import Animated, { ZoomOut } from "react-native-reanimated";
 
 interface Props extends ViewProps {
   layout: number[];
@@ -19,38 +20,60 @@ interface Props extends ViewProps {
 const CdmgPiece = ({
   layout,
   index,
-  dimensions = {},
   style,
+  dimensions = {},
   ...props
 }: Props) => {
-  const deadPlayers = GameStore((state) => state.deadPlayers);
-
   const playerIds = useMemo(() => getPlayerIds(layout, index), [layout]);
-  const alivePlayers = useMemo(
+  const deadPlayers = GameStore((state) => state.deadPlayers);
+  const alivePlayerIds = useMemo(
     () => playerIds.filter((id) => !deadPlayers.includes(id)),
     [playerIds, deadPlayers]
   );
 
-  const playerWidth = 100 / Math.max(alivePlayers.length, 1);
+  if (alivePlayerIds.length === 0) {
+    return null;
+  }
 
   return (
-    <AnimatedAdjustableView
+    <Animated.View
       style={[styles.sideContainer, style]}
-      shouldExit={!alivePlayers.length}
-      dimensions={dimensions}
+      exiting={ZoomOut}
       {...props}
     >
-      {alivePlayers.map((playerId, playerIndex) => (
-        <CdmgBox
-          key={playerId}
-          positionId={playerId}
-          style={{
-            borderBottomWidth: index !== 3 ? 1 : 0,
-            borderTopWidth: index !== 0 ? 1 : 0,
-          }}
-        />
-      ))}
-    </AnimatedAdjustableView>
+      {alivePlayerIds.map((playerId, playerIndex) => {
+        const isFirstPlayer = playerIndex === 0;
+        const isLastPlayer = playerIndex === alivePlayerIds.length - 1;
+        return (
+          <CdmgBox
+            key={playerId}
+            positionId={playerId}
+            style={[
+              {
+                borderBottomWidth: index !== 3 ? 1 : 0,
+                borderTopWidth: index !== 0 ? 1 : 0,
+              },
+              index === 1 && [
+                isFirstPlayer && {
+                  borderTopWidth: 0,
+                },
+                isLastPlayer && {
+                  borderBottomWidth: 0,
+                },
+              ],
+              index === 2 && [
+                isFirstPlayer && {
+                  borderBottomWidth: 0,
+                },
+                isLastPlayer && {
+                  borderTopWidth: 0,
+                },
+              ],
+            ]}
+          />
+        );
+      })}
+    </Animated.View>
   );
 };
 
@@ -58,6 +81,7 @@ const styles = StyleSheet.create({
   sideContainer: {
     borderColor: "#555555",
     flexDirection: "column",
+    flex: 1,
   },
   content: {
     flex: 1,

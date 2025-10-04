@@ -1,9 +1,8 @@
 import Rotator from "@/components/Rotator/Rotator";
 import { Direction } from "@/components/types";
-import AnimatedAdjustableView from "@/components/ui/Animations/AutoAdjustableView";
 import GameStore from "@/store/GameStore";
 import { useMemo } from "react";
-import { StyleSheet, ViewProps } from "react-native";
+import { StyleSheet, View, ViewProps } from "react-native";
 import { getPlayerIds } from "../utils";
 import PlayerBox from "@/components/PlayerBox/PlayerBox";
 
@@ -20,7 +19,6 @@ interface Props extends ViewProps {
 const PlayerPiece = ({
   layout,
   index,
-  dimensions = {},
   direction = Direction.down,
   style,
   ...props
@@ -33,22 +31,17 @@ const PlayerPiece = ({
     [playerIds, deadPlayers]
   );
 
-  const playerWidth = 100 / Math.max(alivePlayers.length, 1);
+  if (alivePlayers.length === 0) {
+    return null;
+  }
 
   return (
-    <AnimatedAdjustableView
-      style={[styles.sideContainer, style]}
-      shouldExit={!alivePlayers.length}
-      dimensions={dimensions}
-      {...props}
-    >
+    <View style={[styles.sideContainer, style]} {...props}>
       <Rotator direction={direction} style={styles.content}>
         {alivePlayers.map((playerId, playerIndex) => (
           <PlayerBox
             key={playerId}
             playerId={playerId}
-            shouldExit={deadPlayers.includes(playerId)}
-            dimensions={{ width: playerWidth }}
             style={{
               borderLeftWidth: playerIndex === 0 ? 0 : 1, // Only show left border for first player
               borderRightWidth: playerIndex === alivePlayers.length - 1 ? 0 : 1, // Only show right border for last player
@@ -57,18 +50,18 @@ const PlayerPiece = ({
           />
         ))}
       </Rotator>
-    </AnimatedAdjustableView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   sideContainer: {
     flexDirection: "row",
-    borderColor: "#555555",
+    flex: 1,
   },
   content: {
-    flex: 1,
     flexDirection: "row",
+    flex: 1,
   },
 });
 

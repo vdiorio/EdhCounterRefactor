@@ -88,7 +88,7 @@ const AppColors = {
 };
 
 const options = Array.from(new Array(6)).map(
-  (_, index) => `${index + 1} Player${!index ? "" : "s"}`
+  (_, index) => `${index + 1} Jogador${!index ? "" : "es"}`
 );
 
 export default function GameSelectors() {
@@ -116,14 +116,14 @@ export default function GameSelectors() {
           EDH Counter
         </Typography>
         <Typography style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Commander Life Tracker
+          Contador de vida para commander
         </Typography>
       </View>
 
       <View style={styles.content}>
         <View style={styles.sectionContainer}>
           <Typography style={[styles.sectionTitle, { color: colors.text }]}>
-            SELECT PLAYERS
+            Quantidade de Jogadores
           </Typography>
           <View
             style={[
@@ -157,7 +157,7 @@ export default function GameSelectors() {
 
         <View style={styles.sectionContainer}>
           <Typography style={[styles.sectionTitle, { color: colors.text }]}>
-            SELECT LAYOUT
+            Layout da mesa
           </Typography>
           <View style={styles.altContainer}>
             <AltSelector
@@ -195,7 +195,7 @@ export default function GameSelectors() {
                   },
                 ]}
               >
-                START GAME
+                Iniciar Partida
               </Typography>
             </View>
           </TouchableOpacity>

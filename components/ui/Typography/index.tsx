@@ -1,6 +1,8 @@
 import { Text, useColorScheme, TextProps } from "react-native";
+import Animated from "react-native-reanimated";
+import { AnimatedProps } from "react-native-reanimated/lib/typescript/createAnimatedComponent/commonTypes";
 
-interface Props extends TextProps {
+interface Props extends AnimatedProps, TextProps {
   scheme?: Scheme;
 }
 
@@ -19,11 +21,11 @@ export default function Typography({
   const color = scheme || { dark: "#e0e0e0", light: "#121212" };
 
   return (
-    <Text
+    <Animated.Text
       style={[{ color: color[colorScheme], flexWrap: "nowrap" }, style]}
       {...props}
     >
       {children}
-    </Text>
+    </Animated.Text>
   );
 }

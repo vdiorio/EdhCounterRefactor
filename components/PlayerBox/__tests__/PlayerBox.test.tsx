@@ -1,7 +1,7 @@
 import { render, act, fireEvent } from "@testing-library/react-native";
 import PlayerBox from "../PlayerBox";
 import GameStore, {
-  STARTING_VALUE,
+  STARTING_LIFE_TOTAL as STARTING_VALUE,
   TIME_TO_RESET_DELTA,
 } from "@/store/GameStore";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
@@ -188,7 +188,6 @@ describe("PlayerBox", () => {
 
     afterEach(() => {
       jest.clearAllMocks();
-      console.log("clear");
     });
 
     it("should render correctly", () => {

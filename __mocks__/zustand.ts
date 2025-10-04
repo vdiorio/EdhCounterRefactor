@@ -54,10 +54,8 @@ const createStoreUncurried = <T>(
   const initialState = convertToPlainObject(store.getInitialState());
 
   storeResetFns.add(() => {
-    console.log("aqui");
     store.setState(initialState, true);
   });
-  console.log({ storeResetFns });
   return store;
 };
 
