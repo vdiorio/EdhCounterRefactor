@@ -32,7 +32,7 @@ const IncrementerButtons = ({ playerId }: Props) => {
   };
 
   return (
-    <Animated.View entering={FadeIn.duration(1000)} style={styles.container}>
+    <Animated.View style={styles.container}>
       {/* Left button */}
       <TouchableHighlight
         style={[styles.touchable]}

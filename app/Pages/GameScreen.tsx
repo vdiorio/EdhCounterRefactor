@@ -2,7 +2,7 @@ import { StyleSheet, useColorScheme, View } from "react-native";
 import { useGlobalSearchParams } from "expo-router";
 import GameStore from "@/store/GameStore";
 import LayoutGenerator from "@/components/LayoutGenerator/LayoutGenerator";
-import PlayerBox from "@/components/PlayerBox/PlayerBox";
+import { useKeepAwake } from "expo-keep-awake";
 
 const AppColors = {
   dark: {
@@ -16,6 +16,8 @@ const AppColors = {
 };
 
 export default function Game() {
+  useKeepAwake();
+
   const params = useGlobalSearchParams();
   const { alt, playerCount } = {
     alt: params.alternative === "v",
@@ -27,6 +29,7 @@ export default function Game() {
   const setNumberOfPlayers = GameStore((state) => state.setNumPlayers);
 
   setNumberOfPlayers({ playerCount, alt });
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <LayoutGenerator />

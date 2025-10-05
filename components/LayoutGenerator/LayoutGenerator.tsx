@@ -10,6 +10,7 @@ import CdmgPiece from "./Component/Cdmg/CdmgPiece";
 import CdmgPieceTwo from "./Component/Cdmg/CdmgPieceTwo";
 import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 import Animated, {
+  FadeIn,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -67,7 +68,11 @@ export default function LayoutGenerator({ style, ...props }: ViewProps) {
   }
 
   return (
-    <View style={styles.gameBody} {...props}>
+    <Animated.View
+      entering={FadeIn.duration(300).delay(700)}
+      style={styles.gameBody}
+      {...props}
+    >
       {/* Base game layout */}
       <Animated.View
         style={[styles.overlay, gameFadeStyle]}
@@ -107,7 +112,7 @@ export default function LayoutGenerator({ style, ...props }: ViewProps) {
           style={{ borderTopWidth: 0.5 }}
         />
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 }
 

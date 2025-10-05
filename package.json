@@ -45,7 +45,8 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "react-native-wheely": "^0.6.0",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.3",
+    "expo-keep-awake": "~14.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -59,7 +60,6 @@
     "jest-expo": "~52.0.4",
     "knip": "^5.64.1",
     "patch-package": "^8.0.0",
-    "postinstall-postinstall": "^2.1.0",
     "react-test-renderer": "18.3.1",
     "ts-jest": "^29.2.6",
     "typescript": "^5.3.3"

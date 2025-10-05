@@ -68,24 +68,19 @@ const LifeTotal = ({ playerId, style, noIcon = false, ...props }: Props) => {
     <>
       <Animated.View
         layout={LinearTransition}
-        entering={FadeIn.duration(100)}
         data-testid={`lifetotal-${playerId}`}
         style={[styles.container, style]}
         {...props}
       >
         <Typography
           layout={LinearTransition}
-          entering={FadeIn.duration(100)}
           testID="delta"
           style={[styles.deltaText, deltaAnimationStyle]}
         >
           {delta !== 0 && signedDelta}
         </Typography>
         {!noIcon && (
-          <Animated.View
-            layout={LinearTransition}
-            entering={FadeIn.duration(100)}
-          >
+          <Animated.View layout={LinearTransition}>
             <MinusIcon
               size={VISUAL_HELPER_ICON_SIZE}
               color={playerColor}
@@ -95,7 +90,6 @@ const LifeTotal = ({ playerId, style, noIcon = false, ...props }: Props) => {
         )}
         <Typography
           layout={LinearTransition}
-          entering={FadeIn.duration(100)}
           scheme={{ dark: playerColor, light: "#121212" }}
           onLongPress={toggleEditing}
           style={{ ...styles.lifeTotal, opacity }}
@@ -104,10 +98,7 @@ const LifeTotal = ({ playerId, style, noIcon = false, ...props }: Props) => {
           {lTotal}
         </Typography>
         {!noIcon && (
-          <Animated.View
-            layout={LinearTransition}
-            entering={FadeIn.duration(100)}
-          >
+          <Animated.View layout={LinearTransition}>
             <PlusIcon
               size={VISUAL_HELPER_ICON_SIZE}
               color={playerColor}

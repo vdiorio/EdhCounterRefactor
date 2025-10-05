@@ -25,8 +25,7 @@ const PlayerBox = ({ playerId, style, ...props }: Props) => {
   const [selectedBar, setSelectedBar] = useState<SideBar | null>(null);
 
   return (
-    <Animated.View
-      entering={FadeIn.duration(1000).delay(500)}
+    <View
       testID={`player-${playerId}`}
       style={[style, styles.container]}
       {...props}
@@ -55,7 +54,7 @@ const PlayerBox = ({ playerId, style, ...props }: Props) => {
         selectSideBar={setSelectedBar}
         selectedBar={selectedBar}
       />
-    </Animated.View>
+    </View>
   );
 };
 
