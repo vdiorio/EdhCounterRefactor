@@ -5,38 +5,23 @@ import ScreenStore, { Screen } from "@/store/ScreenStore";
 import GameStore from "@/store/GameStore";
 import { Direction } from "@/components/types";
 import StyleStore from "@/store/StyleStore";
+import { selectPlayerCdmg } from "@/store/selectors";
+import { selectPlayerColor } from "@/store/selectors";
+import { getPlayerDirection } from "@/components/LayoutGenerator/Component/utils";
 
 interface Props extends ViewProps {
   playerId: number;
 }
 
-const findDirection = (layout: number[], playerId: number) => {
-  let playerIndex = -1;
-  layout.reduce((acc, curr, i) => {
-    if (playerId <= acc + curr && playerIndex === -1) playerIndex = i;
-    return acc + curr;
-  }, 0);
-  switch (playerIndex) {
-    case 0:
-      return Direction.up;
-    case 1:
-      return Direction.left;
-    case 2:
-      return Direction.right;
-    default:
-      return Direction.down;
-  }
-};
 
 export default function CdmgSideBar({ playerId, style, ...props }: Props) {
   const setScreen = ScreenStore((state) => state.setScreen);
   const layout = GameStore((state) => state.gameLayout);
 
-  const colors: string[] = StyleStore((state) => state.playerColors).filter(
-    (_, index) => index !== playerId - 1
-  );
+  const allColors: string[] = StyleStore((state) => state.playerColors);
+  const colors: string[] = allColors.filter((_, index) => index !== playerId - 1);
 
-  const cdmg = GameStore((state) => state.players[playerId].Cdmg);
+  const cdmg = GameStore(selectPlayerCdmg(playerId));
 
   return (
     <TouchableOpacity
@@ -46,7 +31,7 @@ export default function CdmgSideBar({ playerId, style, ...props }: Props) {
         setScreen({
           screen: Screen.cdmg,
           playerId,
-          direction: findDirection(layout, playerId),
+          direction: getPlayerDirection(layout, playerId),
         });
       }}
     >

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, useColorScheme, View } from "react-native";
+import React from "react";
+import { StyleSheet, View } from "react-native";
 import LifeTotal from "./Components/Lifetotal";
 import IncrementerButtons from "./Components/IncrementerButtons";
 import Animated, {
@@ -8,6 +8,8 @@ import Animated, {
   SlideInLeft,
   SlideOutLeft,
 } from "react-native-reanimated";
+import { ANIMATIONS } from "@/constants/ui";
+import { useSidebarState } from "@/hooks/useSidebarState";
 
 import UtilsSideBar from "./Components/UtilsSideBar";
 import CdmgSideBar from "./Components/CdmgSideBar";
@@ -22,7 +24,7 @@ interface Props extends ViewProps {
 }
 
 const PlayerBox = ({ playerId, style, ...props }: Props) => {
-  const [selectedBar, setSelectedBar] = useState<SideBar | null>(null);
+  const { selectedBar, toggleBar } = useSidebarState();
 
   return (
     <View
@@ -42,7 +44,7 @@ const PlayerBox = ({ playerId, style, ...props }: Props) => {
       )}
       <Animated.View
         layout={LinearTransition}
-        entering={FadeIn.duration(1000)}
+        entering={FadeIn.duration(ANIMATIONS.ENTRY_FADE_DURATION)}
         style={[styles.content]}
       >
         <LifeTotal playerId={playerId} />
@@ -51,8 +53,8 @@ const PlayerBox = ({ playerId, style, ...props }: Props) => {
       <UtilsSideBar
         style={[styles.sideBar, styles.utils]}
         playerId={playerId}
-        selectSideBar={setSelectedBar}
         selectedBar={selectedBar}
+        toggleBar={toggleBar}
       />
     </View>
   );

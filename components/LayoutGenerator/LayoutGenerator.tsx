@@ -16,6 +16,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { ANIMATIONS } from "@/constants/ui";
 
 export default function LayoutGenerator({ style, ...props }: ViewProps) {
   const alivePlayers = GameStore((state) => state.alivePlayers);
@@ -47,7 +48,7 @@ export default function LayoutGenerator({ style, ...props }: ViewProps) {
 
   useEffect(() => {
     opacity.value = withTiming(screen === Screen.cdmg ? 100 : -100, {
-      duration: 200,
+      duration: ANIMATIONS.OPACITY_TRANSITION,
     });
   }, [screen]);
 
@@ -69,7 +70,7 @@ export default function LayoutGenerator({ style, ...props }: ViewProps) {
 
   return (
     <Animated.View
-      entering={FadeIn.duration(300).delay(700)}
+      entering={FadeIn.duration(ANIMATIONS.STANDARD_DURATION).delay(ANIMATIONS.INITIAL_DELAY)}
       style={styles.gameBody}
       {...props}
     >

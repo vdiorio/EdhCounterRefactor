@@ -1,9 +1,23 @@
 import { create } from "zustand";
 import { CommanderStore, gameLayout, Player } from "./types";
 import { getPlayerLayout } from "./playerLayouts";
+import { STARTING_LIFE_TOTAL, TIME_TO_RESET_DELTA } from "@/constants/game";
 
-export const STARTING_LIFE_TOTAL = 40;
-export const TIME_TO_RESET_DELTA = 2000;
+// helper to immutably update a single player object
+const updatePlayer = (
+  state: CommanderStore,
+  playerId: number,
+  updates: Partial<Player>
+): CommanderStore => ({
+  ...state,
+  players: {
+    ...state.players,
+    [playerId]: {
+      ...state.players[playerId],
+      ...updates,
+    },
+  },
+});
 
 /**
  * Generates an object with player IDs as keys and Player objects as values.
@@ -36,8 +50,6 @@ const GameStore = create<CommanderStore>((set, get) => {
   /**
    * Resets the delta of a player after a certain amount of time
    * and adds the current delta to the player's history.
-   * @param {number} playerId The ID of the player to reset the delta for.
-   * @returns {void}
    */
   const scheduleDeltaReset = ({
     playerId,
@@ -65,24 +77,6 @@ const GameStore = create<CommanderStore>((set, get) => {
         };
       });
     }, timer || TIME_TO_RESET_DELTA);
-  };
-
-  /**
-   * Adds a value to a player's history.
-   * @param {number} playerId The ID of the player to add to the history of.
-   * @param {number} value The value to add to the player's history.
-   * @returns {void}
-   */
-  const addToHistory = (playerId: number, value: number) => {
-    set((state) => ({
-      players: {
-        ...state.players,
-        [playerId]: {
-          ...state.players[playerId],
-          history: [...state.players[playerId].history, value],
-        },
-      },
-    }));
   };
 
   const clampCdmg = (value: number) => {
@@ -122,28 +116,21 @@ const GameStore = create<CommanderStore>((set, get) => {
 
     incrementLife: ({ playerId, value }) =>
       set((state) => {
-        const player = state.players[playerId];
         scheduleDeltaReset({ playerId });
-        return {
-          players: {
-            ...state.players,
-            [playerId]: {
-              ...player,
-              lTotal: player.lTotal + value,
-              delta: player.delta + value,
-            },
-          },
-        };
+        return updatePlayer(state, playerId, {
+          lTotal: state.players[playerId].lTotal + value,
+          delta: state.players[playerId].delta + value,
+        });
       }),
 
     setLife: ({ playerId, newLife }) =>
       set((state) => {
-        let newState = { ...state };
-        const player = newState.players[playerId];
-        player.delta = newLife - player.lTotal;
-        player.lTotal = newLife;
+        const delta = newLife - state.players[playerId].lTotal;
         scheduleDeltaReset({ playerId });
-        return newState;
+        return updatePlayer(state, playerId, {
+          lTotal: newLife,
+          delta,
+        });
       }),
 
     dealCommanderDamage: ({
@@ -159,21 +146,19 @@ const GameStore = create<CommanderStore>((set, get) => {
         const newCdmgValue = clampCdmg(actualValue + value);
         if (newCdmgValue === actualValue) return state;
 
+        let updated: Partial<Player> = {};
+
         if (player.chain) {
           // Checks if CDMG is linked to life total
-          player.lTotal -= value;
-          player.delta -= value;
+          updated.lTotal = player.lTotal - value;
+          updated.delta = player.delta - value;
           scheduleDeltaReset({ playerId, timer: 500 });
         }
 
         player.Cdmg[attackerId][opponentIdx] = newCdmgValue;
-        return {
-          ...state,
-          players: {
-            ...state.players,
-            [playerId]: { ...player },
-          },
-        };
+        updated.Cdmg = player.Cdmg;
+
+        return updatePlayer(state, playerId, updated);
       });
     },
     resetGame: () =>
@@ -199,18 +184,11 @@ const GameStore = create<CommanderStore>((set, get) => {
       }),
 
     togglePlayerChain: (playerId: number) =>
-      set((state) => {
-        let newState = { ...state };
-        const player = newState.players[playerId];
-        player.chain = !player.chain;
-        return {
-          ...state,
-          players: {
-            ...state.players,
-            [playerId]: { ...player },
-          },
-        };
-      }),
+      set((state) =>
+        updatePlayer(state, playerId, {
+          chain: !state.players[playerId].chain,
+        })
+      ),
   };
 });
 

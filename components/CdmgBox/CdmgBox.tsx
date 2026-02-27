@@ -6,6 +6,7 @@ import {
   Switch,
   TouchableHighlight,
 } from "react-native";
+import { SIZES, COLORS } from "@/constants/ui";
 import CdmgIncrementer from "./Components/CdmgIncrementer";
 import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 import Rotator from "../Rotator/Rotator";
@@ -35,11 +36,11 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
 
   const onLayout = (event: any) => {
     const { width } = event.nativeEvent.layout;
-    setIsSm(width < 200);
+    setIsSm(width < SIZES.SMALL_SCREEN_THRESHOLD);
   };
 
   return (
-    <View style={[{ flex: 1, borderColor: "#555555" }, style]}>
+    <View style={[{ flex: 1, borderColor: COLORS.BORDER }, style]}>
       {positionId !== playerId ? (
         <Rotator style={[{ flex: 1 }]} direction={direction}>
           <View style={[styles.container]}>

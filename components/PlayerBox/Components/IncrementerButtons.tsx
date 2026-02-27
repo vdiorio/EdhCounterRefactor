@@ -1,35 +1,19 @@
-import { useRef } from "react";
 import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
 import GameStore from "@/store/GameStore";
 import Animated, { FadeIn, LinearTransition } from "react-native-reanimated";
+import { useIncrementAction } from "@/hooks/useIncrementAction";
 
 interface Props {
   playerId: number;
 }
 
-export const INCREMENT_HOLD_INTERVAL = 100;
-
 const IncrementerButtons = ({ playerId }: Props) => {
-  const playerInterval = useRef<NodeJS.Timeout | null>(null);
-
   const { incrementLife } = GameStore((state) => state);
 
   const incrementByValue = (value: number) =>
     incrementLife({ playerId, value });
 
-  const startAction = (value: number) => {
-    playerInterval.current = setInterval(
-      () => incrementByValue(value),
-      INCREMENT_HOLD_INTERVAL
-    );
-  };
-
-  const stopAction = () => {
-    if (playerInterval.current) {
-      clearInterval(playerInterval.current);
-      playerInterval.current = null;
-    }
-  };
+  const { startAction, stopAction } = useIncrementAction(incrementByValue);
 
   return (
     <Animated.View style={styles.container}>

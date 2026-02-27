@@ -4,6 +4,7 @@ import GameStore from "@/store/GameStore";
 import ScreenStore from "@/store/ScreenStore";
 import StyleStore from "@/store/StyleStore";
 import { useState } from "react";
+import { selectPlayer } from "@/store/selectors";
 import {
   View,
   TouchableHighlight,
@@ -12,6 +13,7 @@ import {
   ViewProps,
   Dimensions,
 } from "react-native";
+import { useIncrementAction } from "@/hooks/useIncrementAction";
 
 interface Props extends ViewProps {
   playerId: number;
@@ -25,7 +27,7 @@ export default function CdmgIncrementer({
   partner = false,
   ...props
 }: Props) {
-  const { Cdmg } = GameStore((state) => state.players[playerId]);
+  const { Cdmg } = GameStore(selectPlayer(playerId));
   const ATTACKER_COLOR = StyleStore((state) => state.playerColors)[
     positionId - 1
   ];
@@ -40,10 +42,14 @@ export default function CdmgIncrementer({
     dealCdmg({ playerId, attackerId, value, partner });
   }
 
+  const { startAction, stopAction } = useIncrementAction(incrementCdmg);
+
   return (
     <View style={[styles.content, { borderColor: ATTACKER_COLOR }]} {...props}>
       <TouchableHighlight
+        onLongPress={() => startAction(-1)}
         onPress={() => incrementCdmg(-1)}
+        onPressOut={stopAction}
         style={[styles.iconButton, { left: 0 }]}
         underlayColor={"rgba(255,0,0,0.1)"}
         activeOpacity={0.4}
@@ -56,7 +62,9 @@ export default function CdmgIncrementer({
       </Text>
 
       <TouchableHighlight
+        onLongPress={() => startAction(1)}
         onPress={() => incrementCdmg(1)}
+        onPressOut={stopAction}
         style={[styles.iconButton, { right: 0, alignItems: "flex-end" }]}
         underlayColor={"rgba(0,255,0,0.1)"}
         activeOpacity={0.4}

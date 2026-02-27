@@ -6,30 +6,14 @@ import {
   ScrollViewProps,
   Text,
 } from "react-native";
-import GameStore, { STARTING_LIFE_TOTAL } from "@/store/GameStore";
+import GameStore from "@/store/GameStore";
 import { Direction } from "@/components/types";
+import { STARTING_LIFE_TOTAL } from "@/constants/game";
 
 interface Props extends ScrollViewProps {
   playerId: number;
 }
 
-const findDirection = (layout: number[], playerId: number) => {
-  let playerIndex = -1;
-  layout.reduce((acc, curr, i) => {
-    if (playerId <= acc + curr && playerIndex === -1) playerIndex = i;
-    return acc + curr;
-  }, 0);
-  switch (playerIndex) {
-    case 0:
-      return Direction.up;
-    case 1:
-      return Direction.left;
-    case 2:
-      return Direction.right;
-    default:
-      return Direction.down;
-  }
-};
 
 export default function HistorySideBar({ playerId, style, ...props }: Props) {
   const history = GameStore((state) => state.players[playerId].history);

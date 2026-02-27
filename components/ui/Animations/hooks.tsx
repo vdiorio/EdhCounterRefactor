@@ -8,6 +8,7 @@ import {
   useDerivedValue,
   withSpring,
 } from "react-native-reanimated";
+import { ANIMATIONS } from "@/constants/ui";
 
 /**
  * Custom hook to handle width animations for players
@@ -22,7 +23,7 @@ export const useAutoAdjustmentAnimation = (
   const scaleValue = useSharedValue(1);
 
   useEffect(() => {
-    const timingOptions = { duration: 600 };
+    const timingOptions = { duration: ANIMATIONS.AUTO_ADJUST_DURATION };
 
     if (shouldExit) {
       widthValue.value = withTiming(0, timingOptions);
@@ -104,7 +105,7 @@ export const useSliderAnimation = (alt: boolean = false) => {
   useEffect(() => {
     const config = { damping: 15, stiffness: 300 };
     offset.value = withSpring(alt ? 100 : 0, config);
-    scale.value = withTiming(alt ? 1 : 0, { duration: 300 });
+    scale.value = withTiming(alt ? 1 : 0, { duration: ANIMATIONS.SLIDER_TOGGLE_DURATION });
   }, [alt, offset, scale]);
 
   return {
