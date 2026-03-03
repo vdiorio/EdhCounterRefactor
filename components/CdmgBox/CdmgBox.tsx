@@ -32,19 +32,12 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
   const chainColor = player.chain ? "#70e700ff" : "#888888";
   const [isPartner, setIsPartner] = useState(false);
 
-  const [isSm, setIsSm] = useState(false);
-
-  const onLayout = (event: any) => {
-    const { width } = event.nativeEvent.layout;
-    setIsSm(width < SIZES.SMALL_SCREEN_THRESHOLD);
-  };
-
   return (
     <View style={[{ flex: 1, borderColor: COLORS.BORDER }, style]}>
       {positionId !== playerId ? (
         <Rotator style={[{ flex: 1 }]} direction={direction}>
           <View style={[styles.container]}>
-            <View onLayout={onLayout} style={[styles.incrementerContainer]}>
+            <View style={[styles.incrementerContainer]}>
               <CdmgIncrementer playerId={playerId} positionId={positionId} />
               {isPartner && (
                 <CdmgIncrementer
@@ -56,7 +49,13 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
             </View>
             <View style={styles.parnerContainer}>
               <Text style={{ color: "white" }}>Partner</Text>
-              <Switch value={isPartner} onValueChange={setIsPartner} />
+              <Switch
+                value={isPartner}
+                onValueChange={setIsPartner}
+                trackColor={{ false: "#888888", true: playerColor }}
+                thumbColor={"#fff"}
+                
+              />
             </View>
           </View>
         </Rotator>
@@ -69,7 +68,7 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
               underlayColor={playerColor + "33"}
             >
               <Text style={[styles.buttonText, { color: playerColor }]}>
-                <FontAwesome name="arrow-left" size={12} color={playerColor} />{" "}
+                <FontAwesome name="arrow-left" size={16} color={playerColor} />{" "}
                 Voltar
               </Text>
             </TouchableHighlight>
@@ -146,7 +145,7 @@ const styles = StyleSheet.create({
     right: 5,
   },
   buttonText: {
-    fontSize: 10,
+    fontSize: 14,
   },
   checkbox: {
     borderRadius: 5,

@@ -1,6 +1,3 @@
-import { Direction } from "@/components/types";
-import AnimatedAdjustableView from "@/components/ui/Animations/AutoAdjustableView";
-import GameStore from "@/store/GameStore";
 import { useMemo } from "react";
 import { StyleSheet, ViewProps } from "react-native";
 import { getPlayerIds } from "../utils";
@@ -11,9 +8,6 @@ interface Props extends ViewProps {
   layout: number[];
 }
 
-/**
- * PlayerPieceTwo component for managing two groups of players with independent animations
- */
 export default function CdmgPieceTwo({ layout, style, ...props }: Props) {
   const [leftIds, rightIds] = useMemo(
     () => [getPlayerIds(layout, 1), getPlayerIds(layout, 2)],

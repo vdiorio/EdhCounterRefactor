@@ -77,6 +77,7 @@ export default function CdmgIncrementer({
 
 const styles = StyleSheet.create({
   content: {
+    position: "relative",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -84,6 +85,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     minWidth: 80,
+    height: 60,
+    overflow: "hidden",
   },
   text: {
     fontSize: 25,
@@ -92,7 +95,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     position: "absolute",
-    width: "60%",
+    width: "80%",
     height: "100%",
     zIndex: 4,
     display: "flex",
