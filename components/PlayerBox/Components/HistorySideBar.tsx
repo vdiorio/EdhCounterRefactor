@@ -20,6 +20,9 @@ export default function HistorySideBar({ playerId, style, ...props }: Props) {
 
   return (
     <View style={[style, styles.container]}>
+      <Text style={styles.bump}>
+        Histórico
+      </Text>
       <ScrollView contentContainerStyle={[styles.sideBar]} {...props}>
         <View style={[styles.cdmgConteiner, { borderBottomWidth: 1 }]}>
           <Text style={styles.marker} numberOfLines={1}>
@@ -94,6 +97,14 @@ const styles = StyleSheet.create({
     left: 5,
     color: "white",
     fontSize: 10,
-    opacity: 0.5,
   },
+  bump: {
+    height: 20,
+    backgroundColor: "#000",
+    width: "100%",
+    textAlign: "center",
+    color: "white",
+    fontSize: 10,
+    paddingVertical: 2,
+  }
 });
