@@ -23,6 +23,7 @@ import { SIZES } from "@/constants/ui";
 interface Props extends ViewProps {
   playerId: number;
   noIcon?: boolean;
+  debugId?: boolean;
 }
 
 // sizing constants generated from shared values
@@ -34,11 +35,10 @@ const VISUAL_HELPER_ICON_SIZE = Math.round(
   LIFE_FONT_SIZE * SIZES.VISUAL_HELPER_ICON_FACTOR
 );
 
-const LifeTotal = ({ playerId, style, noIcon = false, ...props }: Props) => {
+const LifeTotal = ({ playerId, style, noIcon = false, debugId = false,  ...props }: Props) => {
   const [editing, setEditing] = useState(false);
   const lTotal = GameStore(selectPlayerLife(playerId));
   const delta = GameStore(selectPlayerDelta(playerId));
-
   const playerColor = StyleStore(selectPlayerColor(playerId));
 
   const opacity = useMemo(() => (lTotal <= 0 ? 0.5 : 1), [lTotal]);
@@ -53,49 +53,65 @@ const LifeTotal = ({ playerId, style, noIcon = false, ...props }: Props) => {
   );
 
   return (
-    <>
-      <Animated.View
+    <Animated.View
+      layout={LinearTransition}
+      data-testid={`lifetotal-${playerId}`}
+      style={[styles.container, style]}
+      {...props}
+    >
+      <Typography
         layout={LinearTransition}
-        data-testid={`lifetotal-${playerId}`}
-        style={[styles.container, style]}
-        {...props}
+        testID="delta"
+        style={[styles.deltaText, deltaAnimationStyle]}
       >
-        <Typography
+        {delta !== 0 && signedDelta}
+      </Typography>
+      {!noIcon && (
+        <Animated.View
           layout={LinearTransition}
-          testID="delta"
-          style={[styles.deltaText, deltaAnimationStyle]}
+          style={[
+            styles.iconShadow,
+            { shadowColor: playerColor },
+          ]}
         >
-          {delta !== 0 && signedDelta}
-        </Typography>
-        {!noIcon && (
-          <Animated.View layout={LinearTransition}>
-            <MinusIcon
-              size={VISUAL_HELPER_ICON_SIZE}
-              color={playerColor}
-              opacity={opacity}
-            />
-          </Animated.View>
-        )}
-        <Typography
+          <MinusIcon
+            size={VISUAL_HELPER_ICON_SIZE}
+            opacity={opacity}
+            color="white"
+          />
+        </Animated.View>
+      )}
+      <Typography
+        layout={LinearTransition}
+        onLongPress={toggleEditing}
+        style={[
+          styles.lifeTotal,
+          {
+            textShadowColor: playerColor + "BB",
+            textShadowRadius: 1,
+            textShadowOffset: { width: 2, height: 2 },
+          },
+        ]}
+        testID={`lifetotal-${playerId}`}
+      >
+        {debugId ?  playerId : lTotal}
+      </Typography>
+      {!noIcon && (
+        <Animated.View
           layout={LinearTransition}
-          scheme={{ dark: playerColor, light: "#121212" }}
-          onLongPress={toggleEditing}
-          style={{ ...styles.lifeTotal, opacity }}
-          testID={`lifetotal-${playerId}`}
+          style={[
+            styles.iconShadow,
+            { shadowColor: playerColor },
+          ]}
         >
-          {lTotal}
-        </Typography>
-        {!noIcon && (
-          <Animated.View layout={LinearTransition}>
-            <PlusIcon
-              size={VISUAL_HELPER_ICON_SIZE}
-              color={playerColor}
-              opacity={opacity}
-            />
-          </Animated.View>
-        )}
-      </Animated.View>
-    </>
+          <PlusIcon
+            size={VISUAL_HELPER_ICON_SIZE}
+            opacity={opacity}
+            color="white"
+          />
+        </Animated.View>
+      )}
+    </Animated.View>
   );
 };
 
@@ -127,6 +143,11 @@ const styles = StyleSheet.create({
     left: 0,
     textAlign: "center",
     fontWeight: "900",
+  },
+  iconShadow: {
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 8,
   },
 });
 

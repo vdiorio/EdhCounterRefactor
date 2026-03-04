@@ -7,8 +7,8 @@ import {
   Text,
 } from "react-native";
 import GameStore from "@/store/GameStore";
-import { Direction } from "@/components/types";
 import { STARTING_LIFE_TOTAL } from "@/constants/game";
+
 
 interface Props extends ScrollViewProps {
   playerId: number;

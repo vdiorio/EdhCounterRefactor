@@ -3,7 +3,7 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import WheelPicker from "react-native-wheely";
 import { Link } from "expo-router";
 import AltSelector from "@/components/AltOptions";
@@ -12,12 +12,12 @@ import { Ionicons } from "@expo/vector-icons";
 import Typography from "@/components/ui/Typography";
 import useAppColors from "@/hooks/useAppColors";
 
-const options = Array.from(new Array(6)).map(
-  (_, index) => `${index + 1} Jogador${!index ? "" : "es"}`
+const options = Array.from(new Array(5)).map(
+  (_, index) => `${index + 2} Jogadores`
 );
 
 export default function GameSelectors() {
-  const [selected, setSelected] = useState(3);
+  const [selected, setSelected] = useState(2);
   const [alternative, setAlternative] = useState("f");
   const colors = useAppColors();
 
@@ -25,6 +25,10 @@ export default function GameSelectors() {
     setSelected(index);
     setAlternative("f");
   };
+
+  useEffect(() => {
+    console.log("Selected player count:", selected + 1);
+  }, [alternative]);
 
   const scaleFunction = (x: number) => {
     return 0.7 * x; // Slightly larger for better visibility
@@ -86,7 +90,7 @@ export default function GameSelectors() {
           <View style={styles.altContainer}>
             <AltSelector
               onChange={(alt) => setAlternative(alt ? "v" : "f")}
-              playerCount={selected + 1}
+              playerCount={selected + 2}
               alt={alternative === "v"}
               colors={colors}
             />
@@ -97,7 +101,7 @@ export default function GameSelectors() {
           push
           href={{
             pathname: "/Pages/GameScreen",
-            params: { playerCount: selected + 1, alternative },
+            params: { playerCount: selected + 2, alternative },
           }}
           asChild
         >

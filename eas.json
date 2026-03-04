@@ -12,7 +12,18 @@
         "simulator": false
       }
     },
+    "release": {
+      "distribution": "store",
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "ios": {
+        "simulator": false
+      }
+    },
     "production": {
+      "distribution": "store",
       "android": {
         "buildType": "app-bundle"
       },

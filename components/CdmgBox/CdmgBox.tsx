@@ -5,6 +5,7 @@ import {
   Text,
   Switch,
   TouchableHighlight,
+  TouchableOpacity,
 } from "react-native";
 import { SIZES, COLORS } from "@/constants/ui";
 import CdmgIncrementer from "./Components/CdmgIncrementer";
@@ -32,8 +33,9 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
   const chainColor = player.chain ? "#70e700ff" : "#888888";
   const [isPartner, setIsPartner] = useState(false);
 
+
   return (
-    <View style={[{ flex: 1, borderColor: COLORS.BORDER }, style]}>
+    <View style={[styles.box, { borderColor: playerColor }, style]}>
       {positionId !== playerId ? (
         <Rotator style={[{ flex: 1 }]} direction={direction}>
           <View style={[styles.container]}>
@@ -64,46 +66,40 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
           <View style={[styles.container]}>
             <TouchableHighlight
               onPress={() => setScreen({ screen: Screen.game })}
-              style={[styles.backButton, { borderColor: playerColor }]}
-              underlayColor={playerColor + "33"}
+              style={[styles.backButton, { borderColor: 'lightgrey' }]}
+              underlayColor={'lightgrey' + "33"}
             >
-              <Text style={[styles.buttonText, { color: playerColor }]}>
-                <FontAwesome name="arrow-left" size={16} color={playerColor} />{" "}
+              <Text style={[styles.buttonText, { color: 'lightgrey' }]}>
+                <FontAwesome name="arrow-left" size={16} color={'lightgrey'} />{" "}
                 Voltar
               </Text>
             </TouchableHighlight>
-            <TouchableHighlight
-              style={[
-                styles.checkbox,
-                {
-                  borderColor: player.chain ? chainColor : "transparent",
-                  borderWidth: 1,
-                },
-              ]}
-              onPress={() => togglePlayerChain(playerId)}
-            >
-              <Text
+            <View style={styles.chainLinkContainer}>
+              <TouchableOpacity
+                onPress={() => togglePlayerChain(playerId)}
                 style={[
-                  styles.buttonText,
+                  styles.lifeTotal,
                   {
-                    color: chainColor,
-                    textDecorationLine: player.chain ? "none" : "line-through",
+                    borderWidth: 3,
+                    borderColor: chainColor,
+                    borderRadius: 8,
                   },
                 ]}
               >
                 <FontAwesome
                   name={player.chain ? "link" : "chain-broken"}
-                  size={12}
+                  size={24}
                   color={chainColor}
-                />{" "}
-                Linkar a vida
-              </Text>
-            </TouchableHighlight>
-            <LifeTotal
-              style={{ transform: [{ translateY: 10 }] }}
-              playerId={playerId}
-              noIcon
-            />
+                  style={styles.chainIcon}
+                />
+                <LifeTotal
+                  playerId={playerId}
+                  noIcon
+                  style={{width: "auto"}}
+                  pointerEvents="none"
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </Rotator>
       )}
@@ -112,6 +108,16 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
 }
 
 const styles = StyleSheet.create({
+  box: {
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 5,
+    flex: 1,
+    overflow: "hidden",
+    borderWidth: 2,
+    borderRadius: 10,
+    margin: 2
+  },
   container: {
     flex: 1,
     height: "100%",
@@ -151,10 +157,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    bottom: 5,
-    left: 5,
     width: "auto",
     height: "auto",
-    transform: [{ translateY: 10 }],
+  },
+  chainLinkContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 20,
+  },
+  lifeTotal: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    padding: 4,
+  },
+  chainIcon: {
+    paddingLeft: 5,
+    transform: [{ translateY: 3 }],
   },
 });

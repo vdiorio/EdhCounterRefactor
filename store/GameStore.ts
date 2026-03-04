@@ -103,7 +103,7 @@ const GameStore = create<CommanderStore>((set, get) => {
       playerCount: number;
       alt: boolean;
     }) => {
-      const newLayout = getPlayerLayout({ playerCount, alt });
+      const newLayout = getPlayerLayout({ playerCount: playerCount || 4, alt });
       if (newLayout.join("") === get().gameLayout.join("")) return;
       set(() => ({
         gameLayout: newLayout,

@@ -1,14 +1,6 @@
-import { useEffect, FC } from "react";
+import {  FC } from "react";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  interpolate,
-  Extrapolate,
-  withTiming,
-  useDerivedValue,
-} from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import { getPlayerLayout } from "@/store/playerLayouts";
 import LayoutVisualizer from "./Components/LayoutVisualizer";
 import { useSliderAnimation } from "../ui/Animations/hooks";

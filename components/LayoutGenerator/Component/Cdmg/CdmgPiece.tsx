@@ -24,14 +24,8 @@ const CdmgPiece = ({
   dimensions = {},
   ...props
 }: Props) => {
-  const playerIds = useMemo(() => getPlayerIds(layout, index), [layout]);
-  const deadPlayers = GameStore((state) => state.deadPlayers);
-  const alivePlayerIds = useMemo(
-    () => playerIds.filter((id) => !deadPlayers.includes(id)),
-    [playerIds, deadPlayers]
-  );
-
-  if (alivePlayerIds.length === 0) {
+  const playerIds = getPlayerIds(layout, index);
+  if (playerIds.length === 0) {
     return null;
   }
 
@@ -41,35 +35,11 @@ const CdmgPiece = ({
       exiting={ZoomOut}
       {...props}
     >
-      {alivePlayerIds.map((playerId, playerIndex) => {
-        const isFirstPlayer = playerIndex === 0;
-        const isLastPlayer = playerIndex === alivePlayerIds.length - 1;
+      {playerIds.map((playerId, playerIndex) => {
         return (
           <CdmgBox
             key={playerId}
             positionId={playerId}
-            style={[
-              {
-                borderBottomWidth: index !== 3 ? 1 : 0,
-                borderTopWidth: index !== 0 ? 1 : 0,
-              },
-              index === 1 && [
-                isFirstPlayer && {
-                  borderTopWidth: 0,
-                },
-                isLastPlayer && {
-                  borderBottomWidth: 0,
-                },
-              ],
-              index === 2 && [
-                isFirstPlayer && {
-                  borderBottomWidth: 0,
-                },
-                isLastPlayer && {
-                  borderTopWidth: 0,
-                },
-              ],
-            ]}
           />
         );
       })}
@@ -82,6 +52,7 @@ const styles = StyleSheet.create({
     borderColor: "#555555",
     flexDirection: "column",
     flex: 1,
+    zIndex: 50,
   },
   content: {
     flex: 1,

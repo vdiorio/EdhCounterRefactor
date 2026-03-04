@@ -23,30 +23,19 @@ const PlayerPiece = ({
   style,
   ...props
 }: Props) => {
-  const deadPlayers = GameStore((state) => state.deadPlayers);
+  const playerIds = getPlayerIds(layout, index);
 
-  const playerIds = useMemo(() => getPlayerIds(layout, index), [layout]);
-  const alivePlayers = useMemo(
-    () => playerIds.filter((id) => !deadPlayers.includes(id)),
-    [playerIds, deadPlayers]
-  );
-
-  if (alivePlayers.length === 0) {
+  if (playerIds.length === 0) {
     return null;
-  }
+  } 
 
   return (
     <View style={[styles.sideContainer, style]} {...props}>
-      <Rotator direction={direction} style={styles.content}>
-        {alivePlayers.map((playerId, playerIndex) => (
+      <Rotator direction={direction} style={styles.content} flexReverse={direction === Direction.right}>
+        {playerIds.map((playerId) => (
           <PlayerBox
             key={playerId}
             playerId={playerId}
-            style={{
-              borderLeftWidth: playerIndex === 0 ? 0 : 1, // Only show left border for first player
-              borderRightWidth: playerIndex === alivePlayers.length - 1 ? 0 : 1, // Only show right border for last player
-              borderTopWidth: index % (layout.length - 1) === 0 ? 1 : 0, // Only show top border for first and last Piece
-            }}
           />
         ))}
       </Rotator>
@@ -56,7 +45,6 @@ const PlayerPiece = ({
 
 const styles = StyleSheet.create({
   sideContainer: {
-    flexDirection: "row",
     flex: 1,
   },
   content: {

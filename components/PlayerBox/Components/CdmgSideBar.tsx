@@ -1,13 +1,14 @@
 import Typography from "@/components/ui/Typography";
 import DamageAllButton from "./DamageAllButton";
 import { StyleSheet, ViewProps, View, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import ScreenStore, { Screen } from "@/store/ScreenStore";
 import GameStore from "@/store/GameStore";
 import { Direction } from "@/components/types";
 import StyleStore from "@/store/StyleStore";
 import { selectPlayerCdmg } from "@/store/selectors";
-import { selectPlayerColor } from "@/store/selectors";
 import { getPlayerDirection } from "@/components/LayoutGenerator/Component/utils";
+import usePlayerIcon from "@/hooks/usePlayerIcon";
 
 interface Props extends ViewProps {
   playerId: number;
@@ -18,8 +19,10 @@ export default function CdmgSideBar({ playerId, style, ...props }: Props) {
   const setScreen = ScreenStore((state) => state.setScreen);
   const layout = GameStore((state) => state.gameLayout);
 
-  const allColors: string[] = StyleStore((state) => state.playerColors);
-  const colors: string[] = allColors.filter((_, index) => index !== playerId - 1);
+  const playerOpacityColor = StyleStore((state) => state.playerColors[playerId - 1] + 'C0');
+
+  const colors: string[] = StyleStore((state) => state.playerColors);
+  const generatePlayerIcon = usePlayerIcon(playerId);
 
   const cdmg = GameStore(selectPlayerCdmg(playerId));
 
@@ -35,18 +38,29 @@ export default function CdmgSideBar({ playerId, style, ...props }: Props) {
         });
       }}
     >
-      {Object.keys(cdmg).map((key, i) => {
+      {/* shield icon behind everything */}
+      <View style={styles.backgroundIcon}>
+        <Typography style={{ color: playerOpacityColor, fontSize: 10, marginBottom: 4, textAlign: "center" }}>Dano de comandante</Typography>
+        <Ionicons name="shield" size={40} color={playerOpacityColor} />
+      </View>
+
+      {Object.keys(cdmg).map((key) => {
+        const opponentId = parseInt(key);
         const [p1, p2] = cdmg[key as unknown as keyof typeof cdmg];
+        const opponentColorIndex = opponentId - 1;
+        if (p1 === 0 && p2 === 0) {
+          return null;
+        }
         return (
           <View
             key={key}
-            style={[
-              styles.cdmgConteiner,
-              { backgroundColor: colors[i] + "1a" },
-            ]}
+            style={styles.cdmgConteiner}
           >
+            <View>
+              {generatePlayerIcon(opponentId, 20)}
+            </View>
             <Typography
-              style={[styles.text, { color: colors[i] }]}
+              style={[styles.text, { color: colors[opponentColorIndex] }]}
               numberOfLines={1}
             >
               {p1}
@@ -61,6 +75,7 @@ export default function CdmgSideBar({ playerId, style, ...props }: Props) {
 
 const styles = StyleSheet.create({
   sideBar: {
+    position:'relative',
     alignItems: "center",
     borderTopWidth: 1,
     borderRightWidth: 1,
@@ -79,9 +94,26 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
+    borderWidth: 0.5,
+    borderColor: "#555555",
+    gap: 8,
+    flexDirection: "row",
+    maxHeight: 40,
+    backgroundColor: "#2D2D2D",
   },
   text: {
-    fontSize: 18,
+    fontSize: 12,
     verticalAlign: "middle",
+  },
+  backgroundIcon: {
+    position: "absolute",
+    zIndex: -1,
+    alignSelf: "center",
+    top: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    width: "100%",
   },
 });

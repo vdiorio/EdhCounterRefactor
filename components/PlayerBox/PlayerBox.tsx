@@ -17,28 +17,31 @@ import { SideBar } from "../types";
 import HistorySideBar from "./Components/HistorySideBar";
 import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
 import ScreenStore, { Screen } from "@/store/ScreenStore";
+import StyleStore from "@/store/StyleStore";
+import { selectPlayerColor } from "@/store/selectors";
 
 interface Props extends ViewProps {
   playerId: number;
   style?: any;
+  debugId?: boolean;
 }
 
-const PlayerBox = ({ playerId, style, ...props }: Props) => {
+const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
   const { selectedBar, toggleBar } = useSidebarState();
-
+    const playerColor = StyleStore(selectPlayerColor(playerId));
   return (
     <View
       testID={`player-${playerId}`}
-      style={[style, styles.container]}
+      style={[style, styles.container, {borderColor: playerColor}]}
       {...props}
     >
       {selectedBar === SideBar.cdmg && (
-        <Animated.View entering={SlideInLeft} exiting={SlideOutLeft}>
-          <CdmgSideBar style={styles.sideBar} playerId={playerId} />
+        <Animated.View style={[styles.sideBar, { width: '35%' }]} entering={SlideInLeft} exiting={SlideOutLeft}>
+          <CdmgSideBar style={[styles.sideBar]} playerId={playerId} />
         </Animated.View>
       )}
       {selectedBar === SideBar.history && (
-        <Animated.View entering={SlideInLeft} exiting={SlideOutLeft}>
+        <Animated.View style={[styles.sideBar, { width: '20%' }]} entering={SlideInLeft} exiting={SlideOutLeft}>
           <HistorySideBar style={styles.sideBar} playerId={playerId} />
         </Animated.View>
       )}
@@ -47,7 +50,7 @@ const PlayerBox = ({ playerId, style, ...props }: Props) => {
         entering={FadeIn.duration(ANIMATIONS.ENTRY_FADE_DURATION)}
         style={[styles.content]}
       >
-        <LifeTotal playerId={playerId} />
+        <LifeTotal playerId={playerId} debugId={debugId} />
         <IncrementerButtons playerId={playerId} />
       </Animated.View>
       <UtilsSideBar
@@ -68,12 +71,14 @@ export default PlayerBox;
 
 const styles = StyleSheet.create({
   container: {
-    borderColor: "#555555",
     justifyContent: "center",
     flexDirection: "row",
     gap: 5,
     flex: 1,
     overflow: "hidden",
+    borderWidth: 2,
+    borderRadius: 10,
+    margin: 2
   },
   content: {
     justifyContent: "center",
@@ -83,8 +88,6 @@ const styles = StyleSheet.create({
   },
   sideBar: {
     height: "100%",
-    width: "20%",
-    maxWidth: 60,
     minWidth: 60,
     backgroundColor: "#FFFFFF0a",
     borderWidth: 0.5,

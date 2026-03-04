@@ -12,6 +12,7 @@ interface Props extends ViewProps {
   direction: Direction;
   isDead?: boolean;
   rotatedStyle?: ViewStyle;
+  flexReverse?: boolean;
 }
 
 const Rotator: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const Rotator: React.FC<Props> = ({
   style,
   rotatedStyle,
   isDead,
+  flexReverse,
   ...props
 }) => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -49,7 +51,7 @@ const Rotator: React.FC<Props> = ({
   return (
     <View style={[styles.container, style]} onLayout={onLayout} {...props}>
       <View
-        style={[styles.fullScreen, rightStyle, rotatedStyle, getRotatedStyle()]}
+        style={[styles.fullScreen, rightStyle, rotatedStyle, getRotatedStyle(), flexReverse && { flexDirection: "row-reverse" }]}
       >
         {children}
       </View>

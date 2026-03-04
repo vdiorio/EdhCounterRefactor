@@ -28,9 +28,9 @@ export function getPlayerDirection(
     case 0:
       return Direction.up;
     case 1:
-      return Direction.left;
-    case 2:
       return Direction.right;
+    case 2:
+      return Direction.left;
     default:
       return Direction.down;
   }

@@ -3,6 +3,7 @@ import { useGlobalSearchParams } from "expo-router";
 import GameStore from "@/store/GameStore";
 import ScreenStore, { Screen } from "@/store/ScreenStore";
 import { useEffect } from "react";
+import Menu from "@/components/Menu/Menu";
 import { Direction } from "@/components/types";
 import PlayerPiece from "@/components/LayoutGenerator/Component/Player/PlayerPiece";
 import CdmgPiece from "@/components/LayoutGenerator/Component/Cdmg/CdmgPiece";
@@ -18,29 +19,24 @@ import { ANIMATIONS } from "@/constants/ui";
 export default function Game() {
   useKeepAwake();
 
-  // Router params for player setup
   const params = useGlobalSearchParams();
   const { alt, playerCount } = {
     alt: params.alternative === "v",
     playerCount: parseInt(String(params.playerCount) || "4"),
   };
 
-  // Game store selectors
   const alivePlayers = GameStore((state) => state.alivePlayers);
   const layout = GameStore((state) => state.gameLayout);
   const screen = ScreenStore((state) => state.screen);
   const setScreen = ScreenStore((state) => state.setScreen);
   const setNumberOfPlayers = GameStore((state) => state.setNumPlayers);
 
-  // Styling
   const colors = useAppColors();
 
-  // Initialize player count once on param change
   useEffect(() => {
     setNumberOfPlayers({ playerCount, alt });
   }, [playerCount, alt, setNumberOfPlayers]);
 
-  // Set game screen and cleanup
   useEffect(() => {
     setScreen({ screen: Screen.game });
 
@@ -49,7 +45,8 @@ export default function Game() {
     };
   }, [setScreen]);
 
-  // Derive helper values from hook (metrics + animation)
+  
+
   const {
     isGameWithFiveOrMore,
     gameFadeStyle,
@@ -59,13 +56,17 @@ export default function Game() {
   if (screen === Screen.main) {
     return null;
   }
+  
+  const screenState = screen === Screen.cdmg ? "cdmg" : "game";
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}> 
       <Animated.View
         entering={FadeIn.duration(ANIMATIONS.STANDARD_DURATION).delay(ANIMATIONS.INITIAL_DELAY)}
         style={styles.gameBody}
       >
+
+      {screenState === "game" && <Menu />}
         {/* Base game layout */}
         <Animated.View
           style={[styles.overlay, gameFadeStyle]}
@@ -75,7 +76,6 @@ export default function Game() {
             layout={layout}
             index={0}
             direction={Direction.up}
-            style={{ borderBottomWidth: 0.5 }}
           />
           {/* side pieces from indexes 1 & 2 */}
           {(layout[1] || layout[2]) && (
@@ -87,15 +87,13 @@ export default function Game() {
             >
               <PlayerPiece
                 layout={layout}
-                index={1}
+                index={2}
                 direction={Direction.left}
-                style={styles.left}
               />
               <PlayerPiece
                 layout={layout}
-                index={2}
+                index={1}
                 direction={Direction.right}
-                style={styles.right}
               />
             </View>
           )}
@@ -103,11 +101,9 @@ export default function Game() {
             layout={layout}
             index={3}
             direction={Direction.down}
-            style={{ borderTopWidth: 0.5 }}
           />
         </Animated.View>
 
-        {/* Overlay for cdmg */}
         <Animated.View
           style={[styles.overlay, cdmgFadeStyle]}
           pointerEvents={screen === "cdmg" ? "auto" : "none"}
@@ -116,19 +112,16 @@ export default function Game() {
             layout={layout}
             index={0}
             direction={Direction.up}
-            style={{ borderBottomWidth: 0.5 }}
           />
-          {/* side cdmg pieces (indexes 1 & 2) */}
           {(layout[1] || layout[2]) && (
             <Animated.View
               exiting={ZoomOut}
               style={[styles.sideContainer, isGameWithFiveOrMore && { flex: 3 }]}
             >
-              <CdmgPiece layout={layout} index={1} style={{ borderRightWidth: 1 }} />
+              <CdmgPiece layout={layout} index={2} />
               <CdmgPiece
                 layout={layout}
-                index={2}
-                style={{ borderLeftWidth: 1, flexDirection: "column-reverse" }}
+                index={1}
               />
             </Animated.View>
           )}
@@ -136,7 +129,6 @@ export default function Game() {
             layout={layout}
             index={3}
             direction={Direction.down}
-            style={{ borderTopWidth: 0.5 }}
           />
         </Animated.View>
       </Animated.View>
@@ -149,6 +141,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     justifyContent: "center",
+    position: "relative",
     alignItems: "center",
   },
   gameBody: {
@@ -164,14 +157,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 2,
   },
-  left: {
-    borderRightWidth: 1,
-    borderColor: "#555555",
-  },
-  right: {
-    borderLeftWidth: 1,
-    borderColor: "#555555",
-  },
   content: {
     width: "100%",
   },
@@ -185,7 +170,6 @@ const styles = StyleSheet.create({
   altCard: {
     width: "40%",
     height: "100%",
-    borderRadius: 8,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

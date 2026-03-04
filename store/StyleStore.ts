@@ -17,11 +17,11 @@ const colorsDark = [
 
 const colorsLight = [
   "#6699FF", // Light Blue
-  "#66FF66", // Light Green
+  "#00c300", // Dark Green
   "#FF6666", // Light Red
   "#FF66CC", // Light Pink
   "#9966FF", // Light Purple
-  "#FFCC66", // Light Orange
+  "#bec400", // Light Orange
 ];
 
 const shuffleColors = (colorArray: string[]): string[] => {
