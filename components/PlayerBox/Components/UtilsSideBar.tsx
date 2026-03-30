@@ -1,8 +1,7 @@
-import GameStore from "@/store/GameStore";
 import DamageAllButton from "./DamageAllButton";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { SideBar } from "@/components/types";
-import Animated, { LinearTransition } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import SidebarButton, { SidebarIcon } from "./SidebarButton";
 import { UtilsSideBarProps } from "./UtilsSideBar.types";
 
@@ -16,15 +15,24 @@ export default function UtilsSideBar({
   return (
     <Animated.View style={[styles.sideBar, style]} {...props}>
       <SidebarButton
+        style={styles.button}
         selected={selectedBar === SideBar.cdmg}
         onPress={() => toggleBar(SideBar.cdmg)}
         icon={SidebarIcon.Cdmg}
         playerId={playerId}
       />
       <SidebarButton
+        style={styles.button}
         selected={selectedBar === SideBar.history}
         onPress={() => toggleBar(SideBar.history)}
         icon={SidebarIcon.History}
+      />
+      <SidebarButton
+        style={styles.button}
+        selected={selectedBar === SideBar.counters}
+        onPress={() => toggleBar(SideBar.counters)}
+        icon={SidebarIcon.Counters}
+        testID={`sidebar-counters-${playerId}`}
       />
       <DamageAllButton playerId={playerId} style={{ marginTop: "auto" }} />
     </Animated.View>
@@ -44,6 +52,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
     aspectRatio: 1,
-    borderRadius: 5,
+    borderRadius: 4,
   },
 });

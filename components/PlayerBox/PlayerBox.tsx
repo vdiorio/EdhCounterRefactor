@@ -15,10 +15,12 @@ import UtilsSideBar from "./Components/UtilsSideBar";
 import CdmgSideBar from "./Components/CdmgSideBar";
 import { SideBar } from "../types";
 import HistorySideBar from "./Components/HistorySideBar";
+import CountersSideBar from "./Components/CountersSideBar";
+import StatusBottomBar from "./Components/StatusBottomBar";
 import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
-import ScreenStore, { Screen } from "@/store/ScreenStore";
 import StyleStore from "@/store/StyleStore";
-import { selectPlayerColor } from "@/store/selectors";
+import GameStore from "@/store/GameStore";
+import { selectPlayerColor, selectShowMonarchBar, selectShowInitiativeBar } from "@/store/selectors";
 
 interface Props extends ViewProps {
   playerId: number;
@@ -28,7 +30,11 @@ interface Props extends ViewProps {
 
 const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
   const { selectedBar, toggleBar } = useSidebarState();
-    const playerColor = StyleStore(selectPlayerColor(playerId));
+  const playerColor = StyleStore(selectPlayerColor(playerId));
+  const showMonarchBar = GameStore(selectShowMonarchBar);
+  const showInitiativeBar = GameStore(selectShowInitiativeBar);
+  
+
   return (
     <View
       testID={`player-${playerId}`}
@@ -45,6 +51,11 @@ const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
           <HistorySideBar style={styles.sideBar} playerId={playerId} />
         </Animated.View>
       )}
+      {selectedBar === SideBar.counters && (
+        <Animated.View style={[styles.sideBar, { width: "26%" }]} entering={SlideInLeft} exiting={SlideOutLeft}>
+          <CountersSideBar style={styles.sideBar} playerId={playerId} />
+        </Animated.View>
+      )}
       <Animated.View
         layout={LinearTransition}
         entering={FadeIn.duration(ANIMATIONS.ENTRY_FADE_DURATION)}
@@ -52,6 +63,9 @@ const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
       >
         <LifeTotal playerId={playerId} debugId={debugId} />
         <IncrementerButtons playerId={playerId} />
+        {(showMonarchBar || showInitiativeBar) && (
+          <StatusBottomBar playerId={playerId} />
+        )}
       </Animated.View>
       <UtilsSideBar
         style={[styles.sideBar, styles.utils]}
@@ -82,19 +96,18 @@ const styles = StyleSheet.create({
   },
   content: {
     justifyContent: "center",
-    position: "relative",
     flex: 1,
     width: 500,
   },
   sideBar: {
     height: "100%",
-    minWidth: 60,
+    minWidth: 80,
     backgroundColor: "#FFFFFF0a",
     borderWidth: 0.5,
     borderColor: "#555555",
   },
   utils: {
-    width: 40,
+    width: 45,
     paddingVertical: 10,
     paddingHorizontal: 5,
     minWidth: 0,

@@ -15,4 +15,5 @@ export interface RotatedStyle {
 export enum SideBar {
   cdmg = "cdmg",
   history = "history",
+  counters = "counters",
 }

@@ -8,6 +8,7 @@ import { selectPlayerColor } from "@/store/selectors";
 export enum SidebarIcon {
   Cdmg = "shield",
   History = "history",
+  Counters = "stats-chart",
 }
 
 interface ButtonProps extends TouchableOpacityProps {
@@ -20,6 +21,7 @@ export default function SidebarButton({
   selected,
   playerId,
   icon,
+  style,
   ...props
 }: ButtonProps) {
   const playerColor = playerId
@@ -28,14 +30,14 @@ export default function SidebarButton({
   const selectedColor = selected ? playerColor : "white";
 
   const iconProps = {
-    size: icon === SidebarIcon.Cdmg ? 18 : 16,
+    size: 22,
     color: selectedColor,
   } as const;
 
   return (
     <TouchableOpacity
       style={[
-        styles.button,
+        style,
         {
           borderColor: selectedColor,
           backgroundColor: selected ? selectedColor + "25" : undefined,
@@ -45,21 +47,11 @@ export default function SidebarButton({
     >
       {icon === SidebarIcon.Cdmg ? (
         <Ionicons name="shield" {...iconProps} />
+      ) : icon === SidebarIcon.Counters ? (
+        <Ionicons name="stats-chart" {...iconProps} />
       ) : (
         <FontAwesome5 name="history" {...iconProps} />
       )}
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    borderWidth: 1,
-    borderColor: "#555555",
-    padding: 2,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    aspectRatio: 1,
-  },
-});
