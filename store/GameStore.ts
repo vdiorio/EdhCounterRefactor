@@ -35,6 +35,9 @@ const generatePlayers = (numPlayers: number): Record<number, Player> => {
       history: [],
       Cdmg: {},
       chain: true,
+      poison: 0,
+      energy: 0,
+      experience: 0,
     };
 
     for (let j = 1; j <= numPlayers; j++) {
@@ -83,12 +86,24 @@ const GameStore = create<CommanderStore>((set, get) => {
     return Math.min(21, Math.max(0, value));
   };
 
+  const clampPoison = (value: number) => {
+    return Math.min(10, Math.max(0, value));
+  };
+
+  const clampPositive = (value: number) => {
+    return Math.max(0, value);
+  };
+
   return {
     players: generatePlayers(4), // 🟢 Default to 4 players or set dynamically later
     numPlayers: 4,
     deadPlayers: [],
     alivePlayers: [],
     gameLayout: [0, 2, 2, 0],
+    monarchPlayerId: null,
+    initiativePlayerId: null,
+    showMonarchBar: false,
+    showInitiativeBar: false,
     removePlayerFromLayout: (playerId) => {
       set((state) => ({
         deadPlayers: [...state.deadPlayers, playerId],
@@ -111,6 +126,10 @@ const GameStore = create<CommanderStore>((set, get) => {
         players: generatePlayers(playerCount),
         deadPlayers: [],
         alivePlayers: Array.from({ length: playerCount }, (_, i) => i + 1),
+        monarchPlayerId: null,
+        initiativePlayerId: null,
+        showMonarchBar: false,
+        showInitiativeBar: false,
       }));
     },
 
@@ -167,6 +186,10 @@ const GameStore = create<CommanderStore>((set, get) => {
         players: generatePlayers(state.numPlayers),
         deadPlayers: [],
         alivePlayers: Array.from({ length: state.numPlayers }, (_, i) => i + 1),
+        monarchPlayerId: null,
+        initiativePlayerId: null,
+        showMonarchBar: false,
+        showInitiativeBar: false,
       })),
 
     damageAllOponents: ({ playerId, value }) =>
@@ -189,6 +212,67 @@ const GameStore = create<CommanderStore>((set, get) => {
           chain: !state.players[playerId].chain,
         })
       ),
+
+    incrementPoison: ({ playerId, value }) =>
+      set((state) => {
+        const player = state.players[playerId];
+        const poison = clampPoison(player.poison + value);
+        if (poison === player.poison) return state;
+
+        return updatePlayer(state, playerId, { poison });
+      }),
+
+    incrementEnergy: ({ playerId, value }) =>
+      set((state) => {
+        const player = state.players[playerId];
+        const energy = clampPositive(player.energy + value);
+        if (energy === player.energy) return state;
+
+        return updatePlayer(state, playerId, { energy });
+      }),
+
+    incrementExperience: ({ playerId, value }) =>
+      set((state) => {
+        const player = state.players[playerId];
+        const experience = clampPositive(player.experience + value);
+        if (experience === player.experience) return state;
+
+        return updatePlayer(state, playerId, { experience });
+      }),
+
+    claimMonarch: (playerId: number) =>
+      set((state) => ({
+        ...state,
+        monarchPlayerId: playerId,
+      })),
+
+    claimInitiative: (playerId: number) =>
+      set((state) => ({
+        ...state,
+        initiativePlayerId: playerId,
+      })),
+
+    toggleMonarchBar: (playerId: number) =>
+      set((state) => {
+        const showMonarchBar = !state.showMonarchBar;
+
+        return {
+          ...state,
+          showMonarchBar,
+          monarchPlayerId: showMonarchBar ? playerId : null,
+        };
+      }),
+
+    toggleInitiativeBar: (playerId: number) =>
+      set((state) => {
+        const showInitiativeBar = !state.showInitiativeBar;
+
+        return {
+          ...state,
+          showInitiativeBar,
+          initiativePlayerId: showInitiativeBar ? playerId : null,
+        };
+      }),
   };
 });
 

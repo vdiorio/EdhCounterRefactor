@@ -17,6 +17,28 @@ export const selectPlayerCdmg = (playerId: number) =>
 export const selectPlayerChain = (playerId: number) =>
   (state: CommanderStore): boolean => state.players[playerId].chain;
 
+export const selectPlayerPoison = (playerId: number) =>
+  (state: CommanderStore): number => state.players[playerId].poison;
+
+export const selectPlayerEnergy = (playerId: number) =>
+  (state: CommanderStore): number => state.players[playerId].energy;
+
+export const selectPlayerExperience = (playerId: number) =>
+  (state: CommanderStore): number => state.players[playerId].experience;
+
+export const selectMonarchPlayerId = (state: CommanderStore): number | null =>
+  state.monarchPlayerId;
+
+export const selectInitiativePlayerId = (
+  state: CommanderStore
+): number | null => state.initiativePlayerId;
+
+export const selectShowMonarchBar = (state: CommanderStore): boolean =>
+  state.showMonarchBar;
+
+export const selectShowInitiativeBar = (state: CommanderStore): boolean =>
+  state.showInitiativeBar;
+
 export const selectGameLayout = (state: CommanderStore) => state.gameLayout;
 
 export const selectAlivePlayers = (state: CommanderStore) => state.alivePlayers;
