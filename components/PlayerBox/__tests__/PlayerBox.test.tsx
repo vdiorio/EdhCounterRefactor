@@ -1,11 +1,11 @@
 import { render, act, fireEvent } from "@testing-library/react-native";
 import PlayerBox from "../PlayerBox";
-import GameStore, {
+import GameStore from "@/store/GameStore";
+import {
   STARTING_LIFE_TOTAL as STARTING_VALUE,
   TIME_TO_RESET_DELTA,
-} from "@/store/GameStore";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
-import { INCREMENT_HOLD_INTERVAL } from "../Components/IncrementerButtons";
+} from "@/constants/game";
+import { INCREMENT_HOLD_INTERVAL } from "@/hooks/useIncrementAction";
 import { DAMAGE_ALL_INTERVAL } from "../Components/DamageAllButton";
 
 describe("PlayerBox", () => {
