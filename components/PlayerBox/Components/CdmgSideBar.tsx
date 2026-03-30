@@ -56,12 +56,19 @@ export default function CdmgSideBar({ playerId, style, ...props }: Props) {
             key={key}
             style={styles.cdmgConteiner}
           >
-            <View>
+            <View
+              style={[
+                styles.colorStrip,
+                { backgroundColor: colors[opponentColorIndex] },
+              ]}
+            />
+            <View style={styles.iconSlot}>
               {generatePlayerIcon(opponentId, 20)}
             </View>
             <Typography
-              style={[styles.text, { color: colors[opponentColorIndex] }]}
+              style={[styles.text, { color: colors[opponentColorIndex], flex: 3 }]}
               numberOfLines={1}
+              adjustsFontSizeToFit
             >
               {p1}
               {p2 !== 0 && ` - ${p2}`}
@@ -91,19 +98,34 @@ const styles = StyleSheet.create({
   },
   cdmgConteiner: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
     width: "100%",
+    position: "relative",
     borderWidth: 0.5,
     borderColor: "#555555",
     gap: 8,
     flexDirection: "row",
     maxHeight: 40,
     backgroundColor: "#2D2D2D",
+    paddingLeft: 8,
+    paddingRight: 4,
+  },
+  colorStrip: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 3,
+  },
+  iconSlot: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   text: {
-    fontSize: 12,
+    fontSize: 20,
     verticalAlign: "middle",
+    textAlign: "center",
   },
   backgroundIcon: {
     position: "absolute",
