@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, TouchableOpacityProps, StyleSheet } from "react-native";
+import { TouchableOpacity, TouchableOpacityProps } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import StyleStore from "@/store/StyleStore";

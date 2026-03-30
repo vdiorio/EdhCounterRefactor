@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import Typography from "@/components/ui/Typography";
 import {
   StyleSheet,
@@ -8,21 +9,23 @@ import {
 } from "react-native";
 import GameStore from "@/store/GameStore";
 import { STARTING_LIFE_TOTAL } from "@/constants/game";
+import { PlayerViewProps } from "./UtilsSideBar.types";
 
-
-interface Props extends ScrollViewProps {
-  playerId: number;
-}
-
+type Props = PlayerViewProps & ScrollViewProps;
 
 export default function HistorySideBar({ playerId, style, ...props }: Props) {
   const history = GameStore((state) => state.players[playerId].history);
+  const totals = useMemo(() => {
+    let running = STARTING_LIFE_TOTAL;
+    return history.map((entry) => {
+      running += entry;
+      return running;
+    });
+  }, [history]);
 
   return (
-    <View style={[style, styles.container]}>
-      <Text style={styles.bump}>
-        Histórico
-      </Text>
+    <View style={style}>
+      <Text style={styles.bump}>Histórico</Text>
       <ScrollView contentContainerStyle={[styles.sideBar]} {...props}>
         <View style={[styles.cdmgConteiner, { borderBottomWidth: 1 }]}>
           <Text style={styles.marker} numberOfLines={1}>
@@ -44,8 +47,7 @@ export default function HistorySideBar({ playerId, style, ...props }: Props) {
               style={[styles.cdmgConteiner, { backgroundColor: color + "1a" }]}
             >
               <Typography style={styles.marker} numberOfLines={1}>
-                {STARTING_LIFE_TOTAL +
-                  history.slice(0, i + 1).reduce((a, b) => a + b, 0)}{" "}
+                {totals[i]} 
               </Typography>
               <Typography
                 style={{
@@ -67,22 +69,10 @@ export default function HistorySideBar({ playerId, style, ...props }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    borderWidth: 0.5,
-    borderColor: "#555555",
-  },
   sideBar: {
     alignItems: "center",
     width: "100%",
     flexDirection: "column-reverse",
-  },
-  button: {
-    backgroundColor: "#ff4d4d",
-    width: "100%",
-    aspectRatio: 1,
-    borderRadius: 2,
-    justifyContent: "center",
-    alignItems: "center",
   },
   cdmgConteiner: {
     position: "relative",

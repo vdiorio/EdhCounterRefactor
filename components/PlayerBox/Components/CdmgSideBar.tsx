@@ -1,27 +1,25 @@
 import Typography from "@/components/ui/Typography";
-import DamageAllButton from "./DamageAllButton";
-import { StyleSheet, ViewProps, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ScreenStore, { Screen } from "@/store/ScreenStore";
 import GameStore from "@/store/GameStore";
-import { Direction } from "@/components/types";
 import StyleStore from "@/store/StyleStore";
-import { selectPlayerCdmg } from "@/store/selectors";
+import {
+  selectPlayerCdmg,
+  selectPlayerColors,
+  selectPlayerColorWithAlpha,
+} from "@/store/selectors";
 import { getPlayerDirection } from "@/components/LayoutGenerator/Component/utils";
 import usePlayerIcon from "@/hooks/usePlayerIcon";
+import { PlayerViewProps } from "./UtilsSideBar.types";
 
-interface Props extends ViewProps {
-  playerId: number;
-}
-
-
-export default function CdmgSideBar({ playerId, style, ...props }: Props) {
+export default function CdmgSideBar({ playerId, style, ...props }: PlayerViewProps) {
   const setScreen = ScreenStore((state) => state.setScreen);
   const layout = GameStore((state) => state.gameLayout);
 
-  const playerOpacityColor = StyleStore((state) => state.playerColors[playerId - 1] + 'C0');
+  const playerOpacityColor = StyleStore(selectPlayerColorWithAlpha(playerId, "C0"));
 
-  const colors: string[] = StyleStore((state) => state.playerColors);
+  const colors = StyleStore(selectPlayerColors);
   const generatePlayerIcon = usePlayerIcon(playerId);
 
   const cdmg = GameStore(selectPlayerCdmg(playerId));
@@ -82,19 +80,11 @@ export default function CdmgSideBar({ playerId, style, ...props }: Props) {
 
 const styles = StyleSheet.create({
   sideBar: {
-    position:'relative',
+    position: "relative",
     alignItems: "center",
     borderTopWidth: 1,
     borderRightWidth: 1,
     borderColor: "#555555",
-  },
-  button: {
-    backgroundColor: "#ff4d4d",
-    width: "100%",
-    aspectRatio: 1,
-    borderRadius: 2,
-    justifyContent: "center",
-    alignItems: "center",
   },
   cdmgConteiner: {
     flex: 1,

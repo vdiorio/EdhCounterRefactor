@@ -8,17 +8,14 @@ import {
   selectShowMonarchBar,
 } from "@/store/selectors";
 import StyleStore from "@/store/StyleStore";
-import { StyleSheet, TouchableOpacity, ViewProps } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Animated, { FadeInDown, FadeOutDown, FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
+import { PlayerViewProps } from "./UtilsSideBar.types";
 
-interface Props extends ViewProps {
-  playerId: number;
-}
+const MONARCH_COLOR = "#d4af37";
+const INITIATIVE_COLOR = "#7e57c2";
 
-export default function StatusBottomBar({ playerId, style, ...props }: Props) {
-  const MONARCH_COLOR = "#d4af37";
-  const INITIATIVE_COLOR = "#7e57c2";
-
+export default function StatusBottomBar({ playerId, style, ...props }: PlayerViewProps) {
   const showMonarchBar = GameStore(selectShowMonarchBar);
   const showInitiativeBar = GameStore(selectShowInitiativeBar);
   const monarchPlayerId = GameStore(selectMonarchPlayerId);
@@ -36,7 +33,13 @@ export default function StatusBottomBar({ playerId, style, ...props }: Props) {
       entering={FadeInDown.duration(220)}
       exiting={FadeOutDown.duration(220)}
       layout={LinearTransition.duration(200)}
-      style={[styles.container, { borderTopColor: playerColor, borderLeftColor: playerColor, borderRightColor: playerColor }, style]}
+      style={[
+        styles.container,
+        {
+          borderColor: playerColor,
+        },
+        style,
+      ]}
       pointerEvents="box-none"
       {...props}
     >

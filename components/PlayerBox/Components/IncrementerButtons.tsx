@@ -1,6 +1,6 @@
-import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
+import { StyleSheet, TouchableHighlight, View } from "react-native";
 import GameStore from "@/store/GameStore";
-import Animated, { FadeIn, LinearTransition } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import { useIncrementAction } from "@/hooks/useIncrementAction";
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const IncrementerButtons = ({ playerId }: Props) => {
-  const { incrementLife } = GameStore((state) => state);
+  const incrementLife = GameStore((state) => state.incrementLife);
 
   const incrementByValue = (value: number) =>
     incrementLife({ playerId, value });
@@ -48,20 +48,16 @@ const IncrementerButtons = ({ playerId }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row", // Arrange buttons horizontally
-    justifyContent: "space-between", // Space out buttons
+    flexDirection: "row",
+    justifyContent: "space-between",
     width: "100%",
-    height: "100%", // Ensure the container takes full height of the parent
+    height: "100%",
     position: "absolute",
   },
   touchable: {
-    flex: 1, // Make both buttons take up equal width
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  buttonText: {
-    color: "#e0e0e0", // Button text color
-    fontSize: 16,
   },
 });
 

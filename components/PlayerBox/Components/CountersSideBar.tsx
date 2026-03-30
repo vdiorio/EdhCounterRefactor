@@ -5,6 +5,7 @@ import StyleStore from "@/store/StyleStore";
 import {
   selectPlayerEnergy,
   selectPlayerExperience,
+  selectPlayerColorWithAlpha,
   selectPlayerPoison,
   selectShowInitiativeBar,
   selectShowMonarchBar,
@@ -16,12 +17,12 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   View,
-  ViewProps,
 } from "react-native";
+import { PlayerViewProps } from "./UtilsSideBar.types";
 
-interface Props extends ViewProps {
-  playerId: number;
-}
+const POISON_COLOR = "#2e7d32";
+const ENERGY_COLOR = "#fbc02d";
+const XP_COLOR = "#1e88e5";
 
 interface CounterRowProps {
   testIdPrefix: string;
@@ -76,17 +77,11 @@ function CounterRow({
   );
 }
 
-export default function CountersSideBar({ playerId, style, ...props }: Props) {
-  const POISON_COLOR = "#2e7d32";
-  const ENERGY_COLOR = "#fbc02d";
-  const XP_COLOR = "#1e88e5";
-
+export default function CountersSideBar({ playerId, style, ...props }: PlayerViewProps) {
   const poison = GameStore(selectPlayerPoison(playerId));
   const energy = GameStore(selectPlayerEnergy(playerId));
   const experience = GameStore(selectPlayerExperience(playerId));
-  const playerOpacityColor = StyleStore(
-    (state) => state.playerColors[playerId - 1] + "C0"
-  );
+  const playerOpacityColor = StyleStore(selectPlayerColorWithAlpha(playerId, "C0"));
 
   const incrementPoison = GameStore((state) => state.incrementPoison);
   const incrementEnergy = GameStore((state) => state.incrementEnergy);
@@ -95,6 +90,13 @@ export default function CountersSideBar({ playerId, style, ...props }: Props) {
   const showInitiativeBar = GameStore(selectShowInitiativeBar);
   const toggleMonarchBar = GameStore((state) => state.toggleMonarchBar);
   const toggleInitiativeBar = GameStore((state) => state.toggleInitiativeBar);
+
+  const onPoisonIncrement = () => incrementPoison({ playerId, value: 1 });
+  const onPoisonDecrement = () => incrementPoison({ playerId, value: -1 });
+  const onEnergyIncrement = () => incrementEnergy({ playerId, value: 1 });
+  const onEnergyDecrement = () => incrementEnergy({ playerId, value: -1 });
+  const onExperienceIncrement = () => incrementExperience({ playerId, value: 1 });
+  const onExperienceDecrement = () => incrementExperience({ playerId, value: -1 });
 
   return (
     <View style={[styles.sideBar, style]} {...props}>
@@ -117,24 +119,24 @@ export default function CountersSideBar({ playerId, style, ...props }: Props) {
         icon={<PoisonCounterIcon size={18} color={POISON_COLOR} opacity={0.95} />}
         color={POISON_COLOR}
         value={poison}
-        onIncrement={() => incrementPoison({ playerId, value: 1 })}
-        onDecrement={() => incrementPoison({ playerId, value: -1 })}
+        onIncrement={onPoisonIncrement}
+        onDecrement={onPoisonDecrement}
       />
       <CounterRow
         testIdPrefix={`counter-energy-${playerId}`}
         icon={<Ionicons name="flash" size={18} color={ENERGY_COLOR} />}
         color={ENERGY_COLOR}
         value={energy}
-        onIncrement={() => incrementEnergy({ playerId, value: 1 })}
-        onDecrement={() => incrementEnergy({ playerId, value: -1 })}
+        onIncrement={onEnergyIncrement}
+        onDecrement={onEnergyDecrement}
       />
       <CounterRow
         testIdPrefix={`counter-xp-${playerId}`}
         icon={<Typography style={[styles.xpIcon, { color: XP_COLOR }]}>XP</Typography>}
         color={XP_COLOR}
         value={experience}
-        onIncrement={() => incrementExperience({ playerId, value: 1 })}
-        onDecrement={() => incrementExperience({ playerId, value: -1 })}
+        onIncrement={onExperienceIncrement}
+        onDecrement={onExperienceDecrement}
       />
 
       <View style={styles.objectiveControls}>
@@ -177,9 +179,6 @@ const styles = StyleSheet.create({
     position: "relative",
     height: "100%",
     alignItems: "center",
-    borderTopWidth: 1,
-    borderRightWidth: 1,
-    borderColor: "#555555",
   },
   row: {
     flex: 1,
