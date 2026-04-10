@@ -94,6 +94,13 @@ export default function StatusBottomBar({ playerId, style, ...props }: PlayerVie
   );
 }
 
+export function StatusBottomBarSlot({ playerId }: { playerId: number }) {
+  const showMonarchBar = GameStore(selectShowMonarchBar);
+  const showInitiativeBar = GameStore(selectShowInitiativeBar);
+  if (!showMonarchBar && !showInitiativeBar) return null;
+  return <StatusBottomBar playerId={playerId} />;
+}
+
 const styles = StyleSheet.create({
   container: {
     position: "absolute",

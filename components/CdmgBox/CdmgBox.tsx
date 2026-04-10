@@ -20,11 +20,11 @@ import StyleStore from "@/store/StyleStore";
 
 interface Props extends ViewProps {
   positionId: number;
+  currentPlayerId: number;
   direction?: Direction;
 }
 
-export default function CdmgBox({ positionId, style, ...props }: Props) {
-  const playerId = ScreenStore((state) => state.playerId);
+export default function CdmgBox({ positionId, currentPlayerId, style, ...props }: Props) {
   const direction = ScreenStore((state) => state.direction);
   const setScreen = ScreenStore((state) => state.setScreen);
   const togglePlayerChain = GameStore((state) => state.togglePlayerChain);
@@ -36,14 +36,14 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
 
   return (
     <View style={[styles.box, { borderColor: playerColor }, style]}>
-      {positionId !== playerId ? (
+      {positionId !== currentPlayerId ? (
         <Rotator style={[{ flex: 1 }]} direction={direction}>
           <View style={[styles.container]}>
             <View style={[styles.incrementerContainer]}>
-              <CdmgIncrementer playerId={playerId} positionId={positionId} />
+              <CdmgIncrementer playerId={currentPlayerId} positionId={positionId} />
               {isPartner && (
                 <CdmgIncrementer
-                  playerId={playerId}
+                  playerId={currentPlayerId}
                   positionId={positionId}
                   partner
                 />
@@ -76,7 +76,7 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
             </TouchableHighlight>
             <View style={styles.chainLinkContainer}>
               <TouchableOpacity
-                onPress={() => togglePlayerChain(playerId)}
+                onPress={() => togglePlayerChain(currentPlayerId)}
                 style={[
                   styles.lifeTotal,
                   {
@@ -93,7 +93,7 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
                   style={styles.chainIcon}
                 />
                 <LifeTotal
-                  playerId={playerId}
+                  playerId={currentPlayerId}
                   noIcon
                   style={{width: "auto"}}
                   pointerEvents="none"

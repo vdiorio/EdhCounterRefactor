@@ -27,13 +27,6 @@ export default function UtilsSideBar({
         onPress={() => toggleBar(SideBar.history)}
         icon={SidebarIcon.History}
       />
-      <SidebarButton
-        style={styles.button}
-        selected={selectedBar === SideBar.counters}
-        onPress={() => toggleBar(SideBar.counters)}
-        icon={SidebarIcon.Counters}
-        testID={`sidebar-counters-${playerId}`}
-      />
       <DamageAllButton playerId={playerId} style={{ marginTop: "auto" }} />
     </Animated.View>
   );

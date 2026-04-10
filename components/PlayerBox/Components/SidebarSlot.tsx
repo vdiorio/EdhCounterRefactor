@@ -24,7 +24,7 @@ function renderContent(
   switch (selectedBar) {
     case SideBar.cdmg:
       return {
-        width: "35%",
+        width: "30%",
         content: <CdmgSideBar style={styles.sideBar} playerId={playerId} />,
       };
     case SideBar.history:

@@ -50,6 +50,13 @@ const generatePlayers = (numPlayers: number): Record<number, Player> => {
 const GameStore = create<CommanderStore>((set, get) => {
   const timers: Record<number, NodeJS.Timeout> = {};
 
+  const clearAllTimers = () => {
+    for (const id of Object.keys(timers)) {
+      clearTimeout(timers[Number(id)]);
+      delete timers[Number(id)];
+    }
+  };
+
   /**
    * Resets the delta of a player after a certain amount of time
    * and adds the current delta to the player's history.
@@ -98,7 +105,7 @@ const GameStore = create<CommanderStore>((set, get) => {
     players: generatePlayers(4), // 🟢 Default to 4 players or set dynamically later
     numPlayers: 4,
     deadPlayers: [],
-    alivePlayers: [],
+    alivePlayers: Array.from({ length: 4 }, (_, i) => i + 1),
     gameLayout: [0, 2, 2, 0],
     monarchPlayerId: null,
     initiativePlayerId: null,
@@ -120,6 +127,7 @@ const GameStore = create<CommanderStore>((set, get) => {
     }) => {
       const newLayout = getPlayerLayout({ playerCount: playerCount || 4, alt });
       if (newLayout.join("") === get().gameLayout.join("")) return;
+      clearAllTimers();
       set(() => ({
         gameLayout: newLayout,
         numPlayers: playerCount,
@@ -180,7 +188,8 @@ const GameStore = create<CommanderStore>((set, get) => {
         return updatePlayer(state, playerId, updated);
       });
     },
-    resetGame: () =>
+    resetGame: () => {
+      clearAllTimers();
       set((state) => ({
         ...state,
         players: generatePlayers(state.numPlayers),
@@ -190,20 +199,23 @@ const GameStore = create<CommanderStore>((set, get) => {
         initiativePlayerId: null,
         showMonarchBar: false,
         showInitiativeBar: false,
-      })),
+      }));
+    },
 
     damageAllOponents: ({ playerId, value }) =>
       set((state) => {
-        let newState = { ...state };
+        let next = state;
         for (const id in state.players) {
           const pID = Number(id);
           if (pID !== playerId) {
-            newState.players[pID].lTotal += value;
-            newState.players[pID].delta += value;
             scheduleDeltaReset({ playerId: pID });
+            next = updatePlayer(next, pID, {
+              lTotal: next.players[pID].lTotal + value,
+              delta: next.players[pID].delta + value,
+            });
           }
         }
-        return newState;
+        return next;
       }),
 
     togglePlayerChain: (playerId: number) =>

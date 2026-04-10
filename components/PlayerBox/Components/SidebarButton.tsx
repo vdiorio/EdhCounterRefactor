@@ -8,7 +8,6 @@ import { selectPlayerColor } from "@/store/selectors";
 export enum SidebarIcon {
   Cdmg = "shield",
   History = "history",
-  Counters = "stats-chart",
 }
 
 interface ButtonProps extends TouchableOpacityProps {
@@ -47,8 +46,6 @@ export default function SidebarButton({
     >
       {icon === SidebarIcon.Cdmg ? (
         <Ionicons name="shield" {...iconProps} />
-      ) : icon === SidebarIcon.Counters ? (
-        <Ionicons name="stats-chart" {...iconProps} />
       ) : (
         <FontAwesome5 name="history" {...iconProps} />
       )}

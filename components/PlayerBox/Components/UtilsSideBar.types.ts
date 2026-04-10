@@ -5,7 +5,9 @@ export interface PlayerViewProps extends ViewProps {
   playerId: number;
 }
 
-export interface UtilsSideBarProps extends PlayerViewProps {
+export interface SidebarToggleProps extends PlayerViewProps {
   toggleBar: (bar: SideBar) => void;
   selectedBar: SideBar | null;
 }
+
+export type UtilsSideBarProps = SidebarToggleProps;

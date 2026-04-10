@@ -12,13 +12,13 @@ const PoisonCounterIcon = ({
   size = 20,
   color = "#FFFFFF",
   opacity = 1,
-  strokeWidth = 2,
+  strokeWidth = 3,
 }: PoisonCounterIconProps) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ opacity }}>
-      <Circle cx="12" cy="12" r="8" stroke={color} strokeWidth={strokeWidth} />
+      <Circle cx="12" cy="12" r="7" stroke={color} strokeWidth={strokeWidth} />
       <Path
-        d="M7.5 16.5L16.5 7.5"
+        d="M12 2L12 22"
         stroke={color}
         strokeWidth={strokeWidth}
         strokeLinecap="round"

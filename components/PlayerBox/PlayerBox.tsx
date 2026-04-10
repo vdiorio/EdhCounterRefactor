@@ -10,11 +10,11 @@ import { ANIMATIONS } from "@/constants/ui";
 import { useSidebarState } from "@/hooks/useSidebarState";
 
 import UtilsSideBar from "./Components/UtilsSideBar";
-import StatusBottomBar from "./Components/StatusBottomBar";
+import { StatusBottomBarSlot } from "./Components/StatusBottomBar";
 import SidebarSlot from "./Components/SidebarSlot";
+import CountersTopBar from "@/components/PlayerBox/Components/CountersTopBar/index";
 import StyleStore from "@/store/StyleStore";
-import GameStore from "@/store/GameStore";
-import { selectPlayerColor, selectShowMonarchBar, selectShowInitiativeBar } from "@/store/selectors";
+import { selectPlayerColor } from "@/store/selectors";
 
 interface Props extends ViewProps {
   playerId: number;
@@ -25,8 +25,6 @@ interface Props extends ViewProps {
 const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
   const { selectedBar, toggleBar } = useSidebarState();
   const playerColor = StyleStore(selectPlayerColor(playerId));
-  const showMonarchBar = GameStore(selectShowMonarchBar);
-  const showInitiativeBar = GameStore(selectShowInitiativeBar);
 
   return (
     <View
@@ -35,6 +33,11 @@ const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
       {...props}
     >
       <SidebarSlot selectedBar={selectedBar} playerId={playerId} />
+      <CountersTopBar
+        playerId={playerId}
+        selectedBar={selectedBar}
+        toggleBar={toggleBar}
+      />
       <Animated.View
         layout={LinearTransition}
         entering={FadeIn.duration(ANIMATIONS.ENTRY_FADE_DURATION)}
@@ -42,9 +45,7 @@ const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
       >
         <LifeTotal playerId={playerId} debugId={debugId} />
         <IncrementerButtons playerId={playerId} />
-        {(showMonarchBar || showInitiativeBar) && (
-          <StatusBottomBar playerId={playerId} />
-        )}
+        <StatusBottomBarSlot playerId={playerId} />
       </Animated.View>
       <UtilsSideBar
         style={styles.utils}
