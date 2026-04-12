@@ -1,0 +1,1 @@
+Correção de build F-Droid: preservar binário hermesc via scanignore.
