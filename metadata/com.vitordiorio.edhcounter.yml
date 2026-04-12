@@ -20,6 +20,8 @@ Builds:
       - apt-get install -y nodejs npm
     init:
       - npm ci
+    scanignore:
+      - node_modules
     gradle:
       - release
     abiSplit: true
