@@ -90,8 +90,8 @@ android {
         applicationId 'com.vdiorio.edhcounter'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 14
-        versionName "1.0.13"
+        versionCode 17
+        versionName "1.0.17"
         if (findProperty('reactNativeArchitectures')) {
             ndk {
                 abiFilters(*((findProperty('reactNativeArchitectures')).split(',')))
