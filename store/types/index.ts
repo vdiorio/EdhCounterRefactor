@@ -45,6 +45,8 @@ export interface CommanderStore {
   initiativePlayerId: number | null;
   showMonarchBar: boolean;
   showInitiativeBar: boolean;
+  startingPlayerId: number | null;
+  setStartingPlayerId: (id: number | null) => void;
   setLife: ({ playerId, newLife }: SetLifePayload) => void;
   incrementLife: ({ playerId, value }: IncLifePayload) => void;
   dealCommanderDamage: ({

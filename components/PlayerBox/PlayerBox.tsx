@@ -14,6 +14,7 @@ import { StatusBottomBarSlot } from "./Components/StatusBottomBar";
 import SidebarSlot from "./Components/SidebarSlot";
 import CountersTopBar from "@/components/PlayerBox/Components/CountersTopBar/index";
 import StyleStore from "@/store/StyleStore";
+import GameStore from "@/store/GameStore";
 import { selectPlayerColor } from "@/store/selectors";
 
 interface Props extends ViewProps {
@@ -25,13 +26,15 @@ interface Props extends ViewProps {
 const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
   const { selectedBar, toggleBar } = useSidebarState();
   const playerColor = StyleStore(selectPlayerColor(playerId));
+  const isStarting = GameStore((s) => s.startingPlayerId === playerId);
 
   return (
     <View
       testID={`player-${playerId}`}
-      style={[style, styles.container, { borderColor: playerColor }]}
+      style={[style, styles.container, { borderColor: isStarting ? "#ffffff" : playerColor }]}
       {...props}
     >
+      {isStarting && <View style={styles.startingOverlay} pointerEvents="none" />}
       <SidebarSlot selectedBar={selectedBar} playerId={playerId} />
       <CountersTopBar
         playerId={playerId}
@@ -73,6 +76,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flex: 1,
     width: 500,
+  },
+  startingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "#ffffff18",
+    borderRadius: 8,
+    zIndex: 10,
   },
   utils: {
     width: 45,

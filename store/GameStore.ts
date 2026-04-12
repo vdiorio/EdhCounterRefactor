@@ -109,6 +109,8 @@ const GameStore = create<CommanderStore>((set, get) => {
     initiativePlayerId: null,
     showMonarchBar: false,
     showInitiativeBar: false,
+    startingPlayerId: null,
+    setStartingPlayerId: (id) => set({ startingPlayerId: id }),
     setNumPlayers: ({
       playerCount,
       alt,
@@ -127,6 +129,7 @@ const GameStore = create<CommanderStore>((set, get) => {
         initiativePlayerId: null,
         showMonarchBar: false,
         showInitiativeBar: false,
+        startingPlayerId: null,
       }));
     },
 
@@ -186,6 +189,7 @@ const GameStore = create<CommanderStore>((set, get) => {
         initiativePlayerId: null,
         showMonarchBar: false,
         showInitiativeBar: false,
+        startingPlayerId: null,
       }));
     },
 
