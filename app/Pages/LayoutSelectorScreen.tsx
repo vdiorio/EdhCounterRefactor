@@ -2,7 +2,9 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
+  Text,
 } from "react-native";
+import AppModal from "@/components/ui/AppModal";
 import { useEffect, useState } from "react";
 import WheelPicker from "react-native-wheely";
 import { Link } from "expo-router";
@@ -11,15 +13,21 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import Typography from "@/components/ui/Typography";
 import useAppColors from "@/hooks/useAppColors";
-
-const options = Array.from(new Array(5)).map(
-  (_, index) => `${index + 2} Jogadores`
-);
+import { useTranslation } from 'react-i18next';
+import { AVAILABLE_LANGUAGES } from '@/i18n';
+import { usePreferencesStore } from '@/store/PreferencesStore';
 
 export default function GameSelectors() {
+  const { t } = useTranslation();
+  const options = Array.from(new Array(5)).map(
+    (_, index) => t('player_count_option', { count: index + 2 })
+  );
   const [selected, setSelected] = useState(2);
   const [alternative, setAlternative] = useState("f");
+  const [langModalVisible, setLangModalVisible] = useState(false);
   const colors = useAppColors();
+  const language = usePreferencesStore((s) => s.language);
+  const setLanguage = usePreferencesStore((s) => s.setLanguage);
 
   const handleSelectionChange = (index: number) => {
     setSelected(index);
@@ -40,18 +48,49 @@ export default function GameSelectors() {
       style={styles.container}
     >
       <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.langButton}
+          onPress={() => setLangModalVisible(true)}
+          accessibilityLabel={t('language')}
+        >
+          <Ionicons name="globe-outline" size={22} color={colors.textSecondary} />
+          <Text style={styles.flagText}>
+            {AVAILABLE_LANGUAGES.find((l) => l.code === language)?.flag}
+          </Text>
+        </TouchableOpacity>
         <Typography style={[styles.title, { color: colors.primary }]}>
-          EDH Counter
+          {t('app_title')}
         </Typography>
         <Typography style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Contador de vida para commander
+          {t('subtitle')}
         </Typography>
       </View>
+
+      <AppModal visible={langModalVisible} onClose={() => setLangModalVisible(false)} title={t('language')}>
+        {AVAILABLE_LANGUAGES.map((lang) => (
+          <TouchableOpacity
+            key={lang.code}
+            style={styles.langOption}
+            onPress={() => {
+              setLanguage(lang.code);
+              setLangModalVisible(false);
+            }}
+          >
+            <View style={styles.langOptionLeft}>
+              <Text style={styles.flagText}>{lang.flag}</Text>
+              <Text style={[styles.langOptionText, { color: colors.text }]}>{lang.name}</Text>
+            </View>
+            {language === lang.code && (
+              <Ionicons name="checkmark" size={18} color={colors.primary} />
+            )}
+          </TouchableOpacity>
+        ))}
+      </AppModal>
 
       <View style={styles.content}>
         <View style={styles.sectionContainer}>
           <Typography style={[styles.sectionTitle, { color: colors.text }]}>
-            Quantidade de Jogadores
+            {t('player_count_label')}
           </Typography>
           <View
             style={[
@@ -85,7 +124,7 @@ export default function GameSelectors() {
 
         <View style={styles.sectionContainer}>
           <Typography style={[styles.sectionTitle, { color: colors.text }]}>
-            Layout da mesa
+            {t('table_layout_label')}
           </Typography>
           <View style={styles.altContainer}>
             <AltSelector
@@ -123,7 +162,7 @@ export default function GameSelectors() {
                   },
                 ]}
               >
-                Iniciar Partida
+                {t('start_game')}
               </Typography>
             </View>
           </TouchableOpacity>
@@ -143,6 +182,34 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 20,
     alignItems: "center",
+  },
+  langButton: {
+    position: "absolute",
+    top: 60,
+    right: 20,
+    padding: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  flagText: {
+    fontSize: 18,
+  },
+  langOption: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+  },
+  langOptionLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  langOptionText: {
+    fontSize: 16,
   },
   title: {
     fontSize: 32,

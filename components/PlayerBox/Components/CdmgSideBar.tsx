@@ -1,4 +1,5 @@
 import Typography from "@/components/ui/Typography";
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ScreenStore, { Screen } from "@/store/ScreenStore";
@@ -14,6 +15,7 @@ import usePlayerIcon from "@/hooks/usePlayerIcon";
 import { PlayerViewProps } from "./UtilsSideBar.types";
 
 export default function CdmgSideBar({ playerId, style, ...props }: PlayerViewProps) {
+  const { t } = useTranslation();
   const setScreen = ScreenStore((state) => state.setScreen);
   const layout = GameStore((state) => state.gameLayout);
 
@@ -38,7 +40,7 @@ export default function CdmgSideBar({ playerId, style, ...props }: PlayerViewPro
     >
       {/* shield icon behind everything */}
       <View style={styles.backgroundIcon}>
-        <Typography style={{ color: playerOpacityColor, fontSize: 10, marginBottom: 4, textAlign: "center" }}>Dano de comandante</Typography>
+        <Typography style={{ color: playerOpacityColor, fontSize: 10, marginBottom: 4, textAlign: "center" }}>{t('commander_damage')}</Typography>
         <Ionicons name="shield" size={40} color={playerOpacityColor} />
       </View>
 

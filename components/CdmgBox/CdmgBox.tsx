@@ -7,6 +7,7 @@ import {
   TouchableHighlight,
   TouchableOpacity,
 } from "react-native";
+import { useTranslation, Trans } from 'react-i18next';
 import { SIZES, COLORS } from "@/constants/ui";
 import CdmgIncrementer from "./Components/CdmgIncrementer";
 import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
@@ -25,6 +26,7 @@ interface Props extends ViewProps {
 }
 
 export default function CdmgBox({ positionId, currentPlayerId, style, ...props }: Props) {
+  const { t } = useTranslation();
   const direction = ScreenStore((state) => state.direction);
   const setScreen = ScreenStore((state) => state.setScreen);
   const togglePlayerChain = GameStore((state) => state.togglePlayerChain);
@@ -50,7 +52,7 @@ export default function CdmgBox({ positionId, currentPlayerId, style, ...props }
               )}
             </View>
             <View style={styles.parnerContainer}>
-              <Text style={{ color: "white" }}>Partner</Text>
+              <Text style={{ color: "white" }}>{t('partner')}</Text>
               <Switch
                 value={isPartner}
                 onValueChange={setIsPartner}
@@ -71,7 +73,7 @@ export default function CdmgBox({ positionId, currentPlayerId, style, ...props }
             >
               <Text style={[styles.buttonText, { color: 'lightgrey' }]}>
                 <FontAwesome name="arrow-left" size={16} color={'lightgrey'} />{" "}
-                Voltar
+                {t('back')}
               </Text>
             </TouchableHighlight>
             <LifeTotal
@@ -86,7 +88,7 @@ export default function CdmgBox({ positionId, currentPlayerId, style, ...props }
                 size={16}
                 color={chainColor}
               />
-              <Text style={{ color: chainColor }}>Link to life</Text>
+              <Text style={{ color: chainColor }}>{t('link_to_life')}</Text>
               <Switch
                 value={player.chain}
                 onValueChange={() => togglePlayerChain(currentPlayerId)}
@@ -95,11 +97,12 @@ export default function CdmgBox({ positionId, currentPlayerId, style, ...props }
               />
             </View>
             <Text style={styles.chainCaption}>
-              Dano de comandante{" "}
-              <Text style={{ color: player.chain ? "#70e700ff" : "#e53935" }}>
-                {player.chain ? "também" : "não"}
-              </Text>{" "}
-              afeta seu total de vida
+              <Trans
+                i18nKey={player.chain ? 'chain_on' : 'chain_off'}
+                components={{
+                  colored: <Text style={{ color: player.chain ? "#70e700ff" : "#e53935" }} />,
+                }}
+              />
             </Text>
           </View>
         </Rotator>

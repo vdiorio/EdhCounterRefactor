@@ -1,3 +1,6 @@
+import '@/i18n';
+import i18n from '@/i18n';
+import { usePreferencesStore } from '@/store/PreferencesStore';
 import { StyleSheet, View } from "react-native";
 import { StrictMode, useEffect, useState } from "react";
 import { StatusBar, setStatusBarHidden } from "expo-status-bar";
@@ -6,6 +9,12 @@ import { Stack } from "expo-router";
 import { Platform, AppState } from "react-native";
 
 export default function RootLayout() {
+  const language = usePreferencesStore((s) => s.language);
+
+  useEffect(() => {
+    i18n.changeLanguage(language);
+  }, [language]);
+
   const [screenDimensions, setScreenDimensions] = useState({
     height: 0,
     width: 0,

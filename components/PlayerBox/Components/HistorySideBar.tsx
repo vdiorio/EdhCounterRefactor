@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from 'react-i18next';
 import Typography from "@/components/ui/Typography";
 import {
   StyleSheet,
@@ -14,6 +15,7 @@ import { PlayerViewProps } from "./UtilsSideBar.types";
 type Props = PlayerViewProps & ScrollViewProps;
 
 export default function HistorySideBar({ playerId, style, ...props }: Props) {
+  const { t } = useTranslation();
   const history = GameStore((state) => state.players[playerId].history);
   const totals = useMemo(() => {
     let running = STARTING_LIFE_TOTAL;
@@ -25,7 +27,7 @@ export default function HistorySideBar({ playerId, style, ...props }: Props) {
 
   return (
     <View style={style}>
-      <Text style={styles.bump}>Histórico</Text>
+      <Text style={styles.bump}>{t('history')}</Text>
       <ScrollView contentContainerStyle={[styles.sideBar]} {...props}>
         <View style={[styles.cdmgConteiner, { borderBottomWidth: 1 }]}>
           <Text style={styles.marker} numberOfLines={1}>
