@@ -24,7 +24,7 @@ interface ScreenFadeStyles {
 /**
  * Computes layout-related metrics such as player counts in each slot and side groups.
  */
-export function useLayoutMetrics(layout: number[], alivePlayers: number[]): LayoutMetrics {
+export function useLayoutMetrics(layout: number[]): LayoutMetrics {
 
   const [leftIds, rightIds] = useMemo(
     () => [getPlayerIds(layout, 1), getPlayerIds(layout, 2)],
@@ -67,10 +67,9 @@ export function useScreenFadeStyles(screen: Screen): ScreenFadeStyles {
 
 export default function useLayoutGenerator(
   layout: number[],
-  alivePlayers: number[],
   screen: Screen
 ) {
-  const metrics = useLayoutMetrics(layout, alivePlayers);
+  const metrics = useLayoutMetrics(layout);
   const fades = useScreenFadeStyles(screen);
   return { ...metrics, ...fades };
 }

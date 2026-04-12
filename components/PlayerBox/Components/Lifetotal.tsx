@@ -2,26 +2,22 @@ import MinusIcon from "@/assets/icons/minus-sign";
 import PlusIcon from "@/assets/icons/plus-sign";
 import Typography from "@/components/ui/Typography";
 import GameStore from "@/store/GameStore";
-import ScreenStore, { Screen } from "@/store/ScreenStore";
 import { StyleStore } from "@/store/StyleStore";
 import {
   selectPlayerLife,
   selectPlayerDelta,
   selectPlayerColor,
 } from "@/store/selectors";
-import { useState, useMemo } from "react";
-import { ViewProps } from "react-native";
-import { View, StyleSheet } from "react-native";
+import { useMemo } from "react";
+import { StyleSheet } from "react-native";
 import Animated, {
-  FadeIn,
   LinearTransition,
 } from "react-native-reanimated";
 import { useDeltaAnimation } from "@/hooks/useDeltaAnimation";
-import { Line } from "react-native-svg";
 import { SIZES } from "@/constants/ui";
+import { PlayerViewProps } from "./UtilsSideBar.types";
 
-interface Props extends ViewProps {
-  playerId: number;
+interface Props extends PlayerViewProps {
   noIcon?: boolean;
   debugId?: boolean;
 }
@@ -35,8 +31,7 @@ const VISUAL_HELPER_ICON_SIZE = Math.round(
   LIFE_FONT_SIZE * SIZES.VISUAL_HELPER_ICON_FACTOR
 );
 
-const LifeTotal = ({ playerId, style, noIcon = false, debugId = false,  ...props }: Props) => {
-  const [editing, setEditing] = useState(false);
+const LifeTotal = ({ playerId, style, noIcon = false, debugId = false, ...props }: Props) => {
   const lTotal = GameStore(selectPlayerLife(playerId));
   const delta = GameStore(selectPlayerDelta(playerId));
   const playerColor = StyleStore(selectPlayerColor(playerId));
@@ -45,12 +40,6 @@ const LifeTotal = ({ playerId, style, noIcon = false, debugId = false,  ...props
 
   const { deltaAnimationStyle, signedDelta } =
     useDeltaAnimation(delta);
-
-  const toggleEditing = () => setEditing(!editing);
-
-  const removePlayerFromLayout = GameStore(
-    (state) => state.removePlayerFromLayout
-  );
 
   return (
     <Animated.View
@@ -83,7 +72,6 @@ const LifeTotal = ({ playerId, style, noIcon = false, debugId = false,  ...props
       )}
       <Typography
         layout={LinearTransition}
-        onLongPress={toggleEditing}
         style={[
           styles.lifeTotal,
           {
@@ -94,7 +82,7 @@ const LifeTotal = ({ playerId, style, noIcon = false, debugId = false,  ...props
         ]}
         testID={`lifetotal-${playerId}`}
       >
-        {debugId ?  playerId : lTotal}
+        {debugId ? playerId : lTotal}
       </Typography>
       {!noIcon && (
         <Animated.View
@@ -116,12 +104,6 @@ const LifeTotal = ({ playerId, style, noIcon = false, debugId = false,  ...props
 };
 
 const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
-  },
   container: {
     justifyContent: "center",
     alignItems: "center",

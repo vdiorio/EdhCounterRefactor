@@ -20,7 +20,6 @@
         "backgroundColor": "#1e1d22"
       },
       "package": "com.vitordiorio.edhcounter",
-      "enableProguardInReleaseBuilds": true,
       "jsEngine": "hermes"
     },
 

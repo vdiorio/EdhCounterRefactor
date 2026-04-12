@@ -50,6 +50,13 @@ const generatePlayers = (numPlayers: number): Record<number, Player> => {
 const GameStore = create<CommanderStore>((set, get) => {
   const timers: Record<number, NodeJS.Timeout> = {};
 
+  const clearAllTimers = () => {
+    for (const id of Object.keys(timers)) {
+      clearTimeout(timers[Number(id)]);
+      delete timers[Number(id)];
+    }
+  };
+
   /**
    * Resets the delta of a player after a certain amount of time
    * and adds the current delta to the player's history.
@@ -87,7 +94,7 @@ const GameStore = create<CommanderStore>((set, get) => {
   };
 
   const clampPoison = (value: number) => {
-    return Math.min(10, Math.max(0, value));
+    return Math.max(0, value);
   };
 
   const clampPositive = (value: number) => {
@@ -97,20 +104,13 @@ const GameStore = create<CommanderStore>((set, get) => {
   return {
     players: generatePlayers(4), // 🟢 Default to 4 players or set dynamically later
     numPlayers: 4,
-    deadPlayers: [],
-    alivePlayers: [],
     gameLayout: [0, 2, 2, 0],
     monarchPlayerId: null,
     initiativePlayerId: null,
     showMonarchBar: false,
     showInitiativeBar: false,
-    removePlayerFromLayout: (playerId) => {
-      set((state) => ({
-        deadPlayers: [...state.deadPlayers, playerId],
-        alivePlayers: state.alivePlayers.filter((id) => id !== playerId),
-      }));
-    },
-
+    startingPlayerId: null,
+    setStartingPlayerId: (id) => set({ startingPlayerId: id }),
     setNumPlayers: ({
       playerCount,
       alt,
@@ -120,16 +120,16 @@ const GameStore = create<CommanderStore>((set, get) => {
     }) => {
       const newLayout = getPlayerLayout({ playerCount: playerCount || 4, alt });
       if (newLayout.join("") === get().gameLayout.join("")) return;
+      clearAllTimers();
       set(() => ({
         gameLayout: newLayout,
         numPlayers: playerCount,
         players: generatePlayers(playerCount),
-        deadPlayers: [],
-        alivePlayers: Array.from({ length: playerCount }, (_, i) => i + 1),
         monarchPlayerId: null,
         initiativePlayerId: null,
         showMonarchBar: false,
         showInitiativeBar: false,
+        startingPlayerId: null,
       }));
     },
 
@@ -180,30 +180,33 @@ const GameStore = create<CommanderStore>((set, get) => {
         return updatePlayer(state, playerId, updated);
       });
     },
-    resetGame: () =>
+    resetGame: () => {
+      clearAllTimers();
       set((state) => ({
         ...state,
         players: generatePlayers(state.numPlayers),
-        deadPlayers: [],
-        alivePlayers: Array.from({ length: state.numPlayers }, (_, i) => i + 1),
         monarchPlayerId: null,
         initiativePlayerId: null,
         showMonarchBar: false,
         showInitiativeBar: false,
-      })),
+        startingPlayerId: null,
+      }));
+    },
 
     damageAllOponents: ({ playerId, value }) =>
       set((state) => {
-        let newState = { ...state };
+        let next = state;
         for (const id in state.players) {
           const pID = Number(id);
           if (pID !== playerId) {
-            newState.players[pID].lTotal += value;
-            newState.players[pID].delta += value;
             scheduleDeltaReset({ playerId: pID });
+            next = updatePlayer(next, pID, {
+              lTotal: next.players[pID].lTotal + value,
+              delta: next.players[pID].delta + value,
+            });
           }
         }
-        return newState;
+        return next;
       }),
 
     togglePlayerChain: (playerId: number) =>
@@ -272,6 +275,54 @@ const GameStore = create<CommanderStore>((set, get) => {
           showInitiativeBar,
           initiativePlayerId: showInitiativeBar ? playerId : null,
         };
+      }),
+
+    proliferate: (playerId: number) =>
+      set((state) => {
+        let next = state;
+
+        // Increment energy and experience for the current player only if they already have at least 1
+        const current = next.players[playerId];
+        next = updatePlayer(next, playerId, {
+          energy: current.energy > 0 ? clampPositive(current.energy + 1) : current.energy,
+          experience: current.experience > 0 ? clampPositive(current.experience + 1) : current.experience,
+        });
+
+        // Increment poison for every other player that already has at least 1
+        for (const id in next.players) {
+          const pID = Number(id);
+          if (pID === playerId) continue;
+          const p = next.players[pID];
+          if (p.poison > 0) {
+            next = updatePlayer(next, pID, { poison: clampPoison(p.poison + 1) });
+          }
+        }
+
+        return next;
+      }),
+
+    undoProliferate: (playerId: number) =>
+      set((state) => {
+        let next = state;
+
+        // Reverse energy and experience for the current player if they have at least 1
+        const current = next.players[playerId];
+        next = updatePlayer(next, playerId, {
+          energy: current.energy > 0 ? clampPositive(current.energy - 1) : current.energy,
+          experience: current.experience > 0 ? clampPositive(current.experience - 1) : current.experience,
+        });
+
+        // Reverse poison for every other player that has at least 1
+        for (const id in next.players) {
+          const pID = Number(id);
+          if (pID === playerId) continue;
+          const p = next.players[pID];
+          if (p.poison > 0) {
+            next = updatePlayer(next, pID, { poison: clampPoison(p.poison - 1) });
+          }
+        }
+
+        return next;
       }),
   };
 });

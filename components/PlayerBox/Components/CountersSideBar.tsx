@@ -1,7 +1,7 @@
+import { memo, useCallback, useRef, useState } from "react";
 import Typography from "@/components/ui/Typography";
 import PoisonCounterIcon from "@/assets/icons/poison-counter";
 import GameStore from "@/store/GameStore";
-import StyleStore from "@/store/StyleStore";
 import {
   selectPlayerEnergy,
   selectPlayerExperience,
@@ -16,12 +16,12 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   View,
-  ViewProps,
 } from "react-native";
+import { PlayerViewProps } from "./UtilsSideBar.types";
 
-interface Props extends ViewProps {
-  playerId: number;
-}
+const POISON_COLOR = "#2e7d32";
+const ENERGY_COLOR = "#fbc02d";
+const XP_COLOR = "#1e88e5";
 
 interface CounterRowProps {
   testIdPrefix: string;
@@ -32,7 +32,7 @@ interface CounterRowProps {
   onDecrement: () => void;
 }
 
-function CounterRow({
+const CounterRow = memo(function CounterRow({
   testIdPrefix,
   icon,
   color,
@@ -74,68 +74,102 @@ function CounterRow({
       </View>
     </View>
   );
-}
+});
 
-export default function CountersSideBar({ playerId, style, ...props }: Props) {
-  const POISON_COLOR = "#2e7d32";
-  const ENERGY_COLOR = "#fbc02d";
-  const XP_COLOR = "#1e88e5";
-
+export default function CountersSideBar({ playerId, style, ...props }: PlayerViewProps) {
   const poison = GameStore(selectPlayerPoison(playerId));
   const energy = GameStore(selectPlayerEnergy(playerId));
   const experience = GameStore(selectPlayerExperience(playerId));
-  const playerOpacityColor = StyleStore(
-    (state) => state.playerColors[playerId - 1] + "C0"
-  );
 
   const incrementPoison = GameStore((state) => state.incrementPoison);
   const incrementEnergy = GameStore((state) => state.incrementEnergy);
   const incrementExperience = GameStore((state) => state.incrementExperience);
+  const proliferate = GameStore((state) => state.proliferate);
+  const undoProliferate = GameStore((state) => state.undoProliferate);
   const showMonarchBar = GameStore(selectShowMonarchBar);
   const showInitiativeBar = GameStore(selectShowInitiativeBar);
   const toggleMonarchBar = GameStore((state) => state.toggleMonarchBar);
   const toggleInitiativeBar = GameStore((state) => state.toggleInitiativeBar);
 
+  const proliferateCountRef = useRef(0);
+  const [proliferateCount, setProliferateCount] = useState(0);
+  const undoTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const handleProliferate = useCallback(() => {
+    proliferate(playerId);
+    proliferateCountRef.current += 1;
+    setProliferateCount(proliferateCountRef.current);
+  }, [proliferate, playerId]);
+
+  const doUndo = useCallback(() => {
+    if (proliferateCountRef.current === 0) return;
+    undoProliferate(playerId);
+    proliferateCountRef.current -= 1;
+    setProliferateCount(proliferateCountRef.current);
+  }, [undoProliferate, playerId]);
+
+  const handleUndoLongPress = useCallback(() => {
+    doUndo();
+    undoTimer.current = setInterval(doUndo, 400);
+  }, [doUndo]);
+
+  const handlePressOut = useCallback(() => {
+    if (undoTimer.current) {
+      clearInterval(undoTimer.current);
+      undoTimer.current = null;
+    }
+  }, []);
+  const onPoisonIncrement = useCallback(() => incrementPoison({ playerId, value: 1 }), [incrementPoison, playerId]);
+  const onPoisonDecrement = useCallback(
+    () => incrementPoison({ playerId, value: poison > 9 ? 9 - poison : -1 }),
+    [incrementPoison, playerId, poison]
+  );
+  const onEnergyIncrement = useCallback(() => incrementEnergy({ playerId, value: 1 }), [incrementEnergy, playerId]);
+  const onEnergyDecrement = useCallback(() => incrementEnergy({ playerId, value: -1 }), [incrementEnergy, playerId]);
+  const onExperienceIncrement = useCallback(() => incrementExperience({ playerId, value: 1 }), [incrementExperience, playerId]);
+  const onExperienceDecrement = useCallback(() => incrementExperience({ playerId, value: -1 }), [incrementExperience, playerId]);
+  const handleMonarchToggle = useCallback(() => toggleMonarchBar(playerId), [toggleMonarchBar, playerId]);
+  const handleInitiativeToggle = useCallback(() => toggleInitiativeBar(playerId), [toggleInitiativeBar, playerId]);
+
   return (
     <View style={[styles.sideBar, style]} {...props}>
-      <View style={styles.backgroundIcon}>
-        <Typography
-          style={{
-            color: playerOpacityColor,
-            fontSize: 10,
-            marginBottom: 4,
-            textAlign: "center",
-          }}
-        >
-          Counters
-        </Typography>
-        <Ionicons name="stats-chart" size={38} color={playerOpacityColor} />
-      </View>
 
       <CounterRow
         testIdPrefix={`counter-poison-${playerId}`}
-        icon={<PoisonCounterIcon size={18} color={POISON_COLOR} opacity={0.95} />}
+        icon={POISON_ICON}
         color={POISON_COLOR}
-        value={poison}
-        onIncrement={() => incrementPoison({ playerId, value: 1 })}
-        onDecrement={() => incrementPoison({ playerId, value: -1 })}
+        value={Math.min(poison, 10)}
+        onIncrement={onPoisonIncrement}
+        onDecrement={onPoisonDecrement}
       />
       <CounterRow
         testIdPrefix={`counter-energy-${playerId}`}
-        icon={<Ionicons name="flash" size={18} color={ENERGY_COLOR} />}
+        icon={ENERGY_ICON}
         color={ENERGY_COLOR}
         value={energy}
-        onIncrement={() => incrementEnergy({ playerId, value: 1 })}
-        onDecrement={() => incrementEnergy({ playerId, value: -1 })}
+        onIncrement={onEnergyIncrement}
+        onDecrement={onEnergyDecrement}
       />
       <CounterRow
         testIdPrefix={`counter-xp-${playerId}`}
-        icon={<Typography style={[styles.xpIcon, { color: XP_COLOR }]}>XP</Typography>}
+        icon={XP_ICON}
         color={XP_COLOR}
         value={experience}
-        onIncrement={() => incrementExperience({ playerId, value: 1 })}
-        onDecrement={() => incrementExperience({ playerId, value: -1 })}
+        onIncrement={onExperienceIncrement}
+        onDecrement={onExperienceDecrement}
       />
+
+      <TouchableOpacity
+        testID={`proliferate-${playerId}`}
+        style={styles.proliferateButton}
+        onPress={handleProliferate}
+        onLongPress={handleUndoLongPress}
+        onPressOut={handlePressOut}
+        delayLongPress={400}
+      >
+        <Typography style={styles.proliferateText}>Proliferate</Typography>
+        {proliferateCount > 0 && <Typography style={styles.proliferateCount}>+{proliferateCount}</Typography>}
+      </TouchableOpacity>
 
       <View style={styles.objectiveControls}>
         <TouchableOpacity
@@ -144,7 +178,7 @@ export default function CountersSideBar({ playerId, style, ...props }: Props) {
             styles.objectiveButton,
             showMonarchBar && { borderColor: "#d4af37", backgroundColor: "#d4af3728" },
           ]}
-          onPress={() => toggleMonarchBar(playerId)}
+          onPress={handleMonarchToggle}
         >
           <FontAwesome5
             name={"crown" as any}
@@ -159,7 +193,7 @@ export default function CountersSideBar({ playerId, style, ...props }: Props) {
             styles.objectiveButton,
             showInitiativeBar && { borderColor: "#7e57c2", backgroundColor: "#7e57c228" },
           ]}
-          onPress={() => toggleInitiativeBar(playerId)}
+          onPress={handleInitiativeToggle}
         >
           <FontAwesome5
             name={"dungeon" as any}
@@ -177,21 +211,6 @@ const styles = StyleSheet.create({
     position: "relative",
     height: "100%",
     alignItems: "center",
-    borderTopWidth: 1,
-    borderRightWidth: 1,
-    borderColor: "#555555",
-  },
-  row: {
-    flex: 1,
-    width: "100%",
-    borderWidth: 0.5,
-    borderColor: "#555555",
-    backgroundColor: "#2D2D2D",
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-    maxHeight: 40,
-    paddingHorizontal: 4,
   },
   colorStrip: {
     position: "absolute",
@@ -213,7 +232,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    minWidth: 2,
+    minWidth: 10,
   },
   value: {
     flex: 3,
@@ -247,12 +266,47 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
   },
-  objectiveControls: {
-    position: "absolute",
-    bottom: 6,
-    right: 6,
+  row: {
+    flex: 1,
+    width: "100%",
+    borderWidth: 0.5,
+    borderColor: "#555555",
+    backgroundColor: "#2D2D2D",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    paddingHorizontal: 4,
+  },
+  proliferateButton: {
+    flex: 1,
+    width: "100%",
+    borderWidth: 0.5,
+    borderColor: "#555555",
+    backgroundColor: "#2D2D2D",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    paddingHorizontal: 4,
     flexDirection: "row",
-    gap: 4,
+    gap: 6,
+  },
+  proliferateText: {
+    color: "#26c6da",
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  proliferateCount: {
+    color: "#26c6da",
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  objectiveControls: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
   },
   objectiveButton: {
     width: 22,
@@ -265,3 +319,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(18,18,18,0.7)",
   },
 });
+
+// Stable icon elements — all props are module-level constants, created once
+const POISON_ICON = <PoisonCounterIcon size={18} color={POISON_COLOR} opacity={0.95} />;
+const ENERGY_ICON = <Ionicons name="flash" size={18} color={ENERGY_COLOR} />;
+const XP_ICON = <Typography style={[styles.xpIcon, { color: XP_COLOR }]}>XP</Typography>;

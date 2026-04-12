@@ -31,7 +31,7 @@ export const useDeltaAnimation = (delta: number) => {
     deltaAnimationOffset.value = withTiming(0, {
       duration: ANIMATIONS.DELTA_ANIMATION,
     });
-  }, [delta, deltaAnimationOffset]);
+  }, [delta]);
 
   return {
     deltaAnimationStyle,

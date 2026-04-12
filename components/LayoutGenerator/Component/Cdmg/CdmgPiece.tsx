@@ -1,6 +1,7 @@
 import { Direction } from "@/components/types";
 import AnimatedAdjustableView from "@/components/ui/Animations/AutoAdjustableView";
 import GameStore from "@/store/GameStore";
+import ScreenStore from "@/store/ScreenStore";
 import { useMemo } from "react";
 import { StyleSheet, ViewProps } from "react-native";
 import { getPlayerIds } from "../utils";
@@ -25,6 +26,8 @@ const CdmgPiece = ({
   ...props
 }: Props) => {
   const playerIds = getPlayerIds(layout, index);
+  const currentPlayerId = ScreenStore((state) => state.playerId);
+
   if (playerIds.length === 0) {
     return null;
   }
@@ -35,11 +38,12 @@ const CdmgPiece = ({
       exiting={ZoomOut}
       {...props}
     >
-      {playerIds.map((playerId, playerIndex) => {
+      {playerIds.map((playerId) => {
         return (
           <CdmgBox
             key={playerId}
             positionId={playerId}
+            currentPlayerId={currentPlayerId}
           />
         );
       })}

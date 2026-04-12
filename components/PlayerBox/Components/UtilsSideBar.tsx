@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import DamageAllButton from "./DamageAllButton";
 import { StyleSheet } from "react-native";
 import { SideBar } from "@/components/types";
@@ -12,27 +13,23 @@ export default function UtilsSideBar({
   selectedBar,
   ...props
 }: UtilsSideBarProps) {
+  const handleCdmgToggle = useCallback(() => toggleBar(SideBar.cdmg), [toggleBar]);
+  const handleHistoryToggle = useCallback(() => toggleBar(SideBar.history), [toggleBar]);
+
   return (
     <Animated.View style={[styles.sideBar, style]} {...props}>
       <SidebarButton
         style={styles.button}
         selected={selectedBar === SideBar.cdmg}
-        onPress={() => toggleBar(SideBar.cdmg)}
+        onPress={handleCdmgToggle}
         icon={SidebarIcon.Cdmg}
         playerId={playerId}
       />
       <SidebarButton
         style={styles.button}
         selected={selectedBar === SideBar.history}
-        onPress={() => toggleBar(SideBar.history)}
+        onPress={handleHistoryToggle}
         icon={SidebarIcon.History}
-      />
-      <SidebarButton
-        style={styles.button}
-        selected={selectedBar === SideBar.counters}
-        onPress={() => toggleBar(SideBar.counters)}
-        icon={SidebarIcon.Counters}
-        testID={`sidebar-counters-${playerId}`}
       />
       <DamageAllButton playerId={playerId} style={{ marginTop: "auto" }} />
     </Animated.View>

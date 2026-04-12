@@ -20,11 +20,11 @@ import StyleStore from "@/store/StyleStore";
 
 interface Props extends ViewProps {
   positionId: number;
+  currentPlayerId: number;
   direction?: Direction;
 }
 
-export default function CdmgBox({ positionId, style, ...props }: Props) {
-  const playerId = ScreenStore((state) => state.playerId);
+export default function CdmgBox({ positionId, currentPlayerId, style, ...props }: Props) {
   const direction = ScreenStore((state) => state.direction);
   const setScreen = ScreenStore((state) => state.setScreen);
   const togglePlayerChain = GameStore((state) => state.togglePlayerChain);
@@ -36,14 +36,14 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
 
   return (
     <View style={[styles.box, { borderColor: playerColor }, style]}>
-      {positionId !== playerId ? (
+      {positionId !== currentPlayerId ? (
         <Rotator style={[{ flex: 1 }]} direction={direction}>
           <View style={[styles.container]}>
             <View style={[styles.incrementerContainer]}>
-              <CdmgIncrementer playerId={playerId} positionId={positionId} />
+              <CdmgIncrementer playerId={currentPlayerId} positionId={positionId} />
               {isPartner && (
                 <CdmgIncrementer
-                  playerId={playerId}
+                  playerId={currentPlayerId}
                   positionId={positionId}
                   partner
                 />
@@ -74,32 +74,33 @@ export default function CdmgBox({ positionId, style, ...props }: Props) {
                 Voltar
               </Text>
             </TouchableHighlight>
-            <View style={styles.chainLinkContainer}>
-              <TouchableOpacity
-                onPress={() => togglePlayerChain(playerId)}
-                style={[
-                  styles.lifeTotal,
-                  {
-                    borderWidth: 3,
-                    borderColor: chainColor,
-                    borderRadius: 8,
-                  },
-                ]}
-              >
-                <FontAwesome
-                  name={player.chain ? "link" : "chain-broken"}
-                  size={24}
-                  color={chainColor}
-                  style={styles.chainIcon}
-                />
-                <LifeTotal
-                  playerId={playerId}
-                  noIcon
-                  style={{width: "auto"}}
-                  pointerEvents="none"
-                />
-              </TouchableOpacity>
+            <LifeTotal
+              playerId={currentPlayerId}
+              noIcon
+              style={{ width: "auto", marginBottom: -20 }}
+              pointerEvents="none"
+            />
+            <View style={styles.chainRow}>
+              <FontAwesome
+                name={player.chain ? "link" : "chain-broken"}
+                size={16}
+                color={chainColor}
+              />
+              <Text style={{ color: chainColor }}>Link to life</Text>
+              <Switch
+                value={player.chain}
+                onValueChange={() => togglePlayerChain(currentPlayerId)}
+                trackColor={{ false: "#888888", true: "#70e700ff" }}
+                thumbColor="#fff"
+              />
             </View>
+            <Text style={styles.chainCaption}>
+              Dano de comandante{" "}
+              <Text style={{ color: player.chain ? "#70e700ff" : "#e53935" }}>
+                {player.chain ? "também" : "não"}
+              </Text>{" "}
+              afeta seu total de vida
+            </Text>
           </View>
         </Rotator>
       )}
@@ -160,21 +161,15 @@ const styles = StyleSheet.create({
     width: "auto",
     height: "auto",
   },
-  chainLinkContainer: {
+  chainRow: {
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
-    gap: 12,
-    marginTop: 20,
+    gap: 8,
   },
-  lifeTotal: {
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    padding: 4,
-  },
-  chainIcon: {
-    paddingLeft: 5,
-    transform: [{ translateY: 3 }],
+  chainCaption: {
+    color: "#888888",
+    fontSize: 11,
+    textAlign: "center",
+    paddingHorizontal: 16,
   },
 });

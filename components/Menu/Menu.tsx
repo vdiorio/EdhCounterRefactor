@@ -1,18 +1,23 @@
 import React, { useState } from "react";
-import { TouchableOpacity, View, Text, Alert, StyleSheet } from "react-native";
+import { TouchableOpacity, Text, Alert, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import GameStore from "@/store/GameStore";
 import ScreenStore, { Screen } from "@/store/ScreenStore";
 import useAppColors from "@/hooks/useAppColors";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { useStartingPlayer } from "@/hooks/useStartingPlayer";
 
 export default function Menu(): JSX.Element {
   const router = useRouter();
   const resetGame = GameStore((s) => s.resetGame);
   const colors = useAppColors();
+  const { chooseStartingPlayer } = useStartingPlayer();
 
   const [menuVisible, setMenuVisible] = useState(false);
+
+  const screen = ScreenStore((state) => state.screen);
+  const setScreen = ScreenStore((state) => state.setScreen);
 
   const confirmAndGoBack = () => {
     Alert.alert("Voltar", "Tem certeza que deseja voltar ao menu principal?", [
@@ -22,7 +27,7 @@ export default function Menu(): JSX.Element {
         onPress: () => {
           setScreen({ screen: Screen.main });
           setMenuVisible(false);
-          router.back()
+          router.back();
         },
       },
     ]);
@@ -41,13 +46,10 @@ export default function Menu(): JSX.Element {
     ]);
   };
 
-  const chooseStartingPlayer = () => {
-    Alert.alert("Escolher jogador inicial", "Funcionalidade não implementada.");
+  const handleChooseStartingPlayer = () => {
     setMenuVisible(false);
+    chooseStartingPlayer();
   };
-
-  const screen = ScreenStore((state) => state.screen);
-  const setScreen = ScreenStore((state) => state.setScreen);
 
   return (
     <>
@@ -78,7 +80,7 @@ export default function Menu(): JSX.Element {
             onPress={() => { /* absorb tap */ }}
           >
             <Text style={[localStyles.modalTitle, { color: colors.text }]}>Opções</Text>
-            <TouchableOpacity style={localStyles.modalButton} onPress={chooseStartingPlayer}>
+            <TouchableOpacity style={localStyles.modalButton} onPress={handleChooseStartingPlayer}>
               <Text style={localStyles.modalButtonText}>Escolher jogador inicial</Text>
             </TouchableOpacity>
             <TouchableOpacity style={localStyles.modalButton} onPress={confirmAndReset}>
@@ -145,8 +147,5 @@ const localStyles = StyleSheet.create({
   },
   modalButtonText: {
     color: "white",
-  },
-  modalClose: {
-    backgroundColor: "#333",
   },
 });

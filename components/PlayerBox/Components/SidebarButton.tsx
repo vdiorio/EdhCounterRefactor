@@ -1,5 +1,5 @@
-import React from "react";
-import { TouchableOpacity, TouchableOpacityProps, StyleSheet } from "react-native";
+import React, { memo } from "react";
+import { TouchableOpacity, TouchableOpacityProps } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import StyleStore from "@/store/StyleStore";
@@ -8,7 +8,6 @@ import { selectPlayerColor } from "@/store/selectors";
 export enum SidebarIcon {
   Cdmg = "shield",
   History = "history",
-  Counters = "stats-chart",
 }
 
 interface ButtonProps extends TouchableOpacityProps {
@@ -17,7 +16,7 @@ interface ButtonProps extends TouchableOpacityProps {
   icon: SidebarIcon;
 }
 
-export default function SidebarButton({
+export default memo(function SidebarButton({
   selected,
   playerId,
   icon,
@@ -47,11 +46,9 @@ export default function SidebarButton({
     >
       {icon === SidebarIcon.Cdmg ? (
         <Ionicons name="shield" {...iconProps} />
-      ) : icon === SidebarIcon.Counters ? (
-        <Ionicons name="stats-chart" {...iconProps} />
       ) : (
         <FontAwesome5 name="history" {...iconProps} />
       )}
     </TouchableOpacity>
   );
-}
+});

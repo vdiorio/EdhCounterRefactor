@@ -1,61 +1,58 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from "react-native";
 import LifeTotal from "./Components/Lifetotal";
 import IncrementerButtons from "./Components/IncrementerButtons";
 import Animated, {
   FadeIn,
   LinearTransition,
-  SlideInLeft,
-  SlideOutLeft,
 } from "react-native-reanimated";
 import { ANIMATIONS } from "@/constants/ui";
 import { useSidebarState } from "@/hooks/useSidebarState";
 
 import UtilsSideBar from "./Components/UtilsSideBar";
-import CdmgSideBar from "./Components/CdmgSideBar";
-import { SideBar } from "../types";
-import HistorySideBar from "./Components/HistorySideBar";
-import CountersSideBar from "./Components/CountersSideBar";
-import StatusBottomBar from "./Components/StatusBottomBar";
-import { ViewProps } from "react-native-svg/lib/typescript/fabric/utils";
+import { StatusBottomBarSlot } from "./Components/StatusBottomBar";
+import SidebarSlot from "./Components/SidebarSlot";
+import CountersTopBar from "@/components/PlayerBox/Components/CountersTopBar/index";
 import StyleStore from "@/store/StyleStore";
 import GameStore from "@/store/GameStore";
-import { selectPlayerColor, selectShowMonarchBar, selectShowInitiativeBar } from "@/store/selectors";
+import { selectPlayerColor } from "@/store/selectors";
+import Confetti from "./Components/Confetti";
 
 interface Props extends ViewProps {
   playerId: number;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
   debugId?: boolean;
 }
 
 const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
   const { selectedBar, toggleBar } = useSidebarState();
   const playerColor = StyleStore(selectPlayerColor(playerId));
-  const showMonarchBar = GameStore(selectShowMonarchBar);
-  const showInitiativeBar = GameStore(selectShowInitiativeBar);
-  
+  const isStarting = GameStore((s) => s.startingPlayerId === playerId);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    if (!isStarting) {
+      setShowConfetti(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowConfetti(true), 230);
+    return () => clearTimeout(timer);
+  }, [isStarting]);
 
   return (
     <View
       testID={`player-${playerId}`}
-      style={[style, styles.container, {borderColor: playerColor}]}
+      style={[style, styles.container, { borderColor: isStarting ? "#ffffff" : playerColor }]}
       {...props}
     >
-      {selectedBar === SideBar.cdmg && (
-        <Animated.View style={[styles.sideBar, { width: '35%' }]} entering={SlideInLeft} exiting={SlideOutLeft}>
-          <CdmgSideBar style={[styles.sideBar]} playerId={playerId} />
-        </Animated.View>
-      )}
-      {selectedBar === SideBar.history && (
-        <Animated.View style={[styles.sideBar, { width: '20%' }]} entering={SlideInLeft} exiting={SlideOutLeft}>
-          <HistorySideBar style={styles.sideBar} playerId={playerId} />
-        </Animated.View>
-      )}
-      {selectedBar === SideBar.counters && (
-        <Animated.View style={[styles.sideBar, { width: "26%" }]} entering={SlideInLeft} exiting={SlideOutLeft}>
-          <CountersSideBar style={styles.sideBar} playerId={playerId} />
-        </Animated.View>
-      )}
+      {isStarting && <View style={styles.startingOverlay} pointerEvents="none" />}
+      {showConfetti && <Confetti />}
+      <SidebarSlot selectedBar={selectedBar} playerId={playerId} />
+      <CountersTopBar
+        playerId={playerId}
+        selectedBar={selectedBar}
+        toggleBar={toggleBar}
+      />
       <Animated.View
         layout={LinearTransition}
         entering={FadeIn.duration(ANIMATIONS.ENTRY_FADE_DURATION)}
@@ -63,12 +60,10 @@ const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
       >
         <LifeTotal playerId={playerId} debugId={debugId} />
         <IncrementerButtons playerId={playerId} />
-        {(showMonarchBar || showInitiativeBar) && (
-          <StatusBottomBar playerId={playerId} />
-        )}
+        <StatusBottomBarSlot playerId={playerId} />
       </Animated.View>
       <UtilsSideBar
-        style={[styles.sideBar, styles.utils]}
+        style={styles.utils}
         playerId={playerId}
         selectedBar={selectedBar}
         toggleBar={toggleBar}
@@ -79,37 +74,34 @@ const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
 
 export default PlayerBox;
 
-/* ------- Compnentes ------- */
-
-/* ------- Estilos ------- */
-
 const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     flexDirection: "row",
     gap: 5,
     flex: 1,
-    overflow: "hidden",
     borderWidth: 2,
     borderRadius: 10,
-    margin: 2
+    margin: 2,
   },
   content: {
     justifyContent: "center",
     flex: 1,
     width: 500,
   },
-  sideBar: {
-    height: "100%",
-    minWidth: 80,
-    backgroundColor: "#FFFFFF0a",
-    borderWidth: 0.5,
-    borderColor: "#555555",
+  startingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "#ffffff18",
+    borderRadius: 8,
+    zIndex: 10,
   },
   utils: {
     width: 45,
     paddingVertical: 10,
     paddingHorizontal: 5,
-    minWidth: 0,
+    height: "100%",
+    backgroundColor: "#FFFFFF0a",
+    borderLeftWidth: 0.5,
+    borderColor: "#555555",
   },
 });

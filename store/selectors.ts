@@ -14,9 +14,6 @@ export const selectPlayerCdmg = (playerId: number) =>
   (state: CommanderStore): Record<number, number[]> =>
     state.players[playerId].Cdmg;
 
-export const selectPlayerChain = (playerId: number) =>
-  (state: CommanderStore): boolean => state.players[playerId].chain;
-
 export const selectPlayerPoison = (playerId: number) =>
   (state: CommanderStore): number => state.players[playerId].poison;
 
@@ -39,11 +36,18 @@ export const selectShowMonarchBar = (state: CommanderStore): boolean =>
 export const selectShowInitiativeBar = (state: CommanderStore): boolean =>
   state.showInitiativeBar;
 
-export const selectGameLayout = (state: CommanderStore) => state.gameLayout;
-
-export const selectAlivePlayers = (state: CommanderStore) => state.alivePlayers;
-
 // selectors for StyleStore
-export const selectPlayerColor = (playerId: number) => {
-  return (state: any): string => state.playerColors[playerId - 1];
+type StyleStateSlice = {
+  playerColors: string[];
 };
+
+export const selectPlayerColors = (state: StyleStateSlice): string[] =>
+  state.playerColors;
+
+export const selectPlayerColor = (playerId: number) =>
+  (state: StyleStateSlice): string => state.playerColors[playerId - 1];
+
+export const selectPlayerColorWithAlpha = (
+  playerId: number,
+  alpha: string = "FF"
+) => (state: StyleStateSlice): string => `${state.playerColors[playerId - 1]}${alpha}`;
