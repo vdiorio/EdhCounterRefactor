@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleProp, StyleSheet, View, ViewProps, ViewStyle } from "react-native";
 import LifeTotal from "./Components/Lifetotal";
 import IncrementerButtons from "./Components/IncrementerButtons";
@@ -16,6 +16,7 @@ import CountersTopBar from "@/components/PlayerBox/Components/CountersTopBar/ind
 import StyleStore from "@/store/StyleStore";
 import GameStore from "@/store/GameStore";
 import { selectPlayerColor } from "@/store/selectors";
+import Confetti from "./Components/Confetti";
 
 interface Props extends ViewProps {
   playerId: number;
@@ -27,6 +28,16 @@ const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
   const { selectedBar, toggleBar } = useSidebarState();
   const playerColor = StyleStore(selectPlayerColor(playerId));
   const isStarting = GameStore((s) => s.startingPlayerId === playerId);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    if (!isStarting) {
+      setShowConfetti(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowConfetti(true), 230);
+    return () => clearTimeout(timer);
+  }, [isStarting]);
 
   return (
     <View
@@ -35,6 +46,7 @@ const PlayerBox = ({ playerId, style, debugId = false, ...props }: Props) => {
       {...props}
     >
       {isStarting && <View style={styles.startingOverlay} pointerEvents="none" />}
+      {showConfetti && <Confetti />}
       <SidebarSlot selectedBar={selectedBar} playerId={playerId} />
       <CountersTopBar
         playerId={playerId}
