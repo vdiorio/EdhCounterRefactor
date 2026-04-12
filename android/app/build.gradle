@@ -11,7 +11,7 @@ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 react {
     entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
     reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
-    hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
+    hermesCommand = "/tmp/hermesc_fdroid"
     codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
 
     // Use Expo CLI to bundle the app, this ensures the Metro config
@@ -91,8 +91,8 @@ android {
         applicationId 'com.vdiorio.edhcounter'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 11
-        versionName "1.0.10"
+        versionCode 12
+        versionName "1.0.11"
         if (findProperty('reactNativeArchitectures')) {
             ndk {
                 abiFilters(*((findProperty('reactNativeArchitectures')).split(',')))
@@ -195,16 +195,22 @@ dependencies {
     }
 }
 
-// F-Droid buildserver: ensure hermesc binary is executable after npm install.
-// npm does not always preserve the execute bit on non-bin files when restoring
-// from the package tarball, so we chmod it just before the bundle task runs.
+// F-Droid buildserver: the build partition may be mounted noexec, preventing
+// hermesc from running directly from node_modules. Copy it to /tmp (which is
+// always executable) and override hermesCommand to use that copy.
+task prepareHermesc {
+    doLast {
+        def hermescSrc = file("${rootDir}/../node_modules/react-native/sdks/hermesc/linux64-bin/hermesc")
+        def hermescDst = new File("/tmp/hermesc_fdroid")
+        if (hermescSrc.exists()) {
+            hermescSrc.withInputStream { is -> hermescDst.withOutputStream { os -> os << is } }
+            hermescDst.setExecutable(true, false)
+        }
+    }
+}
+
 tasks.configureEach { task ->
     if (task.name.startsWith("createBundle") && task.name.endsWith("JsAndAssets")) {
-        task.doFirst {
-            def hermesc = file("${rootDir}/../node_modules/react-native/sdks/hermesc/linux64-bin/hermesc")
-            if (hermesc.exists()) {
-                hermesc.setExecutable(true, false)
-            }
-        }
+        task.dependsOn prepareHermesc
     }
 }
