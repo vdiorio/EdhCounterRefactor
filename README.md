@@ -1,50 +1,83 @@
-# Welcome to your Expo app 👋
+## 🧙 EDH Counter
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**EDH Counter** é um life tracker *feature-rich* para Magic: The Gathering Commander (EDH), projetado para partidas reais na mesa.
 
-## Get started
+Suporta de 2 a 6 jogadores com layout dinâmico e orientação individual, garantindo que cada jogador veja suas informações corretamente do seu lado da mesa.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## ✨ Features
 
-2. Start the app
+- Suporte para **2–6 jogadores**
+- **Layout dinâmico** adaptado à mesa
+- **Orientação individual** por jogador
+- **Dano de comandante**
+- Contadores:
+  - Veneno
+  - Energia
+  - Experiência
+- **Monarca** e **Iniciativa**
+- **Proliferar** com um toque
+- **Seletor de jogador inicial**
+- 🔥 **Dano global**: aplique dano em todos os jogadores ao mesmo tempo  
+  *(mais útil do que parece — especialmente em efeitos em massa)*
 
-   ```bash
-    npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## 🎮 Funcionalidades
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### ❤️ Totais de Vida
+- Começa em 40. Toque para alterar em ±1 e segure para repetir em intervalos de 100ms.
+- O rastreador de delta mostra alterações recentes (+5, -3...) com animação de fade-out que limpa automaticamente após 2 segundos e salva no histórico.
+- Barra lateral rolável de histórico de vida com totais acumulados e ganhos/perdas coloridos.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### ⚔️ Dano de Comandante
+- Rastreia separadamente o dano do comandante principal e do parceiro de cada oponente.
+- **Alternância de vínculo (chain link)**: ao ativar, o dano de comandante reduz diretamente o total de vida; desativado, é rastreado de forma independente.
+- Tela dedicada de CDMG em tela cheia com incrementadores duplos por oponente.
 
-## Get a fresh project
+### ☣️ Contadores
+- Contadores de **Veneno**, **Energia** e **Experiência** por jogador.
+- **Proliferar**: um toque incrementa todos os contadores acima de zero em todos os jogadores.
+- Pressione e segure para desfazer a última proliferação (repete a cada 400ms).
 
-When you're ready, run:
+### 👑 Monarca e 🏰 Iniciativa
+- Ative/desative por partida e toque para atribuir a um jogador.
+- Monarca: barra dourada com coroa.
+- Iniciativa: barra roxa com indicador de masmorra.
+- Ambas com animações de entrada/saída.
+
+### 💥 Dano em Todos
+- Um botão causa **1 de dano em todos os outros jogadores**.
+- Pressione e segure para repetir.
+- Durante o hold, o comportamento muda para aplicar **+1 em todos**.
+- Feedback visual com estrela rotativa animada.
+
+### 🎲 Seletor de Jogador Inicial
+- Roda animada percorre todos os jogadores antes de parar.
+
+### 🧩 Layouts
+12 configurações para 2 a 6 jogadores.  
+Cada card gira automaticamente para ficar voltado ao jogador.
+
+---
+
+## 🧱 Stack Tecnológica
+
+| Camada | Biblioteca |
+|--------|------------|
+| Framework | React Native 0.76 + Expo 52 |
+| Roteamento | Expo Router 4 |
+| Estado | Zustand 5 |
+| Animações | Reanimated 3 |
+| Gestos | Gesture Handler |
+| Ícones | @expo/vector-icons |
+| Motor JS | Hermes |
+| Build | EAS Build |
+
+---
+
+## 🚀 Como Começar
 
 ```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+npm install
