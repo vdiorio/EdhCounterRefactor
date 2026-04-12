@@ -1,4 +1,4 @@
-package com.vitordiorio.edhcounter
+package com.vdiorio.edhcounter
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

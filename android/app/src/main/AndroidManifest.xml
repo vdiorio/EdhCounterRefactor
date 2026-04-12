@@ -22,7 +22,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="myapp"/>
-        <data android:scheme="com.vitordiorio.edhcounter"/>
+        <data android:scheme="com.vdiorio.edhcounter"/>
       </intent-filter>
     </activity>
   </application>

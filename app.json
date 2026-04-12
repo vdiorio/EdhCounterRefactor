@@ -17,7 +17,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#1e1d22"
       },
-      "package": "com.vitordiorio.edhcounter",
+      "package": "com.vdiorio.edhcounter",
       "jsEngine": "hermes"
     },
     "ios": {

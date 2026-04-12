@@ -86,9 +86,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.vitordiorio.edhcounter'
+    namespace 'com.vdiorio.edhcounter'
     defaultConfig {
-        applicationId 'com.vitordiorio.edhcounter'
+        applicationId 'com.vdiorio.edhcounter'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

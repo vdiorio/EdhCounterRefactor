@@ -1,4 +1,4 @@
-package com.vitordiorio.edhcounter
+package com.vdiorio.edhcounter
 
 import android.app.Application
 import android.content.res.Configuration
