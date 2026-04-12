@@ -1,0 +1,54 @@
+diff --git a/node_modules/expo-modules-autolinking/scripts/android/autolinking_implementation.gradle b/node_modules/expo-modules-autolinking/scripts/android/autolinking_implementation.gradle
+index 98c404e..4b0b26b 100644
+--- a/node_modules/expo-modules-autolinking/scripts/android/autolinking_implementation.gradle
++++ b/node_modules/expo-modules-autolinking/scripts/android/autolinking_implementation.gradle
+@@ -277,49 +277,6 @@ if (rootProject instanceof ProjectDescriptor) {
+         }
+       }
+ 
+-      // Add extra maven repositories to allprojects
+-      for (mavenRepo in extraMavenRepos) {
+-        println "Adding extra maven repository - '${mavenRepo.url}'"
+-      }
+-      rootProject.allprojects { eachProject ->
+-        eachProject.repositories {
+-          for (mavenRepo in extraMavenRepos) {
+-            maven {
+-              url "${mavenRepo.url}"
+-              if (mavenRepo.credentials != null) {
+-                if (mavenRepo.credentials.username && mavenRepo.credentials.password) {
+-                  credentials {
+-                    username mavenRepo.credentials.username
+-                    password mavenRepo.credentials.password
+-                  }
+-                } else if (mavenRepo.credentials.name && mavenRepo.credentials.value) {
+-                  credentials(HttpHeaderCredentials) {
+-                    name mavenRepo.credentials.name
+-                    value mavenRepo.credentials.value
+-                  }
+-                } else if (mavenRepo.credentials.accessKey && mavenRepo.credentials.secretKey) {
+-                  credentials(AwsCredentials) {
+-                    accessKey mavenRepo.credentials.accessKey
+-                    secretKey mavenRepo.credentials.secretKey
+-                    sessionToken mavenRepo.credentials.sessionToken
+-                  }
+-                }
+-              }
+-              if (mavenRepo.authentication != null) {
+-                authentication {
+-                  if (mavenRepo.authentication == "basic") {
+-                    basic(BasicAuthentication)
+-                  } else if (mavenRepo.authentication == "digest") {
+-                    digest(DigestAuthentication)
+-                  } else if (mavenRepo.authentication == "header") {
+-                    header(HttpHeaderAuthentication)
+-                  }
+-                }
+-              }
+-            }
+-          }
+-        }
+-      }
+     }
+ 
+     // Apply plugins for all app projects
