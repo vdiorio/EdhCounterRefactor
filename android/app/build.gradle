@@ -91,8 +91,8 @@ android {
         applicationId 'com.vdiorio.edhcounter'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10
-        versionName "1.0.9"
+        versionCode 11
+        versionName "1.0.10"
         if (findProperty('reactNativeArchitectures')) {
             ndk {
                 abiFilters(*((findProperty('reactNativeArchitectures')).split(',')))
@@ -192,5 +192,19 @@ dependencies {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
+    }
+}
+
+// F-Droid buildserver: ensure hermesc binary is executable after npm install.
+// npm does not always preserve the execute bit on non-bin files when restoring
+// from the package tarball, so we chmod it just before the bundle task runs.
+tasks.configureEach { task ->
+    if (task.name.startsWith("createBundle") && task.name.endsWith("JsAndAssets")) {
+        task.doFirst {
+            def hermesc = file("${rootDir}/../node_modules/react-native/sdks/hermesc/linux64-bin/hermesc")
+            if (hermesc.exists()) {
+                hermesc.setExecutable(true, false)
+            }
+        }
     }
 }
