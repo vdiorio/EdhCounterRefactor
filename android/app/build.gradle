@@ -91,8 +91,8 @@ android {
         applicationId 'com.vdiorio.edhcounter'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 12
-        versionName "1.0.11"
+        versionCode 13
+        versionName "1.0.12"
         if (findProperty('reactNativeArchitectures')) {
             ndk {
                 abiFilters(*((findProperty('reactNativeArchitectures')).split(',')))
@@ -195,16 +195,23 @@ dependencies {
     }
 }
 
-// F-Droid buildserver: the build partition may be mounted noexec, preventing
-// hermesc from running directly from node_modules. Copy it to /tmp (which is
-// always executable) and override hermesCommand to use that copy.
+// F-Droid buildserver: copy hermesc to /usr/local/bin via shell cp+chmod for
+// maximum compatibility. Debug output printed to build log.
 task prepareHermesc {
     doLast {
-        def hermescSrc = file("${rootDir}/../node_modules/react-native/sdks/hermesc/linux64-bin/hermesc")
-        def hermescDst = new File("/tmp/hermesc_fdroid")
-        if (hermescSrc.exists()) {
-            hermescSrc.withInputStream { is -> hermescDst.withOutputStream { os -> os << is } }
-            hermescDst.setExecutable(true, false)
+        def srcPath = new File(rootDir, "../node_modules/react-native/sdks/hermesc/linux64-bin/hermesc").canonicalPath
+        exec {
+            commandLine 'sh', '-c', """
+                echo "=== prepareHermesc ==="
+                echo "src: ${srcPath}"
+                ls -la "${srcPath}" 2>&1 || echo "SRC NOT FOUND"
+                if [ -f "${srcPath}" ]; then
+                    cp "${srcPath}" /tmp/hermesc_fdroid
+                    chmod +x /tmp/hermesc_fdroid
+                    ls -la /tmp/hermesc_fdroid
+                    /tmp/hermesc_fdroid --version 2>&1 || echo "exec test failed (exit \$?)"
+                fi
+            """.stripIndent()
         }
     }
 }
