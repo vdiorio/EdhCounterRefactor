@@ -1,0 +1,1 @@
+Added language selector, i18n support (English/Portuguese), and UI improvements.

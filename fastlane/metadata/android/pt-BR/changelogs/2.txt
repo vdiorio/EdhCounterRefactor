@@ -1,0 +1,1 @@
+Seletor de idioma, suporte a i18n (inglês/português) e melhorias visuais.
