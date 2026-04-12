@@ -64,7 +64,7 @@ export function useStartingPlayer() {
     timersRef.current.forEach(clearTimeout);
 
     const winner = pickWeighted();
-    weightsRef.current[winner] *= 0.25;
+    weightsRef.current[winner] *= 0.74;
 
     const seq = buildSequence(winner, gameLayout);
     let accumulated = 0;
