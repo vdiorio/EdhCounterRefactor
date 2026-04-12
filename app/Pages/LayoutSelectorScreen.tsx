@@ -3,6 +3,7 @@ import {
   View,
   TouchableOpacity,
   Text,
+  Image,
 } from "react-native";
 import AppModal from "@/components/ui/AppModal";
 import { useEffect, useState } from "react";
@@ -58,12 +59,11 @@ export default function GameSelectors() {
             {AVAILABLE_LANGUAGES.find((l) => l.code === language)?.flag}
           </Text>
         </TouchableOpacity>
-        <Typography style={[styles.title, { color: colors.primary }]}>
-          {t('app_title')}
-        </Typography>
-        <Typography style={[styles.subtitle, { color: colors.textSecondary }]}>
-          {t('subtitle')}
-        </Typography>
+        <Image
+          source={require('@/assets/images/splash-icon.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </View>
 
       <AppModal visible={langModalVisible} onClose={() => setLangModalVisible(false)} title={t('language')}>
@@ -179,13 +179,12 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   header: {
-    paddingTop: 60,
-    paddingBottom: 20,
+    paddingTop: 10,
     alignItems: "center",
   },
   langButton: {
     position: "absolute",
-    top: 60,
+    top: 20,
     right: 20,
     padding: 6,
     flexDirection: "row",
@@ -211,10 +210,9 @@ const styles = StyleSheet.create({
   langOptionText: {
     fontSize: 16,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "700",
-    letterSpacing: 0.5,
+  logo: {
+    width: 400,
+    height: 250,
   },
   subtitle: {
     fontSize: 16,
