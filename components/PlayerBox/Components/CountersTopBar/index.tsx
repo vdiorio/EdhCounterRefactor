@@ -35,7 +35,7 @@ export default function CountersTopBar({
 
   const activeCounters = useMemo(() => {
     const counters = [];
-    if (poison > 0) counters.push({ key: "poison", value: poison, color: POISON_COLOR, icon: POISON_ICON });
+    if (poison > 0) counters.push({ key: "poison", value: Math.min(poison, 10), color: POISON_COLOR, icon: POISON_ICON });
     if (energy > 0) counters.push({ key: "energy", value: energy, color: ENERGY_COLOR, icon: ENERGY_ICON });
     if (experience > 0) counters.push({ key: "experience", value: experience, color: XP_COLOR, icon: XP_ICON });
     return counters;

@@ -1,12 +1,10 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 import Typography from "@/components/ui/Typography";
 import PoisonCounterIcon from "@/assets/icons/poison-counter";
 import GameStore from "@/store/GameStore";
-import StyleStore from "@/store/StyleStore";
 import {
   selectPlayerEnergy,
   selectPlayerExperience,
-  selectPlayerColorWithAlpha,
   selectPlayerPoison,
   selectShowInitiativeBar,
   selectShowMonarchBar,
@@ -82,18 +80,50 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
   const poison = GameStore(selectPlayerPoison(playerId));
   const energy = GameStore(selectPlayerEnergy(playerId));
   const experience = GameStore(selectPlayerExperience(playerId));
-  const playerOpacityColor = StyleStore(selectPlayerColorWithAlpha(playerId, "C0"));
 
   const incrementPoison = GameStore((state) => state.incrementPoison);
   const incrementEnergy = GameStore((state) => state.incrementEnergy);
   const incrementExperience = GameStore((state) => state.incrementExperience);
+  const proliferate = GameStore((state) => state.proliferate);
+  const undoProliferate = GameStore((state) => state.undoProliferate);
   const showMonarchBar = GameStore(selectShowMonarchBar);
   const showInitiativeBar = GameStore(selectShowInitiativeBar);
   const toggleMonarchBar = GameStore((state) => state.toggleMonarchBar);
   const toggleInitiativeBar = GameStore((state) => state.toggleInitiativeBar);
 
+  const proliferateCountRef = useRef(0);
+  const [proliferateCount, setProliferateCount] = useState(0);
+  const undoTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const handleProliferate = useCallback(() => {
+    proliferate(playerId);
+    proliferateCountRef.current += 1;
+    setProliferateCount(proliferateCountRef.current);
+  }, [proliferate, playerId]);
+
+  const doUndo = useCallback(() => {
+    if (proliferateCountRef.current === 0) return;
+    undoProliferate(playerId);
+    proliferateCountRef.current -= 1;
+    setProliferateCount(proliferateCountRef.current);
+  }, [undoProliferate, playerId]);
+
+  const handleUndoLongPress = useCallback(() => {
+    doUndo();
+    undoTimer.current = setInterval(doUndo, 400);
+  }, [doUndo]);
+
+  const handlePressOut = useCallback(() => {
+    if (undoTimer.current) {
+      clearInterval(undoTimer.current);
+      undoTimer.current = null;
+    }
+  }, []);
   const onPoisonIncrement = useCallback(() => incrementPoison({ playerId, value: 1 }), [incrementPoison, playerId]);
-  const onPoisonDecrement = useCallback(() => incrementPoison({ playerId, value: -1 }), [incrementPoison, playerId]);
+  const onPoisonDecrement = useCallback(
+    () => incrementPoison({ playerId, value: poison > 9 ? 9 - poison : -1 }),
+    [incrementPoison, playerId, poison]
+  );
   const onEnergyIncrement = useCallback(() => incrementEnergy({ playerId, value: 1 }), [incrementEnergy, playerId]);
   const onEnergyDecrement = useCallback(() => incrementEnergy({ playerId, value: -1 }), [incrementEnergy, playerId]);
   const onExperienceIncrement = useCallback(() => incrementExperience({ playerId, value: 1 }), [incrementExperience, playerId]);
@@ -103,25 +133,12 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
 
   return (
     <View style={[styles.sideBar, style]} {...props}>
-      <View style={styles.backgroundIcon}>
-        <Typography
-          style={{
-            color: playerOpacityColor,
-            fontSize: 10,
-            marginBottom: 4,
-            textAlign: "center",
-          }}
-        >
-          Counters
-        </Typography>
-        <Ionicons name="stats-chart" size={38} color={playerOpacityColor} />
-      </View>
 
       <CounterRow
         testIdPrefix={`counter-poison-${playerId}`}
         icon={POISON_ICON}
         color={POISON_COLOR}
-        value={poison}
+        value={Math.min(poison, 10)}
         onIncrement={onPoisonIncrement}
         onDecrement={onPoisonDecrement}
       />
@@ -141,6 +158,18 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
         onIncrement={onExperienceIncrement}
         onDecrement={onExperienceDecrement}
       />
+
+      <TouchableOpacity
+        testID={`proliferate-${playerId}`}
+        style={styles.proliferateButton}
+        onPress={handleProliferate}
+        onLongPress={handleUndoLongPress}
+        onPressOut={handlePressOut}
+        delayLongPress={400}
+      >
+        <Typography style={styles.proliferateText}>Proliferate</Typography>
+        {proliferateCount > 0 && <Typography style={styles.proliferateCount}>+{proliferateCount}</Typography>}
+      </TouchableOpacity>
 
       <View style={styles.objectiveControls}>
         <TouchableOpacity
@@ -182,18 +211,6 @@ const styles = StyleSheet.create({
     position: "relative",
     height: "100%",
     alignItems: "center",
-  },
-  row: {
-    flex: 1,
-    width: "100%",
-    borderWidth: 0.5,
-    borderColor: "#555555",
-    backgroundColor: "#2D2D2D",
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-    maxHeight: 40,
-    paddingHorizontal: 4,
   },
   colorStrip: {
     position: "absolute",
@@ -249,12 +266,47 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
   },
-  objectiveControls: {
-    position: "absolute",
-    bottom: 6,
-    right: 6,
+  row: {
+    flex: 1,
+    width: "100%",
+    borderWidth: 0.5,
+    borderColor: "#555555",
+    backgroundColor: "#2D2D2D",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    paddingHorizontal: 4,
+  },
+  proliferateButton: {
+    flex: 1,
+    width: "100%",
+    borderWidth: 0.5,
+    borderColor: "#555555",
+    backgroundColor: "#2D2D2D",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    paddingHorizontal: 4,
     flexDirection: "row",
-    gap: 4,
+    gap: 6,
+  },
+  proliferateText: {
+    color: "#26c6da",
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  proliferateCount: {
+    color: "#26c6da",
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  objectiveControls: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
   },
   objectiveButton: {
     width: 22,

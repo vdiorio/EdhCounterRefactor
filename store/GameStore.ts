@@ -94,7 +94,7 @@ const GameStore = create<CommanderStore>((set, get) => {
   };
 
   const clampPoison = (value: number) => {
-    return Math.min(10, Math.max(0, value));
+    return Math.max(0, value);
   };
 
   const clampPositive = (value: number) => {
@@ -271,6 +271,54 @@ const GameStore = create<CommanderStore>((set, get) => {
           showInitiativeBar,
           initiativePlayerId: showInitiativeBar ? playerId : null,
         };
+      }),
+
+    proliferate: (playerId: number) =>
+      set((state) => {
+        let next = state;
+
+        // Increment energy and experience for the current player only if they already have at least 1
+        const current = next.players[playerId];
+        next = updatePlayer(next, playerId, {
+          energy: current.energy > 0 ? clampPositive(current.energy + 1) : current.energy,
+          experience: current.experience > 0 ? clampPositive(current.experience + 1) : current.experience,
+        });
+
+        // Increment poison for every other player that already has at least 1
+        for (const id in next.players) {
+          const pID = Number(id);
+          if (pID === playerId) continue;
+          const p = next.players[pID];
+          if (p.poison > 0) {
+            next = updatePlayer(next, pID, { poison: clampPoison(p.poison + 1) });
+          }
+        }
+
+        return next;
+      }),
+
+    undoProliferate: (playerId: number) =>
+      set((state) => {
+        let next = state;
+
+        // Reverse energy and experience for the current player if they have at least 1
+        const current = next.players[playerId];
+        next = updatePlayer(next, playerId, {
+          energy: current.energy > 0 ? clampPositive(current.energy - 1) : current.energy,
+          experience: current.experience > 0 ? clampPositive(current.experience - 1) : current.experience,
+        });
+
+        // Reverse poison for every other player that has at least 1
+        for (const id in next.players) {
+          const pID = Number(id);
+          if (pID === playerId) continue;
+          const p = next.players[pID];
+          if (p.poison > 0) {
+            next = updatePlayer(next, pID, { poison: clampPoison(p.poison - 1) });
+          }
+        }
+
+        return next;
       }),
   };
 });

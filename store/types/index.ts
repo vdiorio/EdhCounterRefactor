@@ -71,6 +71,8 @@ export interface CommanderStore {
   claimInitiative: (playerId: number) => void;
   toggleMonarchBar: (playerId: number) => void;
   toggleInitiativeBar: (playerId: number) => void;
+  proliferate: (playerId: number) => void;
+  undoProliferate: (playerId: number) => void;
   setNumPlayers: ({
     playerCount,
     alt,
