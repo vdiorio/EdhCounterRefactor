@@ -1,0 +1,1 @@
+Contador de vida para EDH / Commander — suporta 2–6 jogadores com todos os contadores
