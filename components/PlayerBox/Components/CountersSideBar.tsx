@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    minWidth: 2,
+    minWidth: 10,
   },
   value: {
     flex: 3,

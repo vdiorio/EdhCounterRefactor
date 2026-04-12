@@ -83,7 +83,7 @@ export default function SidebarSlot({ selectedBar, playerId }: SidebarSlotProps)
   const { width, content } = renderContent(displayedBar, playerId);
 
   return (
-    <View style={{ overflow: "hidden", width }}>
+    <View style={{ overflow: "hidden", width, minWidth: 80, zIndex: 21 }}>
       {!isExiting && (
         <Animated.View
           key={displayedBar}
