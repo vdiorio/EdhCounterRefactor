@@ -15,9 +15,9 @@ Description: |-
   experience counters.
 
 Builds:
-  - versionName: '1.0.16'
-    versionCode: 16
-    commit: v1.0.16
+  - versionName: '1.0.17'
+    versionCode: 17
+    commit: v1.0.17
     subdir: android
     sudo:
       - apt-get update
@@ -44,9 +44,10 @@ Builds:
 
     gradle:
       - yes
+    output: app/build/outputs/apk/release/*.apk
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
 
-CurrentVersion: '1.0.16'
-CurrentVersionCode: 16
+CurrentVersion: '1.0.17'
+CurrentVersionCode: 17
