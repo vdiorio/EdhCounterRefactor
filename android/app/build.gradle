@@ -11,7 +11,6 @@ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 react {
     entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
     reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
-    hermesCommand = "/tmp/hermesc_fdroid"
     codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
 
     // Use Expo CLI to bundle the app, this ensures the Metro config
@@ -192,32 +191,5 @@ dependencies {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
-    }
-}
-
-// F-Droid buildserver: copy hermesc to /usr/local/bin via shell cp+chmod for
-// maximum compatibility. Debug output printed to build log.
-task prepareHermesc {
-    doLast {
-        def srcPath = new File(rootDir, "../node_modules/react-native/sdks/hermesc/linux64-bin/hermesc").canonicalPath
-        exec {
-            commandLine 'sh', '-c', """
-                echo "=== prepareHermesc ==="
-                echo "src: ${srcPath}"
-                ls -la "${srcPath}" 2>&1 || echo "SRC NOT FOUND"
-                if [ -f "${srcPath}" ]; then
-                    cp "${srcPath}" /tmp/hermesc_fdroid
-                    chmod +x /tmp/hermesc_fdroid
-                    ls -la /tmp/hermesc_fdroid
-                    /tmp/hermesc_fdroid --version 2>&1 || echo "exec test failed (exit \$?)"
-                fi
-            """.stripIndent()
-        }
-    }
-}
-
-tasks.configureEach { task ->
-    if (task.name.startsWith("createBundle") && task.name.endsWith("JsAndAssets")) {
-        task.dependsOn prepareHermesc
     }
 }
