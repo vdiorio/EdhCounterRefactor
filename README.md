@@ -2,6 +2,8 @@
 
 **EDH Counter** é um life tracker *feature-rich* para Magic: The Gathering Commander (EDH), projetado para partidas reais na mesa.
 
+☕ Apoie o projeto no Ko-fi: https://ko-fi.com/vdiorio
+
 Suporta de 2 a 6 jogadores com layout dinâmico e orientação individual, garantindo que cada jogador veja suas informações corretamente do seu lado da mesa.
 
 ---
