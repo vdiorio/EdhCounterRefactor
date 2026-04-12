@@ -2,10 +2,9 @@ import { create } from "zustand";
 
 interface StyleState {
   playerColors: string[];
-  setPlayerColor: (id: number, color: string) => void;
 }
 
-const colorsDark = [                                                                             
+const colors = [                                                                             
   "#6699FF", // Light Blue                                                                        
   "#00c300", // Dark Green                                                                        
   "#FF6666", // Light Red                                                                         
@@ -18,14 +17,8 @@ const shuffleColors = (colorArray: string[]): string[] => {
   return colorArray.sort(() => Math.random() - 0.5);
 };
 
-export const StyleStore = create<StyleState>((set) => ({
-  playerColors: shuffleColors([...colorsDark]),
-  setPlayerColor: (id, color) =>
-    set((state) => {
-      const next = [...state.playerColors];
-      next[id - 1] = color;
-      return { playerColors: next };
-    }),
+export const StyleStore = create<StyleState>(() => ({
+  playerColors: shuffleColors([...colors]),
 }));
 
 export default StyleStore;

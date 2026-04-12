@@ -1,3 +1,4 @@
+import { memo, useCallback } from "react";
 import Typography from "@/components/ui/Typography";
 import PoisonCounterIcon from "@/assets/icons/poison-counter";
 import GameStore from "@/store/GameStore";
@@ -33,7 +34,7 @@ interface CounterRowProps {
   onDecrement: () => void;
 }
 
-function CounterRow({
+const CounterRow = memo(function CounterRow({
   testIdPrefix,
   icon,
   color,
@@ -75,7 +76,7 @@ function CounterRow({
       </View>
     </View>
   );
-}
+});
 
 export default function CountersSideBar({ playerId, style, ...props }: PlayerViewProps) {
   const poison = GameStore(selectPlayerPoison(playerId));
@@ -91,12 +92,14 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
   const toggleMonarchBar = GameStore((state) => state.toggleMonarchBar);
   const toggleInitiativeBar = GameStore((state) => state.toggleInitiativeBar);
 
-  const onPoisonIncrement = () => incrementPoison({ playerId, value: 1 });
-  const onPoisonDecrement = () => incrementPoison({ playerId, value: -1 });
-  const onEnergyIncrement = () => incrementEnergy({ playerId, value: 1 });
-  const onEnergyDecrement = () => incrementEnergy({ playerId, value: -1 });
-  const onExperienceIncrement = () => incrementExperience({ playerId, value: 1 });
-  const onExperienceDecrement = () => incrementExperience({ playerId, value: -1 });
+  const onPoisonIncrement = useCallback(() => incrementPoison({ playerId, value: 1 }), [incrementPoison, playerId]);
+  const onPoisonDecrement = useCallback(() => incrementPoison({ playerId, value: -1 }), [incrementPoison, playerId]);
+  const onEnergyIncrement = useCallback(() => incrementEnergy({ playerId, value: 1 }), [incrementEnergy, playerId]);
+  const onEnergyDecrement = useCallback(() => incrementEnergy({ playerId, value: -1 }), [incrementEnergy, playerId]);
+  const onExperienceIncrement = useCallback(() => incrementExperience({ playerId, value: 1 }), [incrementExperience, playerId]);
+  const onExperienceDecrement = useCallback(() => incrementExperience({ playerId, value: -1 }), [incrementExperience, playerId]);
+  const handleMonarchToggle = useCallback(() => toggleMonarchBar(playerId), [toggleMonarchBar, playerId]);
+  const handleInitiativeToggle = useCallback(() => toggleInitiativeBar(playerId), [toggleInitiativeBar, playerId]);
 
   return (
     <View style={[styles.sideBar, style]} {...props}>
@@ -116,7 +119,7 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
 
       <CounterRow
         testIdPrefix={`counter-poison-${playerId}`}
-        icon={<PoisonCounterIcon size={18} color={POISON_COLOR} opacity={0.95} />}
+        icon={POISON_ICON}
         color={POISON_COLOR}
         value={poison}
         onIncrement={onPoisonIncrement}
@@ -124,7 +127,7 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
       />
       <CounterRow
         testIdPrefix={`counter-energy-${playerId}`}
-        icon={<Ionicons name="flash" size={18} color={ENERGY_COLOR} />}
+        icon={ENERGY_ICON}
         color={ENERGY_COLOR}
         value={energy}
         onIncrement={onEnergyIncrement}
@@ -132,7 +135,7 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
       />
       <CounterRow
         testIdPrefix={`counter-xp-${playerId}`}
-        icon={<Typography style={[styles.xpIcon, { color: XP_COLOR }]}>XP</Typography>}
+        icon={XP_ICON}
         color={XP_COLOR}
         value={experience}
         onIncrement={onExperienceIncrement}
@@ -146,7 +149,7 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
             styles.objectiveButton,
             showMonarchBar && { borderColor: "#d4af37", backgroundColor: "#d4af3728" },
           ]}
-          onPress={() => toggleMonarchBar(playerId)}
+          onPress={handleMonarchToggle}
         >
           <FontAwesome5
             name={"crown" as any}
@@ -161,7 +164,7 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
             styles.objectiveButton,
             showInitiativeBar && { borderColor: "#7e57c2", backgroundColor: "#7e57c228" },
           ]}
-          onPress={() => toggleInitiativeBar(playerId)}
+          onPress={handleInitiativeToggle}
         >
           <FontAwesome5
             name={"dungeon" as any}
@@ -264,3 +267,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(18,18,18,0.7)",
   },
 });
+
+// Stable icon elements — all props are module-level constants, created once
+const POISON_ICON = <PoisonCounterIcon size={18} color={POISON_COLOR} opacity={0.95} />;
+const ENERGY_ICON = <Ionicons name="flash" size={18} color={ENERGY_COLOR} />;
+const XP_ICON = <Typography style={[styles.xpIcon, { color: XP_COLOR }]}>XP</Typography>;

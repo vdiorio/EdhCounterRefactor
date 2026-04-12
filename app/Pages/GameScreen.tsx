@@ -25,7 +25,6 @@ export default function Game() {
     playerCount: parseInt(String(params.playerCount) || "4"),
   };
 
-  const alivePlayers = GameStore((state) => state.alivePlayers);
   const layout = GameStore((state) => state.gameLayout);
   const screen = ScreenStore((state) => state.screen);
   const setScreen = ScreenStore((state) => state.setScreen);
@@ -51,7 +50,7 @@ export default function Game() {
     isGameWithFiveOrMore,
     gameFadeStyle,
     cdmgFadeStyle,
-  } = useLayoutGenerator(layout, alivePlayers, screen);
+  } = useLayoutGenerator(layout, screen);
 
   if (screen === Screen.main) {
     return null;

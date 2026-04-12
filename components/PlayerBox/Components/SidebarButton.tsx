@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { TouchableOpacity, TouchableOpacityProps } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -16,7 +16,7 @@ interface ButtonProps extends TouchableOpacityProps {
   icon: SidebarIcon;
 }
 
-export default function SidebarButton({
+export default memo(function SidebarButton({
   selected,
   playerId,
   icon,
@@ -51,4 +51,4 @@ export default function SidebarButton({
       )}
     </TouchableOpacity>
   );
-}
+});

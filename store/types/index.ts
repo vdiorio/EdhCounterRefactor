@@ -40,14 +40,11 @@ export type gameLayout = [number, number, number, number];
 export interface CommanderStore {
   players: Record<number, Player>;
   numPlayers: number;
-  deadPlayers: number[];
-  alivePlayers: number[];
   gameLayout: gameLayout;
   monarchPlayerId: number | null;
   initiativePlayerId: number | null;
   showMonarchBar: boolean;
   showInitiativeBar: boolean;
-  removePlayerFromLayout: (playerId: number) => void;
   setLife: ({ playerId, newLife }: SetLifePayload) => void;
   incrementLife: ({ playerId, value }: IncLifePayload) => void;
   dealCommanderDamage: ({

@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react";
 import { SideBar } from "@/components/types";
 import PoisonCounterIcon from "@/assets/icons/poison-counter";
 import Typography from "@/components/ui/Typography";
@@ -32,54 +33,28 @@ export default function CountersTopBar({
   const isSelected = selectedBar === SideBar.counters;
   const accentColor = isSelected ? playerColor : "#8a8a8a";
 
-  const activeCounters = [];
+  const activeCounters = useMemo(() => {
+    const counters = [];
+    if (poison > 0) counters.push({ key: "poison", value: poison, color: POISON_COLOR, icon: POISON_ICON });
+    if (energy > 0) counters.push({ key: "energy", value: energy, color: ENERGY_COLOR, icon: ENERGY_ICON });
+    if (experience > 0) counters.push({ key: "experience", value: experience, color: XP_COLOR, icon: XP_ICON });
+    return counters;
+  }, [poison, energy, experience]);
 
-  if (poison > 0) {
-    activeCounters.push({
-      key: "poison",
-      value: poison,
-      color: POISON_COLOR,
-      icon: (
-        <PoisonCounterIcon size={12} color={POISON_COLOR} opacity={0.95} />
-      ),
-    });
-  }
+  const containerStyle = useMemo(() => [
+    styles.container,
+    { borderColor: playerColor, backgroundColor: isSelected ? playerColor + "20" : "#0d0d0d" },
+    style,
+  ], [playerColor, isSelected, style]);
 
-  if (energy > 0) {
-    activeCounters.push({
-      key: "energy",
-      value: energy,
-      color: ENERGY_COLOR,
-      icon: <Ionicons name="flash" size={12} color={ENERGY_COLOR} />,
-    });
-  }
-
-  if (experience > 0) {
-    activeCounters.push({
-      key: "experience",
-      value: experience,
-      color: XP_COLOR,
-      icon: (
-        <Typography style={[styles.xpIcon, { color: XP_COLOR }]}>
-          XP
-        </Typography>
-      ),
-    });
-  }
+  const handleToggle = useCallback(() => toggleBar(SideBar.counters), [toggleBar]);
 
   return (
     <TouchableOpacity
       testID={`top-bar-counters-${playerId}`}
       activeOpacity={0.85}
-      onPress={() => toggleBar(SideBar.counters)}
-      style={[
-        styles.container,
-        {
-          borderColor: playerColor,
-          backgroundColor: isSelected ? playerColor + "20" : "#0d0d0d",
-        },
-        style,
-      ]}
+      onPress={handleToggle}
+      style={containerStyle}
       {...props}
     >
       {activeCounters.length > 0 ? (
@@ -142,3 +117,8 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 });
+
+// Stable icon elements — all props are module-level constants, created once
+const POISON_ICON = <PoisonCounterIcon size={12} color={POISON_COLOR} opacity={0.95} />;
+const ENERGY_ICON = <Ionicons name="flash" size={12} color={ENERGY_COLOR} />;
+const XP_ICON = <Typography style={[styles.xpIcon, { color: XP_COLOR }]}>XP</Typography>;

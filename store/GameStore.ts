@@ -104,20 +104,11 @@ const GameStore = create<CommanderStore>((set, get) => {
   return {
     players: generatePlayers(4), // 🟢 Default to 4 players or set dynamically later
     numPlayers: 4,
-    deadPlayers: [],
-    alivePlayers: Array.from({ length: 4 }, (_, i) => i + 1),
     gameLayout: [0, 2, 2, 0],
     monarchPlayerId: null,
     initiativePlayerId: null,
     showMonarchBar: false,
     showInitiativeBar: false,
-    removePlayerFromLayout: (playerId) => {
-      set((state) => ({
-        deadPlayers: [...state.deadPlayers, playerId],
-        alivePlayers: state.alivePlayers.filter((id) => id !== playerId),
-      }));
-    },
-
     setNumPlayers: ({
       playerCount,
       alt,
@@ -132,8 +123,6 @@ const GameStore = create<CommanderStore>((set, get) => {
         gameLayout: newLayout,
         numPlayers: playerCount,
         players: generatePlayers(playerCount),
-        deadPlayers: [],
-        alivePlayers: Array.from({ length: playerCount }, (_, i) => i + 1),
         monarchPlayerId: null,
         initiativePlayerId: null,
         showMonarchBar: false,
@@ -193,8 +182,6 @@ const GameStore = create<CommanderStore>((set, get) => {
       set((state) => ({
         ...state,
         players: generatePlayers(state.numPlayers),
-        deadPlayers: [],
-        alivePlayers: Array.from({ length: state.numPlayers }, (_, i) => i + 1),
         monarchPlayerId: null,
         initiativePlayerId: null,
         showMonarchBar: false,
