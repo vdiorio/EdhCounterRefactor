@@ -1,7 +1,7 @@
 import Typography from "@/components/ui/Typography";
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import ScreenStore, { Screen } from "@/store/ScreenStore";
 import GameStore from "@/store/GameStore";
 import StyleStore from "@/store/StyleStore";

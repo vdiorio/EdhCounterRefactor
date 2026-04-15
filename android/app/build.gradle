@@ -90,8 +90,8 @@ android {
         applicationId 'com.vdiorio.edhcounter'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 17
-        versionName "1.0.17"
+        versionCode 18
+        versionName "1.0.18"
         if (findProperty('reactNativeArchitectures')) {
             ndk {
                 abiFilters(*((findProperty('reactNativeArchitectures')).split(',')))
@@ -136,7 +136,7 @@ android {
         abi {
             enable !findProperty('reactNativeArchitectures')
             reset()
-            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+            include "armeabi-v7a", "arm64-v8a"
             universalApk false
         }
     }

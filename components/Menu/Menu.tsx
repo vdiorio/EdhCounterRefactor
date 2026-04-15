@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TouchableOpacity, Text, Alert, StyleSheet } from "react-native";
 import AppModal from "@/components/ui/AppModal";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import GameStore from "@/store/GameStore";
 import ScreenStore, { Screen } from "@/store/ScreenStore";
 import useAppColors from "@/hooks/useAppColors";

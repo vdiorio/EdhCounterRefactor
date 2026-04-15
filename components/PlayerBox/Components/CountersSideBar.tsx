@@ -9,8 +9,7 @@ import {
   selectShowInitiativeBar,
   selectShowMonarchBar,
 } from "@/store/selectors";
-import { Ionicons } from "@expo/vector-icons";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   StyleSheet,
   TouchableOpacity,
@@ -180,8 +179,8 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
           ]}
           onPress={handleMonarchToggle}
         >
-          <FontAwesome5
-            name={"crown" as any}
+          <Ionicons
+            name="trophy"
             size={14}
             color={showMonarchBar ? "#d4af37" : "#BBBBBB"}
           />
@@ -195,8 +194,8 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
           ]}
           onPress={handleInitiativeToggle}
         >
-          <FontAwesome5
-            name={"dungeon" as any}
+          <Ionicons
+            name="skull"
             size={14}
             color={showInitiativeBar ? "#7e57c2" : "#BBBBBB"}
           />

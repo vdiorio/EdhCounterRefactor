@@ -1,5 +1,5 @@
 import GameStore from "@/store/GameStore";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   selectInitiativePlayerId,
   selectMonarchPlayerId,
@@ -58,8 +58,8 @@ export default function StatusBottomBar({ playerId, style, ...props }: PlayerVie
               },
             ]}
           >
-            <FontAwesome5
-              name={"crown" as any}
+            <Ionicons
+              name="trophy"
               size={18}
               color={isMonarchHighlighted ? MONARCH_COLOR : "#888888"}
             />
@@ -82,8 +82,8 @@ export default function StatusBottomBar({ playerId, style, ...props }: PlayerVie
               },
             ]}
           >
-            <FontAwesome5
-              name={"dungeon" as any}
+            <Ionicons
+              name="skull"
               size={18}
               color={isInitiativeHighlighted ? INITIATIVE_COLOR : "#888888"}
             />

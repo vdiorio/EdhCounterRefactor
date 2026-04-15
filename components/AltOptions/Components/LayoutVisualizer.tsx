@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { StyleSheet, View } from "react-native";
 import { ViewProps } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import Rotator from "@/components/Rotator/Rotator";
 import { Direction } from "@/components/types";
 

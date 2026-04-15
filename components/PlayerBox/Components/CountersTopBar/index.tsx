@@ -11,7 +11,7 @@ import {
 } from "@/store/selectors";
 import StyleStore from "@/store/StyleStore";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { SidebarToggleProps } from "../UtilsSideBar.types";
 
 const POISON_COLOR = "#2e7d32";

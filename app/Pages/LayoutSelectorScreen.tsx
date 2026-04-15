@@ -11,7 +11,7 @@ import WheelPicker from "react-native-wheely";
 import { Link } from "expo-router";
 import AltSelector from "@/components/AltOptions";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import Typography from "@/components/ui/Typography";
 import useAppColors from "@/hooks/useAppColors";
 import { useTranslation } from 'react-i18next';

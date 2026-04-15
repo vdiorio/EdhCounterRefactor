@@ -15,7 +15,7 @@ import Rotator from "../Rotator/Rotator";
 import { Direction } from "../types";
 import ScreenStore, { Screen } from "@/store/ScreenStore";
 import LifeTotal from "../PlayerBox/Components/Lifetotal";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import GameStore from "@/store/GameStore";
 import StyleStore from "@/store/StyleStore";
 
@@ -71,10 +71,12 @@ export default function CdmgBox({ positionId, currentPlayerId, style, ...props }
               style={[styles.backButton, { borderColor: 'lightgrey' }]}
               underlayColor={'lightgrey' + "33"}
             >
-              <Text style={[styles.buttonText, { color: 'lightgrey' }]}>
-                <FontAwesome name="arrow-left" size={16} color={'lightgrey'} />{" "}
-                {t('back')}
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+                <Ionicons  name="arrow-back" size={16} color={'lightgrey'} />
+                <Text style={[styles.buttonText, { color: 'lightgrey' }]}>
+                  {t('back')}
+                </Text>
+              </View>
             </TouchableHighlight>
             <LifeTotal
               playerId={currentPlayerId}
@@ -83,8 +85,8 @@ export default function CdmgBox({ positionId, currentPlayerId, style, ...props }
               pointerEvents="none"
             />
             <View style={styles.chainRow}>
-              <FontAwesome
-                name={player.chain ? "link" : "chain-broken"}
+              <Ionicons
+                name={player.chain ? "link" : "unlink"}
                 size={16}
                 color={chainColor}
               />

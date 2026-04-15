@@ -1,7 +1,6 @@
 import React, { memo } from "react";
 import { TouchableOpacity, TouchableOpacityProps } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import StyleStore from "@/store/StyleStore";
 import { selectPlayerColor } from "@/store/selectors";
 
@@ -47,7 +46,7 @@ export default memo(function SidebarButton({
       {icon === SidebarIcon.Cdmg ? (
         <Ionicons name="shield" {...iconProps} />
       ) : (
-        <FontAwesome5 name="history" {...iconProps} />
+        <Ionicons name="time-outline" {...iconProps} />
       )}
     </TouchableOpacity>
   );
