@@ -1,1 +1,0 @@
-Correções de build para compatibilidade com F-Droid.
