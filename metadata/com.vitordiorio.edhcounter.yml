@@ -37,7 +37,7 @@ Builds:
 
   - versionName: 1.0.18
     versionCode: 18
-    commit: v1.0.18
+    commit: b5f5ecc9fb1b0d3dd5205b28c5237cf737884ee1
     subdir: android
     sudo:
       - sysctl fs.inotify.max_user_watches=524288 || true
