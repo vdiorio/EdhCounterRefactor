@@ -6,7 +6,7 @@ import {
   Image,
 } from "react-native";
 import AppModal from "@/components/ui/AppModal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import WheelPicker from "react-native-wheely";
 import { Link } from "expo-router";
 import AltSelector from "@/components/AltOptions";
@@ -35,10 +35,6 @@ export default function GameSelectors() {
     setAlternative("f");
   };
 
-  useEffect(() => {
-    console.log("Selected player count:", selected + 1);
-  }, [alternative]);
-
   const scaleFunction = (x: number) => {
     return 0.7 * x; // Slightly larger for better visibility
   };
@@ -59,11 +55,13 @@ export default function GameSelectors() {
             {AVAILABLE_LANGUAGES.find((l) => l.code === language)?.flag}
           </Text>
         </TouchableOpacity>
-        <Image
-          source={require('@/assets/images/splash-icon.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <View pointerEvents="none">
+          <Image
+            source={require('@/assets/images/splash-icon.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
       </View>
 
       <AppModal visible={langModalVisible} onClose={() => setLangModalVisible(false)} title={t('language')}>

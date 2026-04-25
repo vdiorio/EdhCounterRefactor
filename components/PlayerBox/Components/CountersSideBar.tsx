@@ -1,6 +1,8 @@
 import { memo, useCallback, useRef, useState } from "react";
 import Typography from "@/components/ui/Typography";
 import PoisonCounterIcon from "@/assets/icons/poison-counter";
+import CrownIcon from "@/assets/icons/crown";
+import DungeonIcon from "@/assets/icons/dungeon";
 import GameStore from "@/store/GameStore";
 import {
   selectPlayerEnergy,
@@ -179,8 +181,7 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
           ]}
           onPress={handleMonarchToggle}
         >
-          <Ionicons
-            name="trophy"
+          <CrownIcon
             size={14}
             color={showMonarchBar ? "#d4af37" : "#BBBBBB"}
           />
@@ -194,8 +195,7 @@ export default function CountersSideBar({ playerId, style, ...props }: PlayerVie
           ]}
           onPress={handleInitiativeToggle}
         >
-          <Ionicons
-            name="skull"
+          <DungeonIcon
             size={14}
             color={showInitiativeBar ? "#7e57c2" : "#BBBBBB"}
           />
