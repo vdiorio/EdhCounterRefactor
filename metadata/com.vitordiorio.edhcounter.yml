@@ -75,7 +75,7 @@ Builds:
 
   - versionName: 1.0.20
     versionCode: 20
-    commit: 9a4ef4d35b4d113873b7fee08d6a33f17aac9dbd
+    commit: da2bbfcd9e534f90866f0f2349809717f5aa9f74
     subdir: android
     sudo:
       - sysctl fs.inotify.max_user_watches=524288 || true
