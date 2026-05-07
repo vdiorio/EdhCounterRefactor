@@ -73,7 +73,31 @@ Builds:
     scandelete:
       - node_modules
 
+  - versionName: 1.0.20
+    versionCode: 20
+    commit: 9a4ef4d35b4d113873b7fee08d6a33f17aac9dbd
+    subdir: android
+    sudo:
+      - sysctl fs.inotify.max_user_watches=524288 || true
+      - apt-get update
+      - apt-get install -y npm
+    init:
+      - cd ..
+      - npm ci
+      - npx patch-package
+    gradle:
+      - yes
+    output: app/build/outputs/apk/release/*.apk
+    scanignore:
+      - node_modules/jsc-android/dist
+      - node_modules/react-native/sdks/hermesc
+    scandelete:
+      - node_modules
+
+Binaries: https://github.com/vdiorio/EdhCounterRefactor/releases/download/v%v/app-release.apk
+AllowedAPKSigningKeys: fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c
+
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 1.0.19
-CurrentVersionCode: 19
+CurrentVersion: 1.0.20
+CurrentVersionCode: 20
