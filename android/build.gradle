@@ -32,27 +32,20 @@ allprojects {
 }
 
 subprojects { subproject ->
-    subproject.plugins.withId("com.android.application") {
-        subproject.android {
-            compileOptions {
-                sourceCompatibility JavaVersion.VERSION_17
-                targetCompatibility JavaVersion.VERSION_17
+    def pinAndroidJava17 = {
+        def androidComponents = subproject.extensions
+            .findByType(com.android.build.api.variant.AndroidComponentsExtension)
+        if (androidComponents != null) {
+            androidComponents.finalizeDsl { ext ->
+                ext.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
+                ext.compileOptions.targetCompatibility = JavaVersion.VERSION_17
             }
         }
     }
-
-    subproject.plugins.withId("com.android.library") {
-        subproject.android {
-            compileOptions {
-                sourceCompatibility JavaVersion.VERSION_17
-                targetCompatibility JavaVersion.VERSION_17
-            }
-        }
-    }
+    subproject.plugins.withId("com.android.application", pinAndroidJava17)
+    subproject.plugins.withId("com.android.library", pinAndroidJava17)
 
     subproject.tasks.withType(JavaCompile).configureEach {
-        sourceCompatibility = JavaVersion.VERSION_17.toString()
-        targetCompatibility = JavaVersion.VERSION_17.toString()
         options.release.set(17)
     }
 
